@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Assistente Diagnostico SNC - Scientifico Completo</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: white;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px rgba(102, 126, 234, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8)); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            accent-color: #667eea;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--success-color);
+            color: #a7f3d0;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning-color);
+            color: #fcd34d;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--error-color);
+            color: #fca5a5;
+        }
+
+        .diagnosis-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border: 2px solid var(--success-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnosis-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-conic-gradient(from 0deg, transparent, transparent 2deg, rgba(255,255,255,0.03) 2deg, rgba(255,255,255,0.03) 4deg);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .confidence-meter {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .ki67-interpretation {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .morphology-section {
+            background: rgba(245, 158, 11, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid var(--warning-color);
+        }
+
+        .grade-preview {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+            border: 1px solid #667eea;
+        }
+
+        #reportResults {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1><i class="fas fa-brain"></i> Assistente Diagnostico SNC - Enhanced</h1>
+        <p>WHO CNS5 2021 • Methylation-aware • CDKN2A/B • Solo Uso Educativo</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Clinical Context -->
+            <div class="card">
+                <h3><i class="fas fa-user-md"></i> Contesto Clinico</h3>
+                
+                <div class="input-group">
+                    <label for="patientAge">Età Paziente (anni):</label>
+                    <input type="number" id="patientAge" class="input-field" min="0" max="100" placeholder="Inserire età paziente">
+                </div>
+
+                <div class="input-group">
+                    <label for="anatomicalSite">Sede Anatomica:</label>
+                    <select id="anatomicalSite" class="input-field">
+                        <option value="frontal_lobe">Lobo Frontale</option>
+                        <option value="temporal_lobe">Lobo Temporale</option>
+                        <option value="parietal_lobe">Lobo Parietale</option>
+                        <option value="occipital_lobe">Lobo Occipitale</option>
+                        <option value="cerebellum">Cervelletto</option>
+                        <option value="brainstem">Tronco Encefalico</option>
+                        <option value="spinal_cord">Midollo Spinale</option>
+                        <option value="midline">Linea Mediana</option>
+                        <option value="hemispheric">Emisferico</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="morphPattern">Pattern Morfologico:</label>
+                    <select id="morphPattern" class="input-field">
+                        <option value="diffuse">Diffuso</option>
+                        <option value="circumscribed">Circoscritto</option>
+                        <option value="ependymal">Ependimale</option>
+                        <option value="embryonal">Embrionale</option>
+                    </select>
+                </div>
+
+                <!-- Morphological Criteria -->
+                <div class="morphology-section">
+                    <h4><i class="fas fa-microscope"></i> Criteri Morfologici (Grading)</h4>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="necrosis" onchange="updateGradePreview()">
+                            <label for="necrosis">Necrosi presente (→ Grade IV)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="microvascularProliferation" onchange="updateGradePreview()">
+                            <label for="microvascularProliferation">Proliferazione microvascolare (→ Grade III-IV)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="highMitoticActivity" onchange="updateGradePreview()">
+                            <label for="highMitoticActivity">Alta attività mitotica (→ Grade III)</label>
+                        </div>
+                    </div>
+                    <div id="gradePreview" class="grade-preview" style="display: none;">
+                        <strong>Grado Predetto:</strong> <span id="predictedGrade">WHO Grade II</span><br>
+                        <em id="gradingReasons">Morfologia basale</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IHC Results -->
+            <div class="card">
+                <h3><i class="fas fa-flask"></i> Risultati Immunoistochimici</h3>
+                
+                <!-- Ki-67 Special Section -->
+                <div class="input-group" style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <label for="ki67Value"><strong>Indice Ki-67 (%):</strong></label>
+                    <input type="number" id="ki67Value" class="input-field" min="0" max="100" onchange="updateKi67Interpretation()" placeholder="Inserire percentuale (0-100)">
+                    <div id="ki67Interpretation" class="ki67-interpretation">
+                        <strong>Interpretazione:</strong> <span id="ki67InterpretationText">Inserire valore per interpretazione</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="idh1Status">IDH1 R132H:</label>
+                    <select id="idh1Status" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="atrxStatus">ATRX:</label>
+                    <select id="atrxStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="loss">Perdita</option>
+                        <option value="retained">Conservato</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="p53Status">p53:</label>
+                    <select id="p53Status" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="olig2Status">OLIG2:</label>
+                    <select id="olig2Status" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="gfapStatus">GFAP:</label>
+                    <select id="gfapStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="h3k27me3Status">H3K27me3:</label>
+                    <select id="h3k27me3Status" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Conservato</option>
+                        <option value="loss">Perdita</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="h3k27mStatus">H3K27M:</label>
+                    <select id="h3k27mStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Molecular Results -->
+            <div class="card">
+                <h3><i class="fas fa-dna"></i> Risultati Molecolari</h3>
+                
+                <div class="input-group">
+                    <label for="idhMutation">Mutazione IDH1/2:</label>
+                    <select id="idhMutation" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="codeletion1p19q">Codelezione 1p/19q:</label>
+                    <select id="codeletion1p19q" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="tertPromoter">Promotore TERT:</label>
+                    <select id="tertPromoter" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Mutato</option>
+                        <option value="negative">Wildtype</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="tp53Mutation">Mutazione TP53:</label>
+                    <select id="tp53Mutation" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="egfrAmplification">Amplificazione EGFR:</label>
+                    <select id="egfrAmplification" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="h3f3aMutation">Mutazione H3F3A (K27M/G34R):</label>
+                    <select id="h3f3aMutation" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="k27m">K27M</option>
+                        <option value="g34r">G34R</option>
+                        <option value="negative">Wildtype</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid var(--error-color);">
+                    <label for="cdkn2aStatus"><strong>CDKN2A/B Homozygous Deletion:</strong></label>
+                    <select id="cdkn2aStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente (→ Grade 4)</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                    <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #fca5a5;">
+                        <i class="fas fa-exclamation-triangle"></i> Se presente: automatic upgrade a WHO Grade IV (CNS5 2021)
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="mgmtStatus">MGMT Promoter Methylation:</label>
+                    <select id="mgmtStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="methylated">Metilato (prognosi migliore)</option>
+                        <option value="unmethylated">Non metilato</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(102, 126, 234, 0.15); padding: 1rem; border-radius: 8px; border: 1px solid #667eea;">
+                    <label for="methylationClass"><strong>Methylation Profiling (Heidelberg-style):</strong></label>
+                    <select id="methylationClass" class="input-field">
+                        <option value="">Non disponibile</option>
+                        <option value="idh_astro">IDH, astrocytoma</option>
+                        <option value="idh_oligo">IDH, oligodendroglioma</option>
+                        <option value="gbm_rtk1">GBM, RTK I (pediatrico)</option>
+                        <option value="gbm_rtk2">GBM, RTK II (adulto)</option>
+                        <option value="gbm_mes">GBM, mesenchymal</option>
+                        <option value="h3_k27">H3 K27-altered</option>
+                        <option value="h3_g34">H3 G34-mutant</option>
+                        <option value="pa">Pilocytic astrocytoma</option>
+                        <option value="ependymoma">Ependymoma</option>
+                        <option value="non_diagnostic">Non-diagnostic</option>
+                    </select>
+                    <div class="ki67-interpretation" style="margin-top: 0.5rem; font-size: 0.85rem;">
+                        <i class="fas fa-info-circle"></i> Il methylation profiling è il gold standard WHO CNS5 2021. Se disponibile, ha priorità su morfologia/IHC.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="btn btn-primary" onclick="generateCompleteReport()" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                <i class="fas fa-chart-line"></i> Genera Report Diagnostico Completo
+            </button>
+            <button class="btn btn-secondary" onclick="runDebugTest()" style="margin-left: 1rem;">
+                <i class="fas fa-play"></i> Test Debug (Astro IDH+ Grade 4)
+            </button>
+        </div>
+
+        <!-- Results Container -->
+        <div id="reportResults"></div>
+
+        <!-- References Footer -->
+        <footer style="background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); margin-top: 3rem; padding: 2rem; border-radius: 16px;">
+            <div class="card" style="margin: 0;">
+                <h3><i class="fas fa-book-open"></i> Riferimenti e Documentazione</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <div>
+                        <h4 style="color: #94a3b8; margin-bottom: 0.5rem;">Riferimenti Primari:</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">
+                                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8328013/" 
+                                   target="_blank" 
+                                   style="color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    WHO CNS5 2021 - Articolo PMC
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 0.5rem;">
+                                <a href="https://publications.iarc.who.int/Book-And-Report-Series/Who-Classification-Of-Tumours/Central-Nervous-System-Tumours-2021" 
+                                   target="_blank" 
+                                   style="color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    WHO Blue Book CNS5 (Ufficiale)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #94a3b8; margin-bottom: 0.5rem;">Informazioni Strumento:</h4>
+                        <ul style="list-style: none; padding: 0; font-size: 0.9rem; color: #cbd5e1;">
+                            <li>✅ WHO CNS5 2021 Compliant</li>
+                            <li>✅ Methylation Profiling Aware</li>
+                            <li>✅ CDKN2A/B Grading Logic</li>
+                            <li>✅ Validazione Biologica Inclusa</li>
+                            <li>✅ Solo Uso Educativo</li>
+                            <li>⚠️ Non per Decisioni Cliniche</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Complete diagnostic entities with WHO CNS5 accuracy
+        const diagnosticEntities = {
+            "Astrocytoma_IDH_mutant": {
+                name: "Astrocytoma, IDH-mutant",
+                baseGrade: "WHO Grade II",
+                pattern: "diffuse",
+                agePreference: ["adult"],
+                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe"],
+                requiredIHC: { "IDH1_R132H": "positive" },
+                expectedIHC: { "ATRX": "loss", "p53": "positive", "GFAP": "positive", "OLIG2": "positive" },
+                requiredMol: { "IDH1_2_mutation": "positive" },
+                expectedMol: { "1p19q_codeletion": "negative", "TP53_mutation": "positive", "CDKN2A_deletion": "negative" },
+                methylationClass: "idh_astro",
+                biologicalConstraints: ["IDH_EGFR_exclusive", "ATRX_TP53_correlation"],
+                prognosis: { medianOS: 78, fiveYearSurvival: 0.65, treatmentSensitivity: { "temozolomide": "moderate", "radiotherapy": "good" } }
+            },
+            "Oligodendroglioma_IDH_mutant": {
+                name: "Oligodendroglioma, IDH-mutant and 1p/19q-codeleted",
+                baseGrade: "WHO Grade II",
+                pattern: "diffuse",
+                agePreference: ["adult"],
+                sitePreference: ["frontal_lobe", "temporal_lobe"],
+                requiredIHC: { "IDH1_R132H": "positive" },
+                expectedIHC: { "ATRX": "retained", "OLIG2": "positive", "GFAP": "positive" },
+                requiredMol: { "IDH1_2_mutation": "positive", "1p19q_codeletion": "positive" },
+                expectedMol: { "TERT_promoter": "positive" },
+                methylationClass: "idh_oligo",
+                biologicalConstraints: ["1p19q_ATRX_exclusive"],
+                prognosis: { medianOS: 144, fiveYearSurvival: 0.85, treatmentSensitivity: { "PCV": "excellent", "temozolomide": "good" } }
+            },
+            "Glioblastoma_IDH_wildtype": {
+                name: "Glioblastoma, IDH-wildtype",
+                baseGrade: "WHO Grade IV",
+                pattern: "diffuse",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe"],
+                requiredIHC: { "IDH1_R132H": "negative" },
+                expectedIHC: { "GFAP": "positive" },
+                requiredMol: { "IDH1_2_mutation": "negative" },
+                expectedMol: { "TERT_promoter": "positive", "EGFR_amplification": "positive" },
+                methylationClass: ["gbm_rtk1", "gbm_rtk2", "gbm_mes"],
+                biologicalConstraints: ["IDH_EGFR_exclusive"],
+                prognosis: { medianOS: 15, fiveYearSurvival: 0.05, treatmentSensitivity: { "temozolomide": "MGMT_dependent", "bevacizumab": "temporary" } }
+            },
+            "Diffuse_midline_glioma": {
+                name: "Glioma diffuso midline, H3 K27-alterato",
+                baseGrade: "WHO Grade IV",
+                pattern: "diffuse",
+                agePreference: ["pediatric"],
+                sitePreference: ["brainstem", "midline", "spinal_cord"],
+                requiredIHC: { "H3K27M": "positive" },
+                expectedIHC: { "H3K27me3": "loss", "GFAP": "positive" },
+                requiredMol: { "H3F3A_mutation": "k27m" },
+                methylationClass: "h3_k27",
+                prognosis: { medianOS: 9, fiveYearSurvival: 0.02, treatmentSensitivity: { "radiotherapy": "temporary" } }
+            },
+            "Pilocytic_astrocytoma": {
+                name: "Astrocitoma pilocitico",
+                baseGrade: "WHO Grade I",
+                pattern: "circumscribed",
+                agePreference: ["pediatric"],
+                sitePreference: ["cerebellum", "brainstem"],
+                expectedIHC: { "GFAP": "positive" },
+                expectedMol: { "KIAA1549_BRAF_fusion": "positive" },
+                methylationClass: "pa",
+                prognosis: { medianOS: 240, fiveYearSurvival: 0.95, treatmentSensitivity: { "surgery": "curative" } }
+            }
+        };
+
+        let ki67Value = 0;
+        let morphologicalCriteria = {
+            necrosis: false,
+            microvascularProliferation: false,
+            highMitoticActivity: false
+        };
+
+        function getAgeGroup() {
+            const age = parseInt(document.getElementById('patientAge').value);
+            if (isNaN(age) || age === '') return null;
+            return age < 18 ? 'pediatric' : age > 65 ? 'elderly' : 'adult';
+        }
+
+        function updateKi67Interpretation() {
+            ki67Value = parseInt(document.getElementById('ki67Value').value) || 0;
+            const interpretationElement = document.getElementById('ki67InterpretationText');
+            
+            let interpretation, color;
+            
+            if (ki67Value === 0) {
+                interpretation = "Inserire valore per interpretazione";
+                color = "rgba(203, 213, 225, 0.8)";
+            } else if (ki67Value < 5) {
+                interpretation = "Bassa proliferazione (<5%) - compatibile con WHO Grado I-II";
+                color = "rgba(16, 185, 129, 0.8)";
+            } else if (ki67Value <= 20) {
+                interpretation = "Proliferazione intermedia (5-20%) - compatibile con WHO Grado II-III";
+                color = "rgba(245, 158, 11, 0.8)";
+            } else {
+                interpretation = "Alta proliferazione (>20%) - compatibile con WHO Grado III-IV";
+                color = "rgba(239, 68, 68, 0.8)";
+            }
+            
+            interpretationElement.textContent = interpretation;
+            interpretationElement.style.color = color;
+            interpretationElement.style.fontWeight = "bold";
+            
+            updateGradePreview();
+        }
+
+        function updateGradePreview() {
+            morphologicalCriteria.necrosis = document.getElementById('necrosis').checked;
+            morphologicalCriteria.microvascularProliferation = document.getElementById('microvascularProliferation').checked;
+            morphologicalCriteria.highMitoticActivity = document.getElementById('highMitoticActivity').checked;
+            
+            let predictedGrade = 2;
+            const reasons = [];
+            
+            if (morphologicalCriteria.necrosis) {
+                predictedGrade = Math.max(predictedGrade, 4);
+                reasons.push("Necrosi → Grade IV");
+            }
+            
+            if (morphologicalCriteria.microvascularProliferation) {
+                predictedGrade = Math.max(predictedGrade, 3);
+                reasons.push("Proliferazione microvascolare → Grade III-IV");
+            }
+            
+            if (morphologicalCriteria.highMitoticActivity) {
+                predictedGrade = Math.max(predictedGrade, 3);
+                reasons.push("Alta attività mitotica → Grade III");
+            }
+            
+            if (ki67Value > 30) {
+                predictedGrade = Math.max(predictedGrade, 4);
+                reasons.push('Ki-67 ' + ki67Value + '% → Grade IV');
+            } else if (ki67Value > 15) {
+                predictedGrade = Math.max(predictedGrade, 3);
+                reasons.push('Ki-67 ' + ki67Value + '% → Grade III');
+            }
+            
+            const gradePreview = document.getElementById('gradePreview');
+            const predictedGradeElement = document.getElementById('predictedGrade');
+            const gradingReasonsElement = document.getElementById('gradingReasons');
+            
+            if (reasons.length > 0) {
+                gradePreview.style.display = 'block';
+                const gradeText = predictedGrade === 2 ? 'II' : predictedGrade === 3 ? 'III' : 'IV';
+                predictedGradeElement.textContent = 'WHO Grade ' + gradeText;
+                gradingReasonsElement.textContent = reasons.join(', ');
+            } else {
+                gradePreview.style.display = 'none';
+            }
+        }
+
+        function calculateDynamicGrade(entity, inputData) {
+            let baseGrade = 2;
+            
+            // PRIORITY 1: Methylation class override (gold standard)
+            if (inputData.mol.methylation_class) {
+                if (inputData.mol.methylation_class === 'gbm_rtk1' || 
+                    inputData.mol.methylation_class === 'gbm_rtk2' || 
+                    inputData.mol.methylation_class === 'gbm_mes' ||
+                    inputData.mol.methylation_class === 'h3_k27') {
+                    return "WHO Grade IV";
+                }
+                if (inputData.mol.methylation_class === 'pa') {
+                    return "WHO Grade I";
+                }
+            }
+            
+            // PRIORITY 2: CDKN2A/B homozygous deletion → automatic Grade 4
+            if (inputData.mol.CDKN2A_deletion === 'positive') {
+                return "WHO Grade IV";
+            }
+            
+            // PRIORITY 3: IDH-wildtype diffuse glioma = GBM
+            if (inputData.mol.IDH1_2_mutation === 'negative' && entity.pattern === 'diffuse') {
+                return "WHO Grade IV";
+            }
+            
+            // PRIORITY 4: H3 K27M = Grade IV
+            if (inputData.mol.H3F3A_mutation === 'k27m') {
+                return "WHO Grade IV";
+            }
+            
+            // Morphological criteria
+            if (morphologicalCriteria.necrosis) {
+                baseGrade = Math.max(baseGrade, 4);
+            }
+            
+            if (morphologicalCriteria.microvascularProliferation) {
+                baseGrade = Math.max(baseGrade, 3);
+            }
+            
+            if (morphologicalCriteria.highMitoticActivity) {
+                baseGrade = Math.max(baseGrade, 3);
+            }
+            
+            // Ki-67 correlation
+            if (ki67Value > 30) {
+                baseGrade = Math.max(baseGrade, 4);
+            } else if (ki67Value > 15) {
+                baseGrade = Math.max(baseGrade, 3);
+            }
+            
+            // Special entity rules
+            if (entity.name.includes("pilocitico")) {
+                return "WHO Grade I";
+            }
+            
+            return 'WHO Grade ' + (baseGrade === 2 ? 'II' : baseGrade === 3 ? 'III' : 'IV');
+        }
+
+        function collectInputData() {
+            return {
+                age: getAgeGroup(),
+                site: document.getElementById('anatomicalSite').value,
+                pattern: document.getElementById('morphPattern').value,
+                ki67: ki67Value,
+                ihc: {
+                    "IDH1_R132H": document.getElementById('idh1Status').value,
+                    "ATRX": document.getElementById('atrxStatus').value,
+                    "p53": document.getElementById('p53Status').value,
+                    "OLIG2": document.getElementById('olig2Status').value,
+                    "GFAP": document.getElementById('gfapStatus').value,
+                    "H3K27me3": document.getElementById('h3k27me3Status').value,
+                    "H3K27M": document.getElementById('h3k27mStatus').value
+                },
+                mol: {
+                    "IDH1_2_mutation": document.getElementById('idhMutation').value,
+                    "1p19q_codeletion": document.getElementById('codeletion1p19q').value,
+                    "TERT_promoter": document.getElementById('tertPromoter').value,
+                    "TP53_mutation": document.getElementById('tp53Mutation').value,
+                    "EGFR_amplification": document.getElementById('egfrAmplification').value,
+                    "H3F3A_mutation": document.getElementById('h3f3aMutation').value,
+                    "CDKN2A_deletion": document.getElementById('cdkn2aStatus').value,
+                    "MGMT_methylation": document.getElementById('mgmtStatus').value,
+                    "methylation_class": document.getElementById('methylationClass').value
+                }
+            };
+        }
+
+        function calculateConfidence(entity, inputData) {
+            let score = 0;
+            let maxScore = 0;
+
+            // Methylation class match (highest weight if available)
+            if (inputData.mol.methylation_class && inputData.mol.methylation_class !== 'non_diagnostic') {
+                maxScore += 2;
+                if (Array.isArray(entity.methylationClass)) {
+                    if (entity.methylationClass.includes(inputData.mol.methylation_class)) {
+                        score += 2;
+                    }
+                } else if (entity.methylationClass === inputData.mol.methylation_class) {
+                    score += 2;
+                }
+            }
+
+            // Check required IHC
+            for (const [marker, expected] of Object.entries(entity.requiredIHC || {})) {
+                maxScore += 1;
+                if (inputData.ihc[marker] === expected) {
+                    score += 1;
+                }
+            }
+
+            // Check expected IHC
+            for (const [marker, expected] of Object.entries(entity.expectedIHC || {})) {
+                maxScore += 0.5;
+                if (inputData.ihc[marker] === expected) {
+                    score += 0.5;
+                }
+            }
+
+            // Check required molecular
+            for (const [marker, expected] of Object.entries(entity.requiredMol || {})) {
+                maxScore += 1;
+                if (inputData.mol[marker] === expected) {
+                    score += 1;
+                }
+            }
+
+            // Check expected molecular
+            for (const [marker, expected] of Object.entries(entity.expectedMol || {})) {
+                maxScore += 0.5;
+                if (inputData.mol[marker] === expected) {
+                    score += 0.5;
+                }
+            }
+
+            // Ki-67 correlation with grade
+            maxScore += 0.4;
+            const dynamicGrade = calculateDynamicGrade(entity, inputData);
+            if (dynamicGrade === "WHO Grade I" && ki67Value < 5) {
+                score += 0.4;
+            } else if (dynamicGrade === "WHO Grade II" && ki67Value >= 5 && ki67Value <= 20) {
+                score += 0.4;
+            } else if (dynamicGrade === "WHO Grade III" && ki67Value >= 10 && ki67Value <= 30) {
+                score += 0.4;
+            } else if (dynamicGrade === "WHO Grade IV" && ki67Value > 15) {
+                score += 0.4;
+            }
+
+            // Age and site bonus
+            if (entity.agePreference.includes(inputData.age)) {
+                score += 0.3;
+            }
+            maxScore += 0.3;
+
+            if (entity.sitePreference.includes(inputData.site)) {
+                score += 0.2;
+            }
+            maxScore += 0.2;
+
+            return maxScore > 0 ? score / maxScore : 0;
+        }
+
+        function findSupportingEvidence(entity, inputData) {
+            const supporting = [];
+
+            // Methylation class support
+            if (inputData.mol.methylation_class && inputData.mol.methylation_class !== 'non_diagnostic') {
+                const methylationMap = {
+                    'idh_astro': 'Methylation class: IDH astrocytoma (gold standard)',
+                    'idh_oligo': 'Methylation class: IDH oligodendroglioma (gold standard)',
+                    'gbm_rtk1': 'Methylation class: GBM RTK I (gold standard)',
+                    'gbm_rtk2': 'Methylation class: GBM RTK II (gold standard)',
+                    'gbm_mes': 'Methylation class: GBM mesenchymal (gold standard)',
+                    'h3_k27': 'Methylation class: H3 K27-altered (gold standard)',
+                    'h3_g34': 'Methylation class: H3 G34-mutant (gold standard)',
+                    'pa': 'Methylation class: Pilocytic astrocytoma (gold standard)',
+                    'ependymoma': 'Methylation class: Ependymoma (gold standard)'
+                };
+                
+                if (methylationMap[inputData.mol.methylation_class]) {
+                    supporting.push(methylationMap[inputData.mol.methylation_class]);
+                }
+            }
+
+            // CDKN2A/B deletion
+            if (inputData.mol.CDKN2A_deletion === 'positive') {
+                supporting.push('CDKN2A/B homozygous deletion presente (criterio Grade 4 CNS5)');
+            }
+
+            // MGMT status (prognostic, not diagnostic)
+            if (inputData.mol.MGMT_methylation === 'methylated' && entity.name.includes('Glioblastoma')) {
+                supporting.push('MGMT metilato (prognosi favorevole, risposta a TMZ)');
+            }
+
+            // Required markers
+            for (const [marker, expected] of Object.entries(entity.requiredIHC || {})) {
+                if (inputData.ihc[marker] === expected) {
+                    supporting.push(marker.replace(/_/g, ' ') + ' ' + expected + ' (richiesto)');
+                }
+            }
+
+            for (const [marker, expected] of Object.entries(entity.requiredMol || {})) {
+                if (inputData.mol[marker] === expected) {
+                    supporting.push(marker.replace(/_/g, ' ') + ' ' + expected + ' (richiesto)');
+                }
+            }
+
+            // Expected markers
+            for (const [marker, expected] of Object.entries(entity.expectedIHC || {})) {
+                if (inputData.ihc[marker] === expected) {
+                    supporting.push(marker.replace(/_/g, ' ') + ' ' + expected + ' (atteso)');
+                }
+            }
+
+            // Ki-67 supporting evidence
+            const dynamicGrade = calculateDynamicGrade(entity, inputData);
+            if (dynamicGrade === "WHO Grade I" && ki67Value < 5) {
+                supporting.push('Ki-67 ' + ki67Value + '% (compatibile con Grade I)');
+            } else if (dynamicGrade === "WHO Grade II" && ki67Value >= 5 && ki67Value <= 20) {
+                supporting.push('Ki-67 ' + ki67Value + '% (compatibile con Grade II)');
+            } else if (dynamicGrade === "WHO Grade III" && ki67Value >= 10 && ki67Value <= 30) {
+                supporting.push('Ki-67 ' + ki67Value + '% (compatibile con Grade III)');
+            } else if (dynamicGrade === "WHO Grade IV" && ki67Value > 15) {
+                supporting.push('Ki-67 ' + ki67Value + '% (compatibile con Grade IV)');
+            }
+
+            return supporting;
+        }
+
+        function findContradictoryEvidence(entity, inputData) {
+            const contradictory = [];
+
+            // Required markers that don't match
+            for (const [marker, expected] of Object.entries(entity.requiredIHC || {})) {
+                if (inputData.ihc[marker] && inputData.ihc[marker] !== expected) {
+                    contradictory.push(marker.replace(/_/g, ' ') + ' ' + inputData.ihc[marker] + ' (dovrebbe essere ' + expected + ')');
+                }
+            }
+
+            for (const [marker, expected] of Object.entries(entity.requiredMol || {})) {
+                if (inputData.mol[marker] && inputData.mol[marker] !== expected) {
+                    contradictory.push(marker.replace(/_/g, ' ') + ' ' + inputData.mol[marker] + ' (dovrebbe essere ' + expected + ')');
+                }
+            }
+
+            // Ki-67 contradictory evidence
+            const dynamicGrade = calculateDynamicGrade(entity, inputData);
+            if (dynamicGrade === "WHO Grade I" && ki67Value >= 20) {
+                contradictory.push('Ki-67 ' + ki67Value + '% (insolitamente alto per Grade I)');
+            } else if (dynamicGrade === "WHO Grade II" && ki67Value > 40) {
+                contradictory.push('Ki-67 ' + ki67Value + '% (troppo alto per Grade II)');
+            } else if (dynamicGrade === "WHO Grade IV" && ki67Value < 5) {
+                contradictory.push('Ki-67 ' + ki67Value + '% (insolitamente basso per Grade IV)');
+            }
+
+            return contradictory;
+        }
+
+        function generateCompleteReport() {
+            console.log('🚀 GENERATING COMPLETE DIAGNOSTIC REPORT');
+            
+            const inputData = collectInputData();
+            console.log('📊 Complete input data:', inputData);
+
+            // Check if we have any results
+            const hasIHC = Object.values(inputData.ihc).some(value => value);
+            const hasMol = Object.values(inputData.mol).some(value => value);
+            
+            if (!hasIHC && !hasMol && ki67Value === 0) {
+                alert('Inserire almeno alcuni risultati IHC o molecolari per procedere.');
+                return;
+            }
+
+            // Age warning
+            if (!inputData.age) {
+                const userWantsToContinue = confirm('Età paziente non specificata. L\'età è importante per la classificazione tumori SNC. Continuare comunque?');
+                if (!userWantsToContinue) {
+                    return;
+                }
+            }
+
+            // Filter matching entities
+            const candidates = [];
+            for (const [key, entity] of Object.entries(diagnosticEntities)) {
+                // Pattern filter
+                if (inputData.pattern !== entity.pattern) {
+                    console.log('❌ ' + key + ': pattern mismatch');
+                    continue;
+                }
+                
+                // Age filter
+                if (inputData.age && !entity.agePreference.includes(inputData.age)) {
+                    console.log('❌ ' + key + ': age mismatch');
+                    continue;
+                }
+                
+                // Site filter
+                if (!entity.sitePreference.includes(inputData.site)) {
+                    console.log('❌ ' + key + ': site mismatch');
+                    continue;
+                }
+                
+                // IDH exclusion filter - prevent biological impossibilities
+                if (key === 'Glioblastoma_IDH_wildtype' && 
+                    (inputData.ihc.IDH1_R132H === 'positive' || inputData.mol.IDH1_2_mutation === 'positive')) {
+                    console.log('❌ ' + key + ': IDH positive excludes IDH-wildtype diagnosis');
+                    continue;
+                }
+                
+                if ((key === 'Astrocytoma_IDH_mutant' || key === 'Oligodendroglioma_IDH_mutant') && 
+                    (inputData.ihc.IDH1_R132H === 'negative' || inputData.mol.IDH1_2_mutation === 'negative')) {
+                    console.log('❌ ' + key + ': IDH negative excludes IDH-mutant diagnosis');
+                    continue;
+                }
+                
+                console.log('✅ ' + key + ': PASSED filters');
+                candidates.push([key, entity]);
+            }
+
+            if (candidates.length === 0) {
+                document.getElementById('reportResults').innerHTML = 
+                    '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Nessuna entità diagnostica trovata per i parametri selezionati. Rivedere contesto clinico.</div>';
+                document.getElementById('reportResults').style.display = 'block';
+                return;
+            }
+
+            // Calculate confidence scores
+            const results = candidates.map(([key, entity]) => {
+                const confidence = calculateConfidence(entity, inputData);
+                const supporting = findSupportingEvidence(entity, inputData);
+                const contradictory = findContradictoryEvidence(entity, inputData);
+                const dynamicGrade = calculateDynamicGrade(entity, inputData);
+                
+                console.log('📈 ' + key + ': confidence ' + (confidence*100).toFixed(1) + '%, grade ' + dynamicGrade);
+                
+                return { 
+                    key, 
+                    entity: {
+                        ...entity,
+                        grade: dynamicGrade
+                    }, 
+                    confidence,
+                    supporting,
+                    contradictory
+                };
+            }).sort((a, b) => b.confidence - a.confidence);
+
+            // Display results
+            const topResult = results[0];
+            console.log('🏆 Top result:', topResult.entity.name);
+            
+            let reportContent = '';
+            reportContent += '<div class="diagnosis-card">';
+            reportContent += '<h2><i class="fas fa-bullseye"></i> Diagnosi Primaria</h2>';
+            reportContent += '<h3>' + topResult.entity.name + '</h3>';
+            reportContent += '<p><strong>Grado WHO:</strong> ' + topResult.entity.grade + '</p>';
+            reportContent += '<p><strong>Confidenza:</strong> ' + (topResult.confidence * 100).toFixed(1) + '%</p>';
+            
+            reportContent += '<div class="confidence-meter">';
+            reportContent += '<div class="confidence-fill" style="width: ' + (topResult.confidence * 100) + '%"></div>';
+            reportContent += '</div>';
+
+            // Add grading explanation
+            const gradingReasons = [];
+            if (inputData.mol.CDKN2A_deletion === 'positive') {
+                gradingReasons.push("CDKN2A/B homozygous deletion (CNS5 criterio automatico Grade IV)");
+            }
+            if (inputData.mol.methylation_class === 'gbm_rtk1' || inputData.mol.methylation_class === 'gbm_rtk2' || inputData.mol.methylation_class === 'gbm_mes') {
+                gradingReasons.push("Methylation class GBM (gold standard → Grade IV)");
+            }
+            if (morphologicalCriteria.necrosis) gradingReasons.push("Necrosi presente");
+            if (morphologicalCriteria.microvascularProliferation) gradingReasons.push("Proliferazione microvascolare");
+            if (morphologicalCriteria.highMitoticActivity) gradingReasons.push("Alta attività mitotica");
+            if (ki67Value > 30) gradingReasons.push('Ki-67 ' + ki67Value + '% (molto alto)');
+            else if (ki67Value > 15) gradingReasons.push('Ki-67 ' + ki67Value + '% (elevato)');
+            
+            if (gradingReasons.length > 0 || topResult.entity.grade.includes("IV")) {
+                reportContent += '<div class="alert alert-success">';
+                reportContent += '<i class="fas fa-ruler"></i>';
+                reportContent += '<strong>Base del Grading:</strong> ' + (gradingReasons.length > 0 ? gradingReasons.join(', ') : 'Criteri molecolari (IDH-wildtype → automaticamente Grade IV)');
+                reportContent += '</div>';
+            }
+
+            // Supporting evidence
+            if (topResult.supporting && topResult.supporting.length > 0) {
+                reportContent += '<div class="alert alert-success">';
+                reportContent += '<i class="fas fa-check-circle"></i>';
+                reportContent += '<strong>Evidenze Supportive:</strong>';
+                reportContent += '<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">';
+                topResult.supporting.forEach(function(evidence) {
+                    reportContent += '<li>' + evidence + '</li>';
+                });
+                reportContent += '</ul></div>';
+            }
+
+            // Contradictory evidence
+            if (topResult.contradictory && topResult.contradictory.length > 0) {
+                reportContent += '<div class="alert alert-error">';
+                reportContent += '<i class="fas fa-times-circle"></i>';
+                reportContent += '<strong>Evidenze Contraddittorie:</strong>';
+                reportContent += '<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">';
+                topResult.contradictory.forEach(function(evidence) {
+                    reportContent += '<li>' + evidence + '</li>';
+                });
+                reportContent += '</ul></div>';
+            }
+
+            // Prognosis
+            if (topResult.entity.prognosis) {
+                const prog = topResult.entity.prognosis;
+                let survivalDesc = "buona";
+                if (prog.fiveYearSurvival < 0.3) {
+                    survivalDesc = "povera";
+                } else if (prog.fiveYearSurvival < 0.7) {
+                    survivalDesc = "intermedia";
+                }
+                
+                reportContent += '<div class="alert alert-success">';
+                reportContent += '<i class="fas fa-chart-line"></i>';
+                reportContent += '<strong>Prognosi:</strong> Sopravvivenza mediana: ' + prog.medianOS + ' mesi, ';
+                reportContent += 'Sopravvivenza a 5 anni: ' + (prog.fiveYearSurvival * 100).toFixed(0) + '% (prognosi ' + survivalDesc + ')';
+                
+                // Add MGMT context if GBM
+                if (topResult.entity.name.includes('Glioblastoma') && inputData.mol.MGMT_methylation) {
+                    reportContent += '<br><strong>MGMT:</strong> ';
+                    if (inputData.mol.MGMT_methylation === 'methylated') {
+                        reportContent += 'Metilato - miglior risposta a temozolomide';
+                    } else {
+                        reportContent += 'Non metilato - risposta limitata a temozolomide';
+                    }
+                }
+                
+                reportContent += '</div>';
+            }
+
+            reportContent += '</div>';
+
+            // Differential diagnosis
+            if (results.length > 1) {
+                reportContent += '<div class="card">';
+                reportContent += '<h3><i class="fas fa-list"></i> Diagnosi Differenziale</h3>';
+                reportContent += '<table style="width: 100%; border-collapse: collapse;">';
+                reportContent += '<thead><tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">';
+                reportContent += '<th style="padding: 0.5rem; text-align: left;">Diagnosi</th>';
+                reportContent += '<th style="padding: 0.5rem; text-align: center;">Confidenza</th>';
+                reportContent += '<th style="padding: 0.5rem; text-align: center;">Grado</th>';
+                reportContent += '</tr></thead><tbody>';
+                
+                results.forEach(function(result) {
+                    reportContent += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
+                    reportContent += '<td style="padding: 0.5rem;">' + result.entity.name + '</td>';
+                    reportContent += '<td style="padding: 0.5rem; text-align: center;">' + (result.confidence * 100).toFixed(1) + '%</td>';
+                    reportContent += '<td style="padding: 0.5rem; text-align: center;">' + result.entity.grade + '</td>';
+                    reportContent += '</tr>';
+                });
+                
+                reportContent += '</tbody></table></div>';
+            }
+
+            document.getElementById('reportResults').innerHTML = reportContent;
+            document.getElementById('reportResults').style.display = 'block';
+            
+            console.log('✅ COMPLETE REPORT DISPLAYED SUCCESSFULLY');
+            document.getElementById('reportResults').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function runDebugTest() {
+            console.log('🧪 RUNNING DEBUG TEST: Astrocytoma IDH-mutant GRADE 4 (CDKN2A deletion)');
+            
+            // Test Astrocytoma IDH-mutant Grade 4 via CDKN2A deletion
+            document.getElementById('patientAge').value = '42';
+            document.getElementById('anatomicalSite').value = 'frontal_lobe';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '18';
+            document.getElementById('idh1Status').value = 'positive';
+            document.getElementById('atrxStatus').value = 'loss';
+            document.getElementById('p53Status').value = 'positive';
+            document.getElementById('olig2Status').value = 'positive';
+            document.getElementById('gfapStatus').value = 'positive';
+            document.getElementById('idhMutation').value = 'positive';
+            document.getElementById('tp53Mutation').value = 'positive';
+            document.getElementById('codeletion1p19q').value = 'negative';
+            document.getElementById('cdkn2aStatus').value = 'positive';  // KEY: → Grade 4!
+            document.getElementById('methylationClass').value = 'idh_astro';
+            
+            // NO morphological criteria for Grade IV
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = false;
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            console.log('✅ Test data set: Astrocytoma IDH-mutant con CDKN2A deletion');
+            console.log('Expected result: WHO Grade IV (anche senza necrosi morfologica)');
+            generateCompleteReport();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateKi67Interpretation();
+        });
+    </script>
+</body>
+</html>
