@@ -589,13 +589,51 @@
             </div>
         </div>
 
+        <!-- Clinical Cases Section -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3><i class="fas fa-book-medical"></i> Casi Clinici Pre-Caricati</h3>
+            <p style="color: #94a3b8; margin-bottom: 1rem;">Clicca su un caso per pre-compilare tutti i campi e studiare il processo diagnostico</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <button onclick="loadCase1()" style="padding: 1rem; border: 1px solid #667eea; border-radius: 8px; background: rgba(102, 126, 234, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 1: GBM Classico</strong><br>
+                    <small style="color: #94a3b8;">Uomo 68 anni, lobo temporale, IDH-wildtype</small>
+                </button>
+                
+                <button onclick="loadCase2()" style="padding: 1rem; border: 1px solid #10b981; border-radius: 8px; background: rgba(16, 185, 129, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 2: Oligodendroglioma</strong><br>
+                    <small style="color: #94a3b8;">Donna 42 anni, lobo frontale, 1p/19q codeleto</small>
+                </button>
+                
+                <button onclick="loadCase3()" style="padding: 1rem; border: 1px solid #f59e0b; border-radius: 8px; background: rgba(245, 158, 11, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 3: Astrocitoma Grade 4</strong><br>
+                    <small style="color: #94a3b8;">Uomo 45 anni, IDH+ con CDKN2A deletion</small>
+                </button>
+                
+                <button onclick="loadCase4()" style="padding: 1rem; border: 1px solid #ef4444; border-radius: 8px; background: rgba(239, 68, 68, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 4: DMG H3K27M</strong><br>
+                    <small style="color: #94a3b8;">Bambino 7 anni, ponte, prognosi infausta</small>
+                </button>
+                
+                <button onclick="loadCase5()" style="padding: 1rem; border: 1px solid #06b6d4; border-radius: 8px; background: rgba(6, 182, 212, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 5: Ependimoma PFA</strong><br>
+                    <small style="color: #94a3b8;">Bambina 4 anni, IV ventricolo, L1CAM+</small>
+                </button>
+                
+                <button onclick="loadCase6()" style="padding: 1rem; border: 1px solid #8b5cf6; border-radius: 8px; background: rgba(139, 92, 246, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 6: Ependimoma ZFTA</strong><br>
+                    <small style="color: #94a3b8;">Bambino 6 anni, supratentoriale, ZFTA+</small>
+                </button>
+            </div>
+        </div>
+
         <!-- Generate Button -->
         <div style="text-align: center; margin: 2rem 0;">
             <button class="btn btn-primary" onclick="generateCompleteReport()" style="font-size: 1.2rem; padding: 1rem 2rem;">
                 <i class="fas fa-chart-line"></i> Genera Report Diagnostico Completo
             </button>
-            <button class="btn btn-secondary" onclick="runDebugTest()" style="margin-left: 1rem;">
-                <i class="fas fa-play"></i> Test: Ependimoma PFA
+            <button class="btn btn-secondary" onclick="clearAllFields()" style="margin-left: 1rem;">
+                <i class="fas fa-eraser"></i> Reset Campi
             </button>
         </div>
 
@@ -1366,38 +1404,241 @@
             document.getElementById('reportResults').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function runDebugTest() {
-            console.log('🧪 RUNNING DEBUG TEST: Ependymoma PFA (pediatrico, poor prognosis)');
+        // Clinical Case Loading Functions
+        
+        function clearAllFields() {
+            // Reset all fields to default
+            document.getElementById('patientAge').value = '';
+            document.getElementById('anatomicalSite').value = 'frontal_lobe';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '';
             
-            // Test Ependymoma PFA - pediatric posterior fossa with L1CAM+
-            document.getElementById('patientAge').value = '5';
-            document.getElementById('anatomicalSite').value = 'posterior_fossa';
-            document.getElementById('morphPattern').value = 'ependymal';
-            document.getElementById('ki67Value').value = '12';
-            
-            // IHC pattern for PFA
-            document.getElementById('gfapStatus').value = 'positive';
-            document.getElementById('emaStatus').value = 'positive';
-            document.getElementById('l1camStatus').value = 'positive';  // KEY marker for PFA
-            
-            // Molecular
-            document.getElementById('methylationClass').value = 'ependymoma_pfa';
-            
-            // Clear glioma markers
-            document.getElementById('idh1Status').value = '';
-            document.getElementById('idhMutation').value = '';
-            
-            // NO morphological criteria for Grade III
+            // Reset checkboxes
             document.getElementById('necrosis').checked = false;
             document.getElementById('microvascularProliferation').checked = false;
             document.getElementById('highMitoticActivity').checked = false;
             
+            // Reset all IHC
+            document.getElementById('idh1Status').value = '';
+            document.getElementById('atrxStatus').value = '';
+            document.getElementById('p53Status').value = '';
+            document.getElementById('olig2Status').value = '';
+            document.getElementById('gfapStatus').value = '';
+            document.getElementById('h3k27me3Status').value = '';
+            document.getElementById('h3k27mStatus').value = '';
+            document.getElementById('emaStatus').value = '';
+            document.getElementById('l1camStatus').value = '';
+            
+            // Reset all molecular
+            document.getElementById('idhMutation').value = '';
+            document.getElementById('codeletion1p19q').value = '';
+            document.getElementById('tertPromoter').value = '';
+            document.getElementById('tp53Mutation').value = '';
+            document.getElementById('egfrAmplification').value = '';
+            document.getElementById('h3f3aMutation').value = '';
+            document.getElementById('cdkn2aStatus').value = '';
+            document.getElementById('mgmtStatus').value = '';
+            document.getElementById('zftaFusion').value = '';
+            document.getElementById('yap1Fusion').value = '';
+            document.getElementById('methylationClass').value = '';
+            
             updateKi67Interpretation();
             updateGradePreview();
             
-            console.log('✅ Test data set: Ependymoma PFA (L1CAM+, methylation PFA)');
-            console.log('Expected result: WHO Grade II-III, poor prognosis pediatric ependymoma');
-            generateCompleteReport();
+            // Hide results
+            document.getElementById('reportResults').style.display = 'none';
+            
+            console.log('✅ All fields cleared');
+        }
+        
+        function loadCase1() {
+            clearAllFields();
+            console.log('📋 Loading Case 1: GBM Classico (IDH-wildtype)');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '68';
+            document.getElementById('anatomicalSite').value = 'temporal_lobe';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '35';
+            
+            // Morphological criteria
+            document.getElementById('necrosis').checked = true;
+            document.getElementById('microvascularProliferation').checked = true;
+            document.getElementById('highMitoticActivity').checked = true;
+            
+            // IHC
+            document.getElementById('idh1Status').value = 'negative';
+            document.getElementById('gfapStatus').value = 'positive';
+            document.getElementById('p53Status').value = 'positive';
+            
+            // Molecular
+            document.getElementById('idhMutation').value = 'negative';
+            document.getElementById('egfrAmplification').value = 'positive';
+            document.getElementById('tertPromoter').value = 'positive';
+            document.getElementById('mgmtStatus').value = 'unmethylated';
+            document.getElementById('methylationClass').value = 'gbm_rtk2';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 1 caricato: GBM classico\n\nUomo 68 anni con massa temporale destra. RM: lesione con enhancement ad anello, necrosi centrale.\n\nClick "Genera Report" per vedere la diagnosi.');
+        }
+        
+        function loadCase2() {
+            clearAllFields();
+            console.log('📋 Loading Case 2: Oligodendroglioma IDH-mutant');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '42';
+            document.getElementById('anatomicalSite').value = 'frontal_lobe';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '8';
+            
+            // NO morphological high-grade criteria
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = false;
+            
+            // IHC
+            document.getElementById('idh1Status').value = 'positive';
+            document.getElementById('atrxStatus').value = 'retained';
+            document.getElementById('olig2Status').value = 'positive';
+            document.getElementById('gfapStatus').value = 'positive';
+            
+            // Molecular
+            document.getElementById('idhMutation').value = 'positive';
+            document.getElementById('codeletion1p19q').value = 'positive';
+            document.getElementById('tertPromoter').value = 'positive';
+            document.getElementById('methylationClass').value = 'idh_oligo';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 2 caricato: Oligodendroglioma\n\nDonna 42 anni con crisi epilettiche. RM: lesione frontale corticale con calcificazioni.\n\nClick "Genera Report" per vedere la diagnosi.');
+        }
+        
+        function loadCase3() {
+            clearAllFields();
+            console.log('📋 Loading Case 3: Astrocitoma IDH-mutant Grade 4 (CDKN2A deletion)');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '45';
+            document.getElementById('anatomicalSite').value = 'frontal_lobe';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '22';
+            
+            // IMPORTANT: NO necrosis or MVP morphologically, but CDKN2A makes it Grade 4
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = true;
+            
+            // IHC
+            document.getElementById('idh1Status').value = 'positive';
+            document.getElementById('atrxStatus').value = 'loss';
+            document.getElementById('p53Status').value = 'positive';
+            document.getElementById('olig2Status').value = 'positive';
+            document.getElementById('gfapStatus').value = 'positive';
+            
+            // Molecular - KEY: CDKN2A deletion!
+            document.getElementById('idhMutation').value = 'positive';
+            document.getElementById('codeletion1p19q').value = 'negative';
+            document.getElementById('tp53Mutation').value = 'positive';
+            document.getElementById('cdkn2aStatus').value = 'positive';  // This upgrades to Grade 4!
+            document.getElementById('methylationClass').value = 'idh_astro';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 3 caricato: Astrocitoma IDH-mutant Grade 4\n\nUomo 45 anni con storia di astrocitoma Grade 2 operato 3 anni fa. Recidiva con progressione.\n\nNOTA: CDKN2A/B deletion → automatic Grade 4 anche SENZA necrosi morfologica!\n\nClick "Genera Report".');
+        }
+        
+        function loadCase4() {
+            clearAllFields();
+            console.log('📋 Loading Case 4: Diffuse Midline Glioma H3K27-altered');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '7';
+            document.getElementById('anatomicalSite').value = 'brainstem';
+            document.getElementById('morphPattern').value = 'diffuse';
+            document.getElementById('ki67Value').value = '25';
+            
+            // Morphological criteria variable
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = true;
+            
+            // IHC - KEY markers
+            document.getElementById('h3k27mStatus').value = 'positive';  // Diagnostic!
+            document.getElementById('h3k27me3Status').value = 'loss';
+            document.getElementById('gfapStatus').value = 'positive';
+            
+            // Molecular
+            document.getElementById('h3f3aMutation').value = 'k27m';  // Diagnostic!
+            document.getElementById('methylationClass').value = 'h3_k27';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 4 caricato: Diffuse Midline Glioma (DMG)\n\nBambino 7 anni con atassia e paralisi nervi cranici. RM: lesione pontina espansiva.\n\nH3 K27M-altered → sempre WHO Grade IV, prognosi infausta.\n\nClick "Genera Report".');
+        }
+        
+        function loadCase5() {
+            clearAllFields();
+            console.log('📋 Loading Case 5: Ependymoma PFA (pediatric, poor prognosis)');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '4';
+            document.getElementById('anatomicalSite').value = 'fourth_ventricle';
+            document.getElementById('morphPattern').value = 'ependymal';
+            document.getElementById('ki67Value').value = '15';
+            
+            // NO high-grade morphology necessarily
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = false;
+            
+            // IHC - KEY: L1CAM positive distinguishes PFA from PFB
+            document.getElementById('gfapStatus').value = 'positive';
+            document.getElementById('emaStatus').value = 'positive';
+            document.getElementById('l1camStatus').value = 'positive';  // KEY for PFA!
+            
+            // Molecular
+            document.getElementById('methylationClass').value = 'ependymoma_pfa';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 5 caricato: Ependymoma PFA\n\nBambina 4 anni con vomito e atassia. RM: massa IV ventricolo.\n\nL1CAM positivo → PFA (group A) → prognosi peggiore rispetto a PFB.\n\nClick "Genera Report".');
+        }
+        
+        function loadCase6() {
+            clearAllFields();
+            console.log('📋 Loading Case 6: Ependymoma supratentoriale ZFTA fusion-positive');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '6';
+            document.getElementById('anatomicalSite').value = 'supratentorial';
+            document.getElementById('morphPattern').value = 'ependymal';
+            document.getElementById('ki67Value').value = '10';
+            
+            // Variable morphology
+            document.getElementById('necrosis').checked = false;
+            document.getElementById('microvascularProliferation').checked = false;
+            document.getElementById('highMitoticActivity').checked = false;
+            
+            // IHC
+            document.getElementById('gfapStatus').value = 'positive';
+            document.getElementById('emaStatus').value = 'positive';
+            document.getElementById('l1camStatus').value = 'negative';
+            
+            // Molecular - KEY: ZFTA fusion
+            document.getElementById('zftaFusion').value = 'positive';  // Diagnostic!
+            document.getElementById('methylationClass').value = 'ependymoma_st_zfta';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 6 caricato: Ependymoma ZFTA fusion-positive\n\nBambino 6 anni con cefalea e crisi. RM: massa emisferico parietale.\n\nZFTA fusion (ZFTA-RELA) → diagnostico per ependimoma supratentoriale.\n\nClick "Genera Report".');
         }
 
         // Initialize
