@@ -328,7 +328,7 @@
                         <option value="spinal_cord">Midollo Spinale</option>
                         <option value="midline">Linea Mediana</option>
                         <option value="hemispheric">Emisferico</option>
-                        <option value="supratentorial">Supratentoriale</option>
+                        <option value="supratentorial">Sovratentoriale</option>
                         <option value="posterior_fossa">Fossa Posteriore</option>
                         <option value="lateral_ventricle">Ventricolo Laterale</option>
                         <option value="fourth_ventricle">IV Ventricolo</option>
@@ -622,7 +622,7 @@
                 
                 <button onclick="loadCase6()" style="padding: 1rem; border: 1px solid #8b5cf6; border-radius: 8px; background: rgba(139, 92, 246, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-user"></i> <strong>Caso 6: Ependimoma ZFTA</strong><br>
-                    <small style="color: #94a3b8;">Bambino 6 anni, supratentoriale, ZFTA+</small>
+                    <small style="color: #94a3b8;">Bambino 6 anni, sovratentoriale, ZFTA+</small>
                 </button>
             </div>
         </div>
@@ -754,7 +754,7 @@
                 prognosis: { medianOS: 240, fiveYearSurvival: 0.95, treatmentSensitivity: { "surgery": "curative" } }
             },
             "Ependymoma_ZFTA": {
-                name: "Ependymoma, supratentoriale ZFTA fusion-positive",
+                name: "Ependimoma, sovratentoriale ZFTA fusion-positive",
                 baseGrade: "WHO Grade II-III",
                 pattern: "ependymal",
                 agePreference: ["pediatric"],
@@ -765,7 +765,7 @@
                 prognosis: { medianOS: 84, fiveYearSurvival: 0.70, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "adjuvant" } }
             },
             "Ependymoma_YAP1": {
-                name: "Ependymoma, supratentoriale YAP1 fusion-positive",
+                name: "Ependimoma, sovratentoriale YAP1 fusion-positive",
                 baseGrade: "WHO Grade II",
                 pattern: "ependymal",
                 agePreference: ["pediatric"],
@@ -1350,7 +1350,7 @@
                 const prog = topResult.entity.prognosis;
                 let survivalDesc = "buona";
                 if (prog.fiveYearSurvival < 0.3) {
-                    survivalDesc = "povera";
+                    survivalDesc = "infausta";
                 } else if (prog.fiveYearSurvival < 0.7) {
                     survivalDesc = "intermedia";
                 }
@@ -1638,7 +1638,7 @@
             updateKi67Interpretation();
             updateGradePreview();
             
-            alert('Caso 6 caricato: Ependymoma ZFTA fusion-positive\n\nBambino 6 anni con cefalea e crisi. RM: massa emisferico parietale.\n\nZFTA fusion (ZFTA-RELA) → diagnostico per ependimoma supratentoriale.\n\nClick "Genera Report".');
+            alert('Caso 6 caricato: Ependimoma ZFTA fusion-positive\n\nBambino 6 anni con cefalea e crisi. RM: massa emisferica parietale.\n\nZFTA fusion (ZFTA-RELA) → diagnostico per ependimoma sovratentoriale.\n\nClick "Genera Report".');
         }
 
         // Initialize
