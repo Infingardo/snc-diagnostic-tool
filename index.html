@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧠 Assistente Diagnostico SNC - Scientifico Completo</title>
+    <title>🧠 Assistente Diagnostico SNC - WHO CNS5 Enhanced</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
@@ -302,7 +302,7 @@
 <body>
     <header class="header">
         <h1><i class="fas fa-brain"></i> Assistente Diagnostico SNC - Enhanced</h1>
-        <p>WHO CNS5 2021 • Methylation-aware • CDKN2A/B • Solo Uso Educativo</p>
+        <p>WHO CNS5 2021 • Gliomi + Ependimomi • Methylation-aware • Solo Uso Educativo</p>
     </header>
 
     <div class="container">
@@ -328,6 +328,11 @@
                         <option value="spinal_cord">Midollo Spinale</option>
                         <option value="midline">Linea Mediana</option>
                         <option value="hemispheric">Emisferico</option>
+                        <option value="supratentorial">Supratentoriale</option>
+                        <option value="posterior_fossa">Fossa Posteriore</option>
+                        <option value="lateral_ventricle">Ventricolo Laterale</option>
+                        <option value="fourth_ventricle">IV Ventricolo</option>
+                        <option value="filum_terminale">Filum Terminale</option>
                     </select>
                 </div>
 
@@ -440,6 +445,24 @@
                         <option value="negative">Negativo</option>
                     </select>
                 </div>
+
+                <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
+                    <label for="emaStatus"><strong>EMA (Ependimomi):</strong></label>
+                    <select id="emaStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
+                    <label for="l1camStatus"><strong>L1CAM (PFA ependimoma):</strong></label>
+                    <select id="l1camStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo (suggestivo PFA)</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Molecular Results -->
@@ -522,6 +545,24 @@
                     </select>
                 </div>
 
+                <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
+                    <label for="zftaFusion"><strong>ZFTA Fusion (Ependimoma):</strong></label>
+                    <select id="zftaFusion" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente (ZFTA-RELA)</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
+                    <label for="yap1Fusion"><strong>YAP1 Fusion (Ependimoma):</strong></label>
+                    <select id="yap1Fusion" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente (YAP1-MAMLD1/FAM118B)</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
                 <div class="input-group" style="background: rgba(102, 126, 234, 0.15); padding: 1rem; border-radius: 8px; border: 1px solid #667eea;">
                     <label for="methylationClass"><strong>Methylation Profiling (Heidelberg-style):</strong></label>
                     <select id="methylationClass" class="input-field">
@@ -534,7 +575,11 @@
                         <option value="h3_k27">H3 K27-altered</option>
                         <option value="h3_g34">H3 G34-mutant</option>
                         <option value="pa">Pilocytic astrocytoma</option>
-                        <option value="ependymoma">Ependymoma</option>
+                        <option value="ependymoma_pfa">Ependymoma, PFA</option>
+                        <option value="ependymoma_pfb">Ependymoma, PFB</option>
+                        <option value="ependymoma_st_zfta">Ependymoma, ST-ZFTA</option>
+                        <option value="ependymoma_st_yap1">Ependymoma, ST-YAP1</option>
+                        <option value="subependymoma">Subependymoma</option>
                         <option value="non_diagnostic">Non-diagnostic</option>
                     </select>
                     <div class="ki67-interpretation" style="margin-top: 0.5rem; font-size: 0.85rem;">
@@ -550,7 +595,7 @@
                 <i class="fas fa-chart-line"></i> Genera Report Diagnostico Completo
             </button>
             <button class="btn btn-secondary" onclick="runDebugTest()" style="margin-left: 1rem;">
-                <i class="fas fa-play"></i> Test Debug (Astro IDH+ Grade 4)
+                <i class="fas fa-play"></i> Test: Ependimoma PFA
             </button>
         </div>
 
@@ -589,9 +634,10 @@
                         <h4 style="color: #94a3b8; margin-bottom: 0.5rem;">Informazioni Strumento:</h4>
                         <ul style="list-style: none; padding: 0; font-size: 0.9rem; color: #cbd5e1;">
                             <li>✅ WHO CNS5 2021 Compliant</li>
+                            <li>✅ Gliomi + Ependimomi</li>
                             <li>✅ Methylation Profiling Aware</li>
                             <li>✅ CDKN2A/B Grading Logic</li>
-                            <li>✅ Validazione Biologica Inclusa</li>
+                            <li>✅ 11 entità diagnostiche</li>
                             <li>✅ Solo Uso Educativo</li>
                             <li>⚠️ Non per Decisioni Cliniche</li>
                         </ul>
@@ -609,7 +655,7 @@
                 baseGrade: "WHO Grade II",
                 pattern: "diffuse",
                 agePreference: ["adult"],
-                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe"],
+                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe", "hemispheric"],
                 requiredIHC: { "IDH1_R132H": "positive" },
                 expectedIHC: { "ATRX": "loss", "p53": "positive", "GFAP": "positive", "OLIG2": "positive" },
                 requiredMol: { "IDH1_2_mutation": "positive" },
@@ -623,7 +669,7 @@
                 baseGrade: "WHO Grade II",
                 pattern: "diffuse",
                 agePreference: ["adult"],
-                sitePreference: ["frontal_lobe", "temporal_lobe"],
+                sitePreference: ["frontal_lobe", "temporal_lobe", "hemispheric"],
                 requiredIHC: { "IDH1_R132H": "positive" },
                 expectedIHC: { "ATRX": "retained", "OLIG2": "positive", "GFAP": "positive" },
                 requiredMol: { "IDH1_2_mutation": "positive", "1p19q_codeletion": "positive" },
@@ -637,7 +683,7 @@
                 baseGrade: "WHO Grade IV",
                 pattern: "diffuse",
                 agePreference: ["adult", "elderly"],
-                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe"],
+                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe", "hemispheric"],
                 requiredIHC: { "IDH1_R132H": "negative" },
                 expectedIHC: { "GFAP": "positive" },
                 requiredMol: { "IDH1_2_mutation": "negative" },
@@ -668,6 +714,67 @@
                 expectedMol: { "KIAA1549_BRAF_fusion": "positive" },
                 methylationClass: "pa",
                 prognosis: { medianOS: 240, fiveYearSurvival: 0.95, treatmentSensitivity: { "surgery": "curative" } }
+            },
+            "Ependymoma_ZFTA": {
+                name: "Ependymoma, supratentoriale ZFTA fusion-positive",
+                baseGrade: "WHO Grade II-III",
+                pattern: "ependymal",
+                agePreference: ["pediatric"],
+                sitePreference: ["supratentorial", "lateral_ventricle", "hemispheric"],
+                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
+                requiredMol: { "ZFTA_fusion": "positive" },
+                methylationClass: "ependymoma_st_zfta",
+                prognosis: { medianOS: 84, fiveYearSurvival: 0.70, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "adjuvant" } }
+            },
+            "Ependymoma_YAP1": {
+                name: "Ependymoma, supratentoriale YAP1 fusion-positive",
+                baseGrade: "WHO Grade II",
+                pattern: "ependymal",
+                agePreference: ["pediatric"],
+                sitePreference: ["supratentorial", "lateral_ventricle", "hemispheric"],
+                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
+                requiredMol: { "YAP1_fusion": "positive" },
+                methylationClass: "ependymoma_st_yap1",
+                prognosis: { medianOS: 120, fiveYearSurvival: 0.85, treatmentSensitivity: { "surgery": "curative", "radiotherapy": "optional" } }
+            },
+            "Ependymoma_PFA": {
+                name: "Ependymoma, posterior fossa group A (PFA)",
+                baseGrade: "WHO Grade II-III",
+                pattern: "ependymal",
+                agePreference: ["pediatric"],
+                sitePreference: ["posterior_fossa", "fourth_ventricle", "cerebellum"],
+                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "positive" },
+                methylationClass: "ependymoma_pfa",
+                prognosis: { medianOS: 48, fiveYearSurvival: 0.45, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "essential", "chemotherapy": "limited" } }
+            },
+            "Ependymoma_PFB": {
+                name: "Ependymoma, posterior fossa group B (PFB)",
+                baseGrade: "WHO Grade II",
+                pattern: "ependymal",
+                agePreference: ["adult"],
+                sitePreference: ["posterior_fossa", "fourth_ventricle", "cerebellum"],
+                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
+                methylationClass: "ependymoma_pfb",
+                prognosis: { medianOS: 120, fiveYearSurvival: 0.80, treatmentSensitivity: { "surgery": "curative", "radiotherapy": "adjuvant" } }
+            },
+            "Subependymoma": {
+                name: "Subependymoma",
+                baseGrade: "WHO Grade I",
+                pattern: "ependymal",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["lateral_ventricle", "fourth_ventricle"],
+                expectedIHC: { "GFAP": "positive", "EMA": "negative" },
+                methylationClass: "subependymoma",
+                prognosis: { medianOS: 240, fiveYearSurvival: 0.95, treatmentSensitivity: { "surgery": "curative", "observation": "acceptable" } }
+            },
+            "Myxopapillary_ependymoma": {
+                name: "Myxopapillary ependymoma",
+                baseGrade: "WHO Grade II",
+                pattern: "ependymal",
+                agePreference: ["adult"],
+                sitePreference: ["filum_terminale", "spinal_cord"],
+                expectedIHC: { "GFAP": "positive", "EMA": "positive" },
+                prognosis: { medianOS: 180, fiveYearSurvival: 0.90, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "if_incomplete" } }
             }
         };
 
@@ -767,8 +874,13 @@
                     inputData.mol.methylation_class === 'h3_k27') {
                     return "WHO Grade IV";
                 }
-                if (inputData.mol.methylation_class === 'pa') {
+                if (inputData.mol.methylation_class === 'pa' || 
+                    inputData.mol.methylation_class === 'subependymoma') {
                     return "WHO Grade I";
+                }
+                if (inputData.mol.methylation_class === 'ependymoma_st_yap1' ||
+                    inputData.mol.methylation_class === 'ependymoma_pfb') {
+                    return "WHO Grade II";
                 }
             }
             
@@ -808,8 +920,17 @@
             }
             
             // Special entity rules
-            if (entity.name.includes("pilocitico")) {
+            if (entity.name.includes("pilocitico") || entity.name.includes("Subependymoma")) {
                 return "WHO Grade I";
+            }
+            
+            if (entity.name.includes("Myxopapillary")) {
+                return "WHO Grade II";
+            }
+            
+            // Return base grade as string
+            if (entity.baseGrade && entity.baseGrade.includes("II-III")) {
+                return baseGrade >= 3 ? "WHO Grade III" : "WHO Grade II";
             }
             
             return 'WHO Grade ' + (baseGrade === 2 ? 'II' : baseGrade === 3 ? 'III' : 'IV');
@@ -828,7 +949,9 @@
                     "OLIG2": document.getElementById('olig2Status').value,
                     "GFAP": document.getElementById('gfapStatus').value,
                     "H3K27me3": document.getElementById('h3k27me3Status').value,
-                    "H3K27M": document.getElementById('h3k27mStatus').value
+                    "H3K27M": document.getElementById('h3k27mStatus').value,
+                    "EMA": document.getElementById('emaStatus').value,
+                    "L1CAM": document.getElementById('l1camStatus').value
                 },
                 mol: {
                     "IDH1_2_mutation": document.getElementById('idhMutation').value,
@@ -839,6 +962,8 @@
                     "H3F3A_mutation": document.getElementById('h3f3aMutation').value,
                     "CDKN2A_deletion": document.getElementById('cdkn2aStatus').value,
                     "MGMT_methylation": document.getElementById('mgmtStatus').value,
+                    "ZFTA_fusion": document.getElementById('zftaFusion').value,
+                    "YAP1_fusion": document.getElementById('yap1Fusion').value,
                     "methylation_class": document.getElementById('methylationClass').value
                 }
             };
@@ -933,7 +1058,11 @@
                     'h3_k27': 'Methylation class: H3 K27-altered (gold standard)',
                     'h3_g34': 'Methylation class: H3 G34-mutant (gold standard)',
                     'pa': 'Methylation class: Pilocytic astrocytoma (gold standard)',
-                    'ependymoma': 'Methylation class: Ependymoma (gold standard)'
+                    'ependymoma_pfa': 'Methylation class: Ependymoma PFA (gold standard)',
+                    'ependymoma_pfb': 'Methylation class: Ependymoma PFB (gold standard)',
+                    'ependymoma_st_zfta': 'Methylation class: Ependymoma ST-ZFTA (gold standard)',
+                    'ependymoma_st_yap1': 'Methylation class: Ependymoma ST-YAP1 (gold standard)',
+                    'subependymoma': 'Methylation class: Subependymoma (gold standard)'
                 };
                 
                 if (methylationMap[inputData.mol.methylation_class]) {
@@ -949,6 +1078,20 @@
             // MGMT status (prognostic, not diagnostic)
             if (inputData.mol.MGMT_methylation === 'methylated' && entity.name.includes('Glioblastoma')) {
                 supporting.push('MGMT metilato (prognosi favorevole, risposta a TMZ)');
+            }
+
+            // Ependymoma-specific fusions
+            if (inputData.mol.ZFTA_fusion === 'positive') {
+                supporting.push('ZFTA fusion presente (diagnostico per ependimoma ST)');
+            }
+            
+            if (inputData.mol.YAP1_fusion === 'positive') {
+                supporting.push('YAP1 fusion presente (diagnostico per ependimoma ST)');
+            }
+
+            // L1CAM for PFA
+            if (inputData.ihc.L1CAM === 'positive' && entity.name.includes('PFA')) {
+                supporting.push('L1CAM positivo (suggestivo per PFA)');
             }
 
             // Required markers
@@ -1224,25 +1367,27 @@
         }
 
         function runDebugTest() {
-            console.log('🧪 RUNNING DEBUG TEST: Astrocytoma IDH-mutant GRADE 4 (CDKN2A deletion)');
+            console.log('🧪 RUNNING DEBUG TEST: Ependymoma PFA (pediatrico, poor prognosis)');
             
-            // Test Astrocytoma IDH-mutant Grade 4 via CDKN2A deletion
-            document.getElementById('patientAge').value = '42';
-            document.getElementById('anatomicalSite').value = 'frontal_lobe';
-            document.getElementById('morphPattern').value = 'diffuse';
-            document.getElementById('ki67Value').value = '18';
-            document.getElementById('idh1Status').value = 'positive';
-            document.getElementById('atrxStatus').value = 'loss';
-            document.getElementById('p53Status').value = 'positive';
-            document.getElementById('olig2Status').value = 'positive';
+            // Test Ependymoma PFA - pediatric posterior fossa with L1CAM+
+            document.getElementById('patientAge').value = '5';
+            document.getElementById('anatomicalSite').value = 'posterior_fossa';
+            document.getElementById('morphPattern').value = 'ependymal';
+            document.getElementById('ki67Value').value = '12';
+            
+            // IHC pattern for PFA
             document.getElementById('gfapStatus').value = 'positive';
-            document.getElementById('idhMutation').value = 'positive';
-            document.getElementById('tp53Mutation').value = 'positive';
-            document.getElementById('codeletion1p19q').value = 'negative';
-            document.getElementById('cdkn2aStatus').value = 'positive';  // KEY: → Grade 4!
-            document.getElementById('methylationClass').value = 'idh_astro';
+            document.getElementById('emaStatus').value = 'positive';
+            document.getElementById('l1camStatus').value = 'positive';  // KEY marker for PFA
             
-            // NO morphological criteria for Grade IV
+            // Molecular
+            document.getElementById('methylationClass').value = 'ependymoma_pfa';
+            
+            // Clear glioma markers
+            document.getElementById('idh1Status').value = '';
+            document.getElementById('idhMutation').value = '';
+            
+            // NO morphological criteria for Grade III
             document.getElementById('necrosis').checked = false;
             document.getElementById('microvascularProliferation').checked = false;
             document.getElementById('highMitoticActivity').checked = false;
@@ -1250,8 +1395,8 @@
             updateKi67Interpretation();
             updateGradePreview();
             
-            console.log('✅ Test data set: Astrocytoma IDH-mutant con CDKN2A deletion');
-            console.log('Expected result: WHO Grade IV (anche senza necrosi morfologica)');
+            console.log('✅ Test data set: Ependymoma PFA (L1CAM+, methylation PFA)');
+            console.log('Expected result: WHO Grade II-III, poor prognosis pediatric ependymoma');
             generateCompleteReport();
         }
 
