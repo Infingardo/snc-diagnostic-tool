@@ -302,7 +302,7 @@
 <body>
     <header class="header">
         <h1><i class="fas fa-brain"></i> Assistente Diagnostico SNC - Enhanced</h1>
-        <p>WHO CNS5 2021 • Gliomi + Ependimomi • Methylation-aware • Solo Uso Educativo</p>
+        <p>WHO CNS5 2021 • Gliomi + Ependimomi + Meningiomi • 20 Entità • Solo Uso Educativo</p>
     </header>
 
     <div class="container">
@@ -333,6 +333,13 @@
                         <option value="lateral_ventricle">Ventricolo Laterale</option>
                         <option value="fourth_ventricle">IV Ventricolo</option>
                         <option value="filum_terminale">Filum Terminale</option>
+                        <option value="convexity">Convessità</option>
+                        <option value="parasagittal">Parasagittale</option>
+                        <option value="falx">Falce Cerebri</option>
+                        <option value="tentorium">Tentorio</option>
+                        <option value="skull_base">Base Cranica</option>
+                        <option value="cpa">Angolo Ponto-Cerebellare</option>
+                        <option value="foramen_magnum">Foramen Magnum</option>
                     </select>
                 </div>
 
@@ -343,26 +350,54 @@
                         <option value="circumscribed">Circoscritto</option>
                         <option value="ependymal">Ependimale</option>
                         <option value="embryonal">Embrionale</option>
+                        <option value="meningothelial">Meningiomatoso</option>
                     </select>
                 </div>
 
                 <!-- Morphological Criteria -->
                 <div class="morphology-section">
                     <h4><i class="fas fa-microscope"></i> Criteri Morfologici (Grading)</h4>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="necrosis" onchange="updateGradePreview()">
-                            <label for="necrosis">Necrosi presente (→ Grade IV)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="microvascularProliferation" onchange="updateGradePreview()">
-                            <label for="microvascularProliferation">Proliferazione microvascolare (→ Grade III-IV)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="highMitoticActivity" onchange="updateGradePreview()">
-                            <label for="highMitoticActivity">Alta attività mitotica (→ Grade III)</label>
+                    
+                    <!-- For gliomas -->
+                    <div id="gliomaGrading">
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="necrosis" onchange="updateGradePreview()">
+                                <label for="necrosis">Necrosi presente (→ Grade IV gliomi)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="microvascularProliferation" onchange="updateGradePreview()">
+                                <label for="microvascularProliferation">Proliferazione microvascolare (→ Grade III-IV)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="highMitoticActivity" onchange="updateGradePreview()">
+                                <label for="highMitoticActivity">Alta attività mitotica (→ Grade III)</label>
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- For meningiomas -->
+                    <div id="meningiomaGrading" style="margin-top: 1rem;">
+                        <h5 style="color: #cbd5e1; margin-bottom: 0.5rem;">Criteri Meningiomi:</h5>
+                        <div class="input-group">
+                            <label for="mitosisCount">Mitosi per 10 HPF:</label>
+                            <input type="number" id="mitosisCount" class="input-field" min="0" max="100" onchange="updateGradePreview()" placeholder="0-100">
+                            <div style="margin-top: 0.3rem; font-size: 0.85rem; color: #94a3b8;">
+                                <4: Grade 1 | 4-19: Grade 2 | ≥20: Grade 3
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="brainInvasion" onchange="updateGradePreview()">
+                                <label for="brainInvasion">Invasione cerebrale (→ Grade 2)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sheetingPattern" onchange="updateGradePreview()">
+                                <label for="sheetingPattern">Sheeting pattern (→ Grade 2)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div id="gradePreview" class="grade-preview" style="display: none;">
                         <strong>Grado Predetto:</strong> <span id="predictedGrade">WHO Grade II</span><br>
                         <em id="gradingReasons">Morfologia basale</em>
@@ -383,6 +418,7 @@
                     </div>
                 </div>
 
+                <!-- Glioma markers -->
                 <div class="input-group">
                     <label for="idh1Status">IDH1 R132H:</label>
                     <select id="idh1Status" class="input-field">
@@ -446,8 +482,9 @@
                     </select>
                 </div>
 
+                <!-- Ependymoma markers -->
                 <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
-                    <label for="emaStatus"><strong>EMA (Ependimomi):</strong></label>
+                    <label for="emaStatus"><strong>EMA (Ependimomi/Meningiomi):</strong></label>
                     <select id="emaStatus" class="input-field">
                         <option value="">Non testato</option>
                         <option value="positive">Positivo</option>
@@ -463,12 +500,41 @@
                         <option value="negative">Negativo</option>
                     </select>
                 </div>
+
+                <!-- Meningioma markers -->
+                <div class="input-group" style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #a855f7;">
+                    <label for="prStatus"><strong>Progesterone Receptor (Meningiomi):</strong></label>
+                    <select id="prStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo</option>
+                        <option value="negative">Negativo (associato alto grado)</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #a855f7;">
+                    <label for="sstr2aStatus"><strong>SSTR2A (Meningiomi):</strong></label>
+                    <select id="sstr2aStatus" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Positivo (target terapeutico)</option>
+                        <option value="negative">Negativo</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #a855f7;">
+                    <label for="bap1Status"><strong>BAP1 (Meningioma rabdoide):</strong></label>
+                    <select id="bap1Status" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="loss">Perdita (rabdoide)</option>
+                        <option value="retained">Conservato</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Molecular Results -->
             <div class="card">
                 <h3><i class="fas fa-dna"></i> Risultati Molecolari</h3>
                 
+                <!-- Glioma molecular -->
                 <div class="input-group">
                     <label for="idhMutation">Mutazione IDH1/2:</label>
                     <select id="idhMutation" class="input-field">
@@ -528,11 +594,11 @@
                     <label for="cdkn2aStatus"><strong>CDKN2A/B Homozygous Deletion:</strong></label>
                     <select id="cdkn2aStatus" class="input-field">
                         <option value="">Non testato</option>
-                        <option value="positive">Presente (→ Grade 4)</option>
+                        <option value="positive">Presente (→ Grade 4 gliomi / prognostico meningiomi)</option>
                         <option value="negative">Assente</option>
                     </select>
                     <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #fca5a5;">
-                        <i class="fas fa-exclamation-triangle"></i> Se presente: automatic upgrade a WHO Grade IV (CNS5 2021)
+                        <i class="fas fa-exclamation-triangle"></i> Gliomi: automatic Grade IV (CNS5). Meningiomi: marker prognostico sfavorevole.
                     </div>
                 </div>
 
@@ -545,6 +611,7 @@
                     </select>
                 </div>
 
+                <!-- Ependymoma molecular -->
                 <div class="input-group" style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #06b6d4;">
                     <label for="zftaFusion"><strong>ZFTA Fusion (Ependimoma):</strong></label>
                     <select id="zftaFusion" class="input-field">
@@ -559,6 +626,25 @@
                     <select id="yap1Fusion" class="input-field">
                         <option value="">Non testato</option>
                         <option value="positive">Presente (YAP1-MAMLD1/FAM118B)</option>
+                        <option value="negative">Assente</option>
+                    </select>
+                </div>
+
+                <!-- Meningioma molecular -->
+                <div class="input-group" style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #a855f7;">
+                    <label for="nf2Mutation"><strong>NF2 Mutation/Loss (Meningiomi):</strong></label>
+                    <select id="nf2Mutation" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente/Perdita</option>
+                        <option value="negative">Wildtype</option>
+                    </select>
+                </div>
+
+                <div class="input-group" style="background: rgba(168, 85, 247, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid #a855f7;">
+                    <label for="chr1pDeletion"><strong>Chr 1p Deletion (Meningiomi):</strong></label>
+                    <select id="chr1pDeletion" class="input-field">
+                        <option value="">Non testato</option>
+                        <option value="positive">Presente (marker prognostico sfavorevole)</option>
                         <option value="negative">Assente</option>
                     </select>
                 </div>
@@ -580,6 +666,7 @@
                         <option value="ependymoma_st_zfta">Ependymoma, ST-ZFTA</option>
                         <option value="ependymoma_st_yap1">Ependymoma, ST-YAP1</option>
                         <option value="subependymoma">Subependymoma</option>
+                        <option value="meningioma">Meningioma</option>
                         <option value="non_diagnostic">Non-diagnostic</option>
                     </select>
                     <div class="ki67-interpretation" style="margin-top: 0.5rem; font-size: 0.85rem;">
@@ -623,6 +710,16 @@
                 <button onclick="loadCase6()" style="padding: 1rem; border: 1px solid #8b5cf6; border-radius: 8px; background: rgba(139, 92, 246, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
                     <i class="fas fa-user"></i> <strong>Caso 6: Ependimoma ZFTA</strong><br>
                     <small style="color: #94a3b8;">Bambino 6 anni, sovratentoriale, ZFTA+</small>
+                </button>
+                
+                <button onclick="loadCase7()" style="padding: 1rem; border: 1px solid #a855f7; border-radius: 8px; background: rgba(168, 85, 247, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 7: Meningioma Atipico</strong><br>
+                    <small style="color: #94a3b8;">Donna 55 anni, parasagittale, invasione</small>
+                </button>
+                
+                <button onclick="loadCase8()" style="padding: 1rem; border: 1px solid #ec4899; border-radius: 8px; background: rgba(236, 72, 153, 0.1); color: white; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-user"></i> <strong>Caso 8: Meningioma Cellule Chiare</strong><br>
+                    <small style="color: #94a3b8;">Uomo 38 anni, spinale, può recidivare</small>
                 </button>
             </div>
         </div>
@@ -672,10 +769,11 @@
                         <h4 style="color: #94a3b8; margin-bottom: 0.5rem;">Informazioni Strumento:</h4>
                         <ul style="list-style: none; padding: 0; font-size: 0.9rem; color: #cbd5e1;">
                             <li>✅ WHO CNS5 2021 Compliant</li>
-                            <li>✅ Gliomi + Ependimomi</li>
+                            <li>✅ Gliomi + Ependimomi + Meningiomi</li>
+                            <li>✅ 20 entità diagnostiche</li>
+                            <li>✅ 8 casi clinici completi</li>
                             <li>✅ Methylation Profiling Aware</li>
-                            <li>✅ CDKN2A/B Grading Logic</li>
-                            <li>✅ 11 entità diagnostiche</li>
+                            <li>✅ Grading dinamico integrato</li>
                             <li>✅ Solo Uso Educativo</li>
                             <li>⚠️ Non per Decisioni Cliniche</li>
                         </ul>
@@ -686,7 +784,7 @@
     </div>
 
     <script>
-        // Complete diagnostic entities with WHO CNS5 accuracy
+        // Complete diagnostic entities with WHO CNS5 accuracy - NOW WITH MENINGIOMAS
         const diagnosticEntities = {
             "Astrocytoma_IDH_mutant": {
                 name: "Astrocytoma, IDH-mutant",
@@ -776,7 +874,7 @@
                 prognosis: { medianOS: 120, fiveYearSurvival: 0.85, treatmentSensitivity: { "surgery": "curative", "radiotherapy": "optional" } }
             },
             "Ependymoma_PFA": {
-                name: "Ependymoma, posterior fossa group A (PFA)",
+                name: "Ependimoma, posterior fossa group A (PFA)",
                 baseGrade: "WHO Grade II-III",
                 pattern: "ependymal",
                 agePreference: ["pediatric"],
@@ -786,7 +884,7 @@
                 prognosis: { medianOS: 48, fiveYearSurvival: 0.45, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "essential", "chemotherapy": "limited" } }
             },
             "Ependymoma_PFB": {
-                name: "Ependymoma, posterior fossa group B (PFB)",
+                name: "Ependimoma, posterior fossa group B (PFB)",
                 baseGrade: "WHO Grade II",
                 pattern: "ependymal",
                 agePreference: ["adult"],
@@ -813,14 +911,114 @@
                 sitePreference: ["filum_terminale", "spinal_cord"],
                 expectedIHC: { "GFAP": "positive", "EMA": "positive" },
                 prognosis: { medianOS: 180, fiveYearSurvival: 0.90, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "if_incomplete" } }
+            },
+            // MENINGIOMAS START HERE
+            "Meningioma_meningothelial": {
+                name: "Meningioma meningoteliomatoso",
+                baseGrade: "WHO Grade I",
+                pattern: "meningothelial",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["convexity", "parasagittal", "falx", "skull_base"],
+                expectedIHC: { "EMA": "positive", "PR": "positive" },
+                expectedMol: { "NF2_mutation": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 240, fiveYearSurvival: 0.93, treatmentSensitivity: { "surgery": "curative", "radiotherapy": "if_incomplete" } }
+            },
+            "Meningioma_fibrous": {
+                name: "Meningioma fibroblastico",
+                baseGrade: "WHO Grade I",
+                pattern: "meningothelial",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["convexity", "parasagittal", "falx"],
+                expectedIHC: { "EMA": "positive", "PR": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 240, fiveYearSurvival: 0.92, treatmentSensitivity: { "surgery": "curative" } }
+            },
+            "Meningioma_transitional": {
+                name: "Meningioma transizionale",
+                baseGrade: "WHO Grade I",
+                pattern: "meningothelial",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["convexity", "parasagittal", "skull_base"],
+                expectedIHC: { "EMA": "positive", "PR": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 240, fiveYearSurvival: 0.92, treatmentSensitivity: { "surgery": "curative" } }
+            },
+            "Meningioma_atypical": {
+                name: "Meningioma atipico",
+                baseGrade: "WHO Grade II",
+                pattern: "meningothelial",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["convexity", "parasagittal", "falx", "skull_base"],
+                expectedIHC: { "EMA": "positive", "PR": "negative" },
+                expectedMol: { "NF2_mutation": "positive", "chr1p_deletion": "positive", "CDKN2A_deletion": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 144, fiveYearSurvival: 0.75, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "recommended" } }
+            },
+            "Meningioma_clear_cell": {
+                name: "Meningioma a cellule chiare",
+                baseGrade: "WHO Grade II",
+                pattern: "meningothelial",
+                agePreference: ["adult"],
+                sitePreference: ["spinal_cord", "cpa", "skull_base"],
+                expectedIHC: { "EMA": "positive" },
+                expectedMol: { "SMARCE1_mutation": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 120, fiveYearSurvival: 0.70, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "recommended", "recurrence_risk": "high" } }
+            },
+            "Meningioma_chordoid": {
+                name: "Meningioma corioide",
+                baseGrade: "WHO Grade II",
+                pattern: "meningothelial",
+                agePreference: ["adult"],
+                sitePreference: ["skull_base", "convexity"],
+                expectedIHC: { "EMA": "positive" },
+                biologicalConstraints: ["Castleman_disease_association"],
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 108, fiveYearSurvival: 0.65, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "recommended" } }
+            },
+            "Meningioma_anaplastic": {
+                name: "Meningioma anaplastico",
+                baseGrade: "WHO Grade III",
+                pattern: "meningothelial",
+                agePreference: ["adult", "elderly"],
+                sitePreference: ["convexity", "parasagittal", "falx"],
+                expectedIHC: { "EMA": "positive", "PR": "negative" },
+                expectedMol: { "CDKN2A_deletion": "positive", "chr1p_deletion": "positive", "TERT_promoter": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 48, fiveYearSurvival: 0.30, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "essential", "chemotherapy": "limited" } }
+            },
+            "Meningioma_papillary": {
+                name: "Meningioma papillare",
+                baseGrade: "WHO Grade III",
+                pattern: "meningothelial",
+                agePreference: ["pediatric", "adult"],
+                sitePreference: ["convexity", "lateral_ventricle"],
+                expectedIHC: { "EMA": "positive", "PR": "negative" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 60, fiveYearSurvival: 0.40, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "essential", "recurrence_risk": "very_high" } }
+            },
+            "Meningioma_rhabdoid": {
+                name: "Meningioma rabdoide",
+                baseGrade: "WHO Grade III",
+                pattern: "meningothelial",
+                agePreference: ["adult"],
+                sitePreference: ["convexity", "parasagittal"],
+                expectedIHC: { "EMA": "positive", "PR": "negative", "BAP1": "loss" },
+                expectedMol: { "BAP1_mutation": "positive", "CDKN2A_deletion": "positive" },
+                methylationClass: "meningioma",
+                prognosis: { medianOS: 36, fiveYearSurvival: 0.25, treatmentSensitivity: { "surgery": "essential", "radiotherapy": "essential", "prognosis": "very_poor" } }
             }
         };
 
         let ki67Value = 0;
+        let mitosisCount = 0;
         let morphologicalCriteria = {
             necrosis: false,
             microvascularProliferation: false,
-            highMitoticActivity: false
+            highMitoticActivity: false,
+            brainInvasion: false,
+            sheetingPattern: false
         };
 
         function getAgeGroup() {
@@ -860,10 +1058,14 @@
             morphologicalCriteria.necrosis = document.getElementById('necrosis').checked;
             morphologicalCriteria.microvascularProliferation = document.getElementById('microvascularProliferation').checked;
             morphologicalCriteria.highMitoticActivity = document.getElementById('highMitoticActivity').checked;
+            morphologicalCriteria.brainInvasion = document.getElementById('brainInvasion').checked;
+            morphologicalCriteria.sheetingPattern = document.getElementById('sheetingPattern').checked;
+            mitosisCount = parseInt(document.getElementById('mitosisCount').value) || 0;
             
             let predictedGrade = 2;
             const reasons = [];
             
+            // Glioma grading
             if (morphologicalCriteria.necrosis) {
                 predictedGrade = Math.max(predictedGrade, 4);
                 reasons.push("Necrosi → Grade IV");
@@ -877,6 +1079,25 @@
             if (morphologicalCriteria.highMitoticActivity) {
                 predictedGrade = Math.max(predictedGrade, 3);
                 reasons.push("Alta attività mitotica → Grade III");
+            }
+            
+            // Meningioma grading
+            if (mitosisCount >= 20) {
+                predictedGrade = Math.max(predictedGrade, 3);
+                reasons.push('Mitosi ≥20/10 HPF → Meningioma Grade III');
+            } else if (mitosisCount >= 4) {
+                predictedGrade = Math.max(predictedGrade, 2);
+                reasons.push('Mitosi 4-19/10 HPF → Meningioma Grade II');
+            }
+            
+            if (morphologicalCriteria.brainInvasion) {
+                predictedGrade = Math.max(predictedGrade, 2);
+                reasons.push('Invasione cerebrale → Meningioma Grade II');
+            }
+            
+            if (morphologicalCriteria.sheetingPattern) {
+                predictedGrade = Math.max(predictedGrade, 2);
+                reasons.push('Sheeting pattern → Meningioma Grade II');
             }
             
             if (ki67Value > 30) {
@@ -893,7 +1114,7 @@
             
             if (reasons.length > 0) {
                 gradePreview.style.display = 'block';
-                const gradeText = predictedGrade === 2 ? 'II' : predictedGrade === 3 ? 'III' : 'IV';
+                const gradeText = predictedGrade === 1 ? 'I' : predictedGrade === 2 ? 'II' : predictedGrade === 3 ? 'III' : 'IV';
                 predictedGradeElement.textContent = 'WHO Grade ' + gradeText;
                 gradingReasonsElement.textContent = reasons.join(', ');
             } else {
@@ -922,8 +1143,8 @@
                 }
             }
             
-            // PRIORITY 2: CDKN2A/B homozygous deletion → automatic Grade 4
-            if (inputData.mol.CDKN2A_deletion === 'positive') {
+            // PRIORITY 2: CDKN2A/B homozygous deletion → automatic Grade 4 for gliomas
+            if (inputData.mol.CDKN2A_deletion === 'positive' && entity.pattern === 'diffuse') {
                 return "WHO Grade IV";
             }
             
@@ -937,7 +1158,18 @@
                 return "WHO Grade IV";
             }
             
-            // Morphological criteria
+            // MENINGIOMA GRADING (based on mitosis count primarily)
+            if (entity.pattern === 'meningothelial') {
+                if (mitosisCount >= 20) {
+                    return "WHO Grade III";
+                }
+                if (mitosisCount >= 4 || morphologicalCriteria.brainInvasion || morphologicalCriteria.sheetingPattern) {
+                    return "WHO Grade II";
+                }
+                return "WHO Grade I";
+            }
+            
+            // Morphological criteria for gliomas
             if (morphologicalCriteria.necrosis) {
                 baseGrade = Math.max(baseGrade, 4);
             }
@@ -962,8 +1194,17 @@
                 return "WHO Grade I";
             }
             
-            if (entity.name.includes("Myxopapillary")) {
+            if (entity.name.includes("Myxopapillary") || entity.name.includes("meningoteliomatoso") || 
+                entity.name.includes("fibroblastico") || entity.name.includes("transizionale")) {
+                return "WHO Grade I";
+            }
+            
+            if (entity.name.includes("atipico") || entity.name.includes("cellule chiare") || entity.name.includes("corioide")) {
                 return "WHO Grade II";
+            }
+            
+            if (entity.name.includes("anaplastico") || entity.name.includes("papillare") || entity.name.includes("rabdoide")) {
+                return "WHO Grade III";
             }
             
             // Return base grade as string
@@ -971,7 +1212,7 @@
                 return baseGrade >= 3 ? "WHO Grade III" : "WHO Grade II";
             }
             
-            return 'WHO Grade ' + (baseGrade === 2 ? 'II' : baseGrade === 3 ? 'III' : 'IV');
+            return 'WHO Grade ' + (baseGrade === 1 ? 'I' : baseGrade === 2 ? 'II' : baseGrade === 3 ? 'III' : 'IV');
         }
 
         function collectInputData() {
@@ -980,6 +1221,7 @@
                 site: document.getElementById('anatomicalSite').value,
                 pattern: document.getElementById('morphPattern').value,
                 ki67: ki67Value,
+                mitosis: mitosisCount,
                 ihc: {
                     "IDH1_R132H": document.getElementById('idh1Status').value,
                     "ATRX": document.getElementById('atrxStatus').value,
@@ -989,7 +1231,10 @@
                     "H3K27me3": document.getElementById('h3k27me3Status').value,
                     "H3K27M": document.getElementById('h3k27mStatus').value,
                     "EMA": document.getElementById('emaStatus').value,
-                    "L1CAM": document.getElementById('l1camStatus').value
+                    "L1CAM": document.getElementById('l1camStatus').value,
+                    "PR": document.getElementById('prStatus').value,
+                    "SSTR2A": document.getElementById('sstr2aStatus').value,
+                    "BAP1": document.getElementById('bap1Status').value
                 },
                 mol: {
                     "IDH1_2_mutation": document.getElementById('idhMutation').value,
@@ -1002,6 +1247,8 @@
                     "MGMT_methylation": document.getElementById('mgmtStatus').value,
                     "ZFTA_fusion": document.getElementById('zftaFusion').value,
                     "YAP1_fusion": document.getElementById('yap1Fusion').value,
+                    "NF2_mutation": document.getElementById('nf2Mutation').value,
+                    "chr1p_deletion": document.getElementById('chr1pDeletion').value,
                     "methylation_class": document.getElementById('methylationClass').value
                 }
             };
@@ -1069,12 +1316,12 @@
             }
 
             // Age and site bonus
-            if (entity.agePreference.includes(inputData.age)) {
+            if (entity.agePreference && entity.agePreference.includes(inputData.age)) {
                 score += 0.3;
             }
             maxScore += 0.3;
 
-            if (entity.sitePreference.includes(inputData.site)) {
+            if (entity.sitePreference && entity.sitePreference.includes(inputData.site)) {
                 score += 0.2;
             }
             maxScore += 0.2;
@@ -1100,7 +1347,8 @@
                     'ependymoma_pfb': 'Methylation class: Ependymoma PFB (gold standard)',
                     'ependymoma_st_zfta': 'Methylation class: Ependymoma ST-ZFTA (gold standard)',
                     'ependymoma_st_yap1': 'Methylation class: Ependymoma ST-YAP1 (gold standard)',
-                    'subependymoma': 'Methylation class: Subependymoma (gold standard)'
+                    'subependymoma': 'Methylation class: Subependymoma (gold standard)',
+                    'meningioma': 'Methylation class: Meningioma (gold standard)'
                 };
                 
                 if (methylationMap[inputData.mol.methylation_class]) {
@@ -1110,7 +1358,11 @@
 
             // CDKN2A/B deletion
             if (inputData.mol.CDKN2A_deletion === 'positive') {
-                supporting.push('CDKN2A/B homozygous deletion presente (criterio Grade 4 CNS5)');
+                if (entity.pattern === 'diffuse') {
+                    supporting.push('CDKN2A/B homozygous deletion presente (criterio Grade 4 CNS5 gliomi)');
+                } else if (entity.pattern === 'meningothelial') {
+                    supporting.push('CDKN2A/B deletion presente (marker prognostico sfavorevole meningiomi)');
+                }
             }
 
             // MGMT status (prognostic, not diagnostic)
@@ -1130,6 +1382,34 @@
             // L1CAM for PFA
             if (inputData.ihc.L1CAM === 'positive' && entity.name.includes('PFA')) {
                 supporting.push('L1CAM positivo (suggestivo per PFA)');
+            }
+
+            // Meningioma markers
+            if (inputData.mol.NF2_mutation === 'positive' && entity.pattern === 'meningothelial') {
+                supporting.push('NF2 mutation/loss (comune in meningiomi)');
+            }
+            
+            if (inputData.mol.chr1p_deletion === 'positive' && entity.pattern === 'meningothelial') {
+                supporting.push('Chr 1p deletion (marker prognostico sfavorevole)');
+            }
+            
+            if (inputData.ihc.BAP1 === 'loss' && entity.name.includes('rabdoide')) {
+                supporting.push('BAP1 loss (diagnostico per variante rabdoide)');
+            }
+            
+            // Mitosis count for meningiomas
+            if (entity.pattern === 'meningothelial' && mitosisCount > 0) {
+                if (mitosisCount >= 20) {
+                    supporting.push('Mitosi ≥20/10 HPF (Grade III)');
+                } else if (mitosisCount >= 4) {
+                    supporting.push('Mitosi 4-19/10 HPF (Grade II)');
+                } else {
+                    supporting.push('Mitosi <4/10 HPF (Grade I)');
+                }
+            }
+            
+            if (morphologicalCriteria.brainInvasion && entity.pattern === 'meningothelial') {
+                supporting.push('Invasione cerebrale (criterio Grade II per meningiomi)');
             }
 
             // Required markers
@@ -1206,8 +1486,8 @@
             const hasIHC = Object.values(inputData.ihc).some(value => value);
             const hasMol = Object.values(inputData.mol).some(value => value);
             
-            if (!hasIHC && !hasMol && ki67Value === 0) {
-                alert('Inserire almeno alcuni risultati IHC o molecolari per procedere.');
+            if (!hasIHC && !hasMol && ki67Value === 0 && mitosisCount === 0) {
+                alert('Inserire almeno alcuni risultati IHC, molecolari o criteri morfologici per procedere.');
                 return;
             }
 
@@ -1229,13 +1509,13 @@
                 }
                 
                 // Age filter
-                if (inputData.age && !entity.agePreference.includes(inputData.age)) {
+                if (inputData.age && entity.agePreference && !entity.agePreference.includes(inputData.age)) {
                     console.log('❌ ' + key + ': age mismatch');
                     continue;
                 }
                 
                 // Site filter
-                if (!entity.sitePreference.includes(inputData.site)) {
+                if (entity.sitePreference && !entity.sitePreference.includes(inputData.site)) {
                     console.log('❌ ' + key + ': site mismatch');
                     continue;
                 }
@@ -1302,15 +1582,24 @@
 
             // Add grading explanation
             const gradingReasons = [];
-            if (inputData.mol.CDKN2A_deletion === 'positive') {
+            if (inputData.mol.CDKN2A_deletion === 'positive' && topResult.entity.pattern === 'diffuse') {
                 gradingReasons.push("CDKN2A/B homozygous deletion (CNS5 criterio automatico Grade IV)");
             }
             if (inputData.mol.methylation_class === 'gbm_rtk1' || inputData.mol.methylation_class === 'gbm_rtk2' || inputData.mol.methylation_class === 'gbm_mes') {
                 gradingReasons.push("Methylation class GBM (gold standard → Grade IV)");
             }
+            if (topResult.entity.pattern === 'meningothelial' && mitosisCount > 0) {
+                if (mitosisCount >= 20) {
+                    gradingReasons.push("Mitosi ≥20/10 HPF (Grade III)");
+                } else if (mitosisCount >= 4) {
+                    gradingReasons.push("Mitosi 4-19/10 HPF (Grade II)");
+                }
+            }
             if (morphologicalCriteria.necrosis) gradingReasons.push("Necrosi presente");
             if (morphologicalCriteria.microvascularProliferation) gradingReasons.push("Proliferazione microvascolare");
             if (morphologicalCriteria.highMitoticActivity) gradingReasons.push("Alta attività mitotica");
+            if (morphologicalCriteria.brainInvasion) gradingReasons.push("Invasione cerebrale (meningiomi)");
+            if (morphologicalCriteria.sheetingPattern) gradingReasons.push("Sheeting pattern (meningiomi)");
             if (ki67Value > 30) gradingReasons.push('Ki-67 ' + ki67Value + '% (molto alto)');
             else if (ki67Value > 15) gradingReasons.push('Ki-67 ' + ki67Value + '% (elevato)');
             
@@ -1412,11 +1701,14 @@
             document.getElementById('anatomicalSite').value = 'frontal_lobe';
             document.getElementById('morphPattern').value = 'diffuse';
             document.getElementById('ki67Value').value = '';
+            document.getElementById('mitosisCount').value = '';
             
             // Reset checkboxes
             document.getElementById('necrosis').checked = false;
             document.getElementById('microvascularProliferation').checked = false;
             document.getElementById('highMitoticActivity').checked = false;
+            document.getElementById('brainInvasion').checked = false;
+            document.getElementById('sheetingPattern').checked = false;
             
             // Reset all IHC
             document.getElementById('idh1Status').value = '';
@@ -1428,6 +1720,9 @@
             document.getElementById('h3k27mStatus').value = '';
             document.getElementById('emaStatus').value = '';
             document.getElementById('l1camStatus').value = '';
+            document.getElementById('prStatus').value = '';
+            document.getElementById('sstr2aStatus').value = '';
+            document.getElementById('bap1Status').value = '';
             
             // Reset all molecular
             document.getElementById('idhMutation').value = '';
@@ -1440,6 +1735,8 @@
             document.getElementById('mgmtStatus').value = '';
             document.getElementById('zftaFusion').value = '';
             document.getElementById('yap1Fusion').value = '';
+            document.getElementById('nf2Mutation').value = '';
+            document.getElementById('chr1pDeletion').value = '';
             document.getElementById('methylationClass').value = '';
             
             updateKi67Interpretation();
@@ -1543,7 +1840,7 @@
             document.getElementById('idhMutation').value = 'positive';
             document.getElementById('codeletion1p19q').value = 'negative';
             document.getElementById('tp53Mutation').value = 'positive';
-            document.getElementById('cdkn2aStatus').value = 'positive';  // This upgrades to Grade 4!
+            document.getElementById('cdkn2aStatus').value = 'positive';
             document.getElementById('methylationClass').value = 'idh_astro';
             
             updateKi67Interpretation();
@@ -1568,12 +1865,12 @@
             document.getElementById('highMitoticActivity').checked = true;
             
             // IHC - KEY markers
-            document.getElementById('h3k27mStatus').value = 'positive';  // Diagnostic!
+            document.getElementById('h3k27mStatus').value = 'positive';
             document.getElementById('h3k27me3Status').value = 'loss';
             document.getElementById('gfapStatus').value = 'positive';
             
             // Molecular
-            document.getElementById('h3f3aMutation').value = 'k27m';  // Diagnostic!
+            document.getElementById('h3f3aMutation').value = 'k27m';
             document.getElementById('methylationClass').value = 'h3_k27';
             
             updateKi67Interpretation();
@@ -1600,7 +1897,7 @@
             // IHC - KEY: L1CAM positive distinguishes PFA from PFB
             document.getElementById('gfapStatus').value = 'positive';
             document.getElementById('emaStatus').value = 'positive';
-            document.getElementById('l1camStatus').value = 'positive';  // KEY for PFA!
+            document.getElementById('l1camStatus').value = 'positive';
             
             // Molecular
             document.getElementById('methylationClass').value = 'ependymoma_pfa';
@@ -1608,12 +1905,12 @@
             updateKi67Interpretation();
             updateGradePreview();
             
-            alert('Caso 5 caricato: Ependymoma PFA\n\nBambina 4 anni con vomito e atassia. RM: massa IV ventricolo.\n\nL1CAM positivo → PFA (group A) → prognosi peggiore rispetto a PFB.\n\nClick "Genera Report".');
+            alert('Caso 5 caricato: Ependimoma PFA\n\nBambina 4 anni con vomito e atassia. RM: massa IV ventricolo.\n\nL1CAM positivo → PFA (group A) → prognosi peggiore rispetto a PFB.\n\nClick "Genera Report".');
         }
         
         function loadCase6() {
             clearAllFields();
-            console.log('📋 Loading Case 6: Ependymoma supratentoriale ZFTA fusion-positive');
+            console.log('📋 Loading Case 6: Ependimoma sovratentoriale ZFTA fusion-positive');
             
             // Clinical context
             document.getElementById('patientAge').value = '6';
@@ -1632,13 +1929,67 @@
             document.getElementById('l1camStatus').value = 'negative';
             
             // Molecular - KEY: ZFTA fusion
-            document.getElementById('zftaFusion').value = 'positive';  // Diagnostic!
+            document.getElementById('zftaFusion').value = 'positive';
             document.getElementById('methylationClass').value = 'ependymoma_st_zfta';
             
             updateKi67Interpretation();
             updateGradePreview();
             
             alert('Caso 6 caricato: Ependimoma ZFTA fusion-positive\n\nBambino 6 anni con cefalea e crisi. RM: massa emisferica parietale.\n\nZFTA fusion (ZFTA-RELA) → diagnostico per ependimoma sovratentoriale.\n\nClick "Genera Report".');
+        }
+        
+        function loadCase7() {
+            clearAllFields();
+            console.log('📋 Loading Case 7: Meningioma Atipico Grade 2');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '55';
+            document.getElementById('anatomicalSite').value = 'parasagittal';
+            document.getElementById('morphPattern').value = 'meningothelial';
+            document.getElementById('ki67Value').value = '12';
+            document.getElementById('mitosisCount').value = '6';
+            
+            // Meningioma grading criteria
+            document.getElementById('brainInvasion').checked = true;
+            document.getElementById('sheetingPattern').checked = false;
+            
+            // IHC
+            document.getElementById('emaStatus').value = 'positive';
+            document.getElementById('prStatus').value = 'negative';
+            
+            // Molecular
+            document.getElementById('nf2Mutation').value = 'positive';
+            document.getElementById('chr1pDeletion').value = 'positive';
+            document.getElementById('methylationClass').value = 'meningioma';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 7 caricato: Meningioma Atipico\n\nDonna 55 anni con cefalea. RM: massa parasagittale con invasione corticale.\n\n6 mitosi/10 HPF + invasione cerebrale → WHO Grade II.\nChr 1p deletion → marker prognostico sfavorevole.\n\nClick "Genera Report".');
+        }
+        
+        function loadCase8() {
+            clearAllFields();
+            console.log('📋 Loading Case 8: Meningioma a Cellule Chiare');
+            
+            // Clinical context
+            document.getElementById('patientAge').value = '38';
+            document.getElementById('anatomicalSite').value = 'spinal_cord';
+            document.getElementById('morphPattern').value = 'meningothelial';
+            document.getElementById('ki67Value').value = '8';
+            document.getElementById('mitosisCount').value = '2';
+            
+            // IHC
+            document.getElementById('emaStatus').value = 'positive';
+            document.getElementById('prStatus').value = 'negative';
+            
+            // Molecular - clear cell variant specific
+            document.getElementById('methylationClass').value = 'meningioma';
+            
+            updateKi67Interpretation();
+            updateGradePreview();
+            
+            alert('Caso 8 caricato: Meningioma a Cellule Chiare\n\nUomo 38 anni con paraparesi. RM: massa intramidollare spinale.\n\nMeningioma a cellule chiare → sempre WHO Grade II.\nRischio elevato di recidiva anche con resezione completa.\n\nClick "Genera Report".');
         }
 
         // Initialize
