@@ -6,6 +6,7 @@
     <title>CNS Tumor Diagnostic Tool - WHO CNS5 2021</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         :root {
             --primary: #667eea;
@@ -303,6 +304,9 @@
             <button class="tab-btn" onclick="switchTab('report')">
                 <i class="fas fa-file-medical"></i> Report Generator
             </button>
+            <button class="tab-btn" onclick="switchTab('workflow')">
+                <i class="fas fa-project-diagram"></i> Workflow Patologo
+            </button>
         </div>
 
         <!-- TAB 1: DATABASE DIAGNOSTICO -->
@@ -566,6 +570,232 @@
                 </button>
 
                 <div id="reportResults" style="margin-top: 2rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: WORKFLOW PATOLOGO -->
+        <div id="workflow-tab" class="tab-content">
+            <div class="glass-card">
+                <h2><i class="fas fa-project-diagram"></i> Workflow Operativo Patologo</h2>
+                <p style="opacity: 0.8; margin-bottom: 2rem;">
+                    Percorso pratico dal vetrino al referto: Morfologia → IHC → Biologia Molecolare
+                </p>
+
+                <div style="background: rgba(255, 255, 255, 0.95); padding: 2rem; border-radius: 15px; overflow-x: auto;">
+                    <div class="mermaid">
+                        graph TD
+                            Start([Biopsia/Resezione SNC]) --> HE[Sezioni HE - Valutazione morfologica]
+                            
+                            HE --> Morpho{Lesione gliale diffusa?}
+                            
+                            Morpho -->|No| AltDx[Altra diagnosi]
+                            Morpho -->|Si| Features[Valuta features: Cellularita, Atipia, Mitosi, Necrosi]
+                            
+                            Features --> GradeMorph[Grading morfologico provvisorio: G2/G3/G4]
+                            
+                            GradeMorph --> IHC1[IHC PANEL BASE: IDH1 R132H + ATRX + p53 + Ki67]
+                            
+                            IHC1 --> IDH{IDH1 R132H IHC?}
+                            
+                            IDH -->|Positivo| ATRXeval{ATRX IHC?}
+                            
+                            ATRXeval -->|Loss| Path1[Pattern suggestivo: ASTROCITOMA IDH-mut]
+                            ATRXeval -->|Preserved| Path2[Pattern suggestivo: OLIGODENDROGLIOMA?]
+                            
+                            Path1 --> BM1[BIOLOGIA MOLECOLARE: 1p/19q FISH - CDKN2A/B - TP53 seq]
+                            
+                            Path2 --> BM2[BIOLOGIA MOLECOLARE: 1p/19q FISH OBBLIGATORIA - TERT - CDKN2A/B]
+                            
+                            BM2 --> Codeletion{1p/19q co-delezione?}
+                            
+                            Codeletion -->|Si| OligoDx[OLIGODENDROGLIOMA IDH-mutato 1p/19q-codeleto]
+                            Codeletion -->|No| AstroRare[ASTROCITOMA IDH-mut - ATRX preserved - Pattern raro]
+                            
+                            BM1 --> Check1p{1p/19q intatto?}
+                            Check1p -->|Si| AstroDx[ASTROCITOMA IDH-mutato]
+                            Check1p -->|No| Error1[ARTEFATTO: ATRX loss + 1p/19q codel IMPOSSIBILE - Ripetere test]
+                            
+                            IDH -->|Negativo| Age{Eta paziente?}
+                            
+                            Age -->|Minore 40 anni| BM3[SEQUENZIAMENTO IDH1/2 completo]
+                            Age -->|40 anni o piu| BM4[BIOLOGIA MOLECOLARE: TERT - EGFR - +7/-10 - Methylation profiling]
+                            
+                            BM3 --> IDHseq{IDH1/2 sequencing?}
+                            IDHseq -->|Mutato| BackToIDH[Torna a pathway IDH-mutato]
+                            IDHseq -->|Wild-type| BM4
+                            
+                            BM4 --> GBMmarkers{Marker GBM presenti?}
+                            
+                            GBMmarkers -->|Si| GBMdx[GLIOBLASTOMA IDH-wildtype - CNS WHO Grade 4]
+                            GBMmarkers -->|No| NOSdx[GLIOMA DIFFUSO IDH-wildtype NOS - PROVVISORIO]
+                            
+                            NOSdx --> Methyl[Raccomandato METHYLATION PROFILING]
+                            
+                            AstroDx --> CDKN_A{CDKN2A/B homozygous deletion?}
+                            OligoDx --> CDKN_O{CDKN2A/B homozygous deletion?}
+                            
+                            CDKN_A -->|Si| FinalA4[REFERTO: ASTROCITOMA IDH-mutato - CNS WHO Grade 4 - molecular upgrade]
+                            CDKN_A -->|No| FinalA[REFERTO: ASTROCITOMA IDH-mutato - Grade 2-4 da morfologia]
+                            
+                            CDKN_O -->|Si| FinalO4[REFERTO: OLIGODENDROGLIOMA IDH-mut 1p/19q-codel - CNS WHO Grade 4]
+                            CDKN_O -->|No| FinalO[REFERTO: OLIGODENDROGLIOMA IDH-mut 1p/19q-codel - Grade 2-3]
+                            
+                            GBMdx --> FinalGBM[REFERTO: GLIOBLASTOMA IDH-wt - CNS WHO Grade 4]
+                            
+                            classDef morphStyle fill:#a78bfa,stroke:#7c3aed,stroke-width:3px,color:#fff
+                            classDef ihcStyle fill:#60a5fa,stroke:#2563eb,stroke-width:3px,color:#fff
+                            classDef bmStyle fill:#34d399,stroke:#059669,stroke-width:3px,color:#fff
+                            classDef decisionStyle fill:#fbbf24,stroke:#d97706,stroke-width:2px,color:#000
+                            classDef diagnosisStyle fill:#10b981,stroke:#059669,stroke-width:3px,color:#fff
+                            classDef warningStyle fill:#f59e0b,stroke:#d97706,stroke-width:3px,color:#fff
+                            classDef errorStyle fill:#ef4444,stroke:#dc2626,stroke-width:3px,color:#fff
+                            classDef finalStyle fill:#8b5cf6,stroke:#6d28d9,stroke-width:4px,color:#fff
+                            
+                            class HE,Features,GradeMorph,Morpho morphStyle
+                            class IHC1,IDH,ATRXeval ihcStyle
+                            class BM1,BM2,BM3,BM4,Codeletion,Check1p,IDHseq,GBMmarkers bmStyle
+                            class Age,CDKN_A,CDKN_O decisionStyle
+                            class AstroDx,OligoDx,GBMdx,Path1,Path2 diagnosisStyle
+                            class NOSdx,AstroRare,Methyl warningStyle
+                            class Error1 errorStyle
+                            class FinalA,FinalA4,FinalO,FinalO4,FinalGBM finalStyle
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <h3 style="color: #fbbf24; margin-bottom: 1rem;"><i class="fas fa-microscope"></i> FASE 1: MORFOLOGIA (HE)</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Architettura:</strong> Diffusa vs circonscritta
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Cellularità:</strong> Bassa/moderata/alta
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Atipia nucleare:</strong> Lieve/moderata/severa
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Mitosi:</strong> Assenti/rare/frequenti
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Necrosi:</strong> Assente/presente
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Grading provvisorio:</strong> G2/G3/G4
+                            </li>
+                        </ul>
+                        <div style="background: rgba(59, 130, 246, 0.2); border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <strong>Remember:</strong> Il grading morfologico è PROVVISORIO. Può cambiare con CDKN2A/B.
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <h3 style="color: #fbbf24; margin-bottom: 1rem;"><i class="fas fa-vial"></i> FASE 2: IHC</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>IDH1 R132H:</strong> 90% mutazioni IDH1
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>ATRX:</strong> Loss = astrocitoma
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>p53:</strong> Overexpression (TP53 mut)
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Ki67:</strong> Index proliferativo
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>GFAP:</strong> Conferma origine gliale
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Olig2:</strong> Positivo in oligodendrogliomi
+                            </li>
+                        </ul>
+                        <div style="background: rgba(239, 68, 68, 0.2); border-left: 4px solid #ef4444; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <strong>Pitfall:</strong> IDH1 R132H negativo non esclude IDH-mutato! 10% ha altre mutazioni. Sequenzia se <40 anni.
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <h3 style="color: #fbbf24; margin-bottom: 1rem;"><i class="fas fa-dna"></i> FASE 3: BIOLOGIA MOLECOLARE</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>FISH 1p/19q:</strong> Obbligatoria per oligo
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>TERT promoter:</strong> C228T/C250T
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>CDKN2A/B:</strong> Homozyg del = G4
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>EGFR amp:</strong> FISH/MLPA
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>+7/-10:</strong> FISH o array-CGH
+                            </li>
+                            <li style="padding: 0.5rem 0; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: #10b981;">→</span>
+                                <strong>Methylation:</strong> Casi ambigui
+                            </li>
+                        </ul>
+                        <div style="background: rgba(239, 68, 68, 0.2); border: 2px solid #ef4444; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <strong style="color: #fca5a5;">TEST OBBLIGATORI:</strong><br>
+                            • 1p/19q FISH se ATRX preserved<br>
+                            • CDKN2A/B per grading<br>
+                            • IDH seq se R132H neg + <40 anni
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: rgba(59, 130, 246, 0.2); border-left: 4px solid #3b82f6; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">📋 TIPS PRATICI</h4>
+                    <ul style="list-style: disc; padding-left: 1.5rem; line-height: 1.8;">
+                        <li>Ordina sempre IHC panel base (IDH1 R132H + ATRX + p53 + Ki67) prima di decidere i test molecolari</li>
+                        <li>FISH 1p/19q è OBBLIGATORIA per oligodendroglioma (non puoi diagnosticare solo con IHC)</li>
+                        <li>Se IDH1 R132H negativo + età <40 anni → sequenzia IDH1/2 completo (10% mutazioni non-R132H)</li>
+                        <li>CDKN2A/B cambia il grade e quindi il trattamento → SEMPRE da testare in IDH-mutati</li>
+                        <li>Se tutto negativo (IDH-wt NOS) → methylation profiling prima di refertare definitivo</li>
+                        <li>Pattern ATRX loss + 1p/19q codel = SEMPRE artefatto tecnico → ripeti FISH</li>
+                    </ul>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                        <div style="width: 30px; height: 30px; background: #a78bfa; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.3);"></div>
+                        <div><strong>Morfologia</strong><br><small>HE</small></div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                        <div style="width: 30px; height: 30px; background: #60a5fa; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.3);"></div>
+                        <div><strong>IHC</strong></div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                        <div style="width: 30px; height: 30px; background: #34d399; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.3);"></div>
+                        <div><strong>Molecolare</strong></div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+                        <div style="width: 30px; height: 30px; background: #8b5cf6; border-radius: 6px; border: 2px solid rgba(255, 255, 255, 0.3);"></div>
+                        <div><strong>Referto</strong></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1020,6 +1250,20 @@
                 document.getElementById('rptPatient').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 300);
         }
+
+        // Initialize Mermaid for workflow flowchart
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 15,
+                nodeSpacing: 50,
+                rankSpacing: 80
+            }
+        });
     </script>
 </body>
 </html>
