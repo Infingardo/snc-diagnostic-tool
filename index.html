@@ -288,6 +288,42 @@
         .molecular-upgrade strong {
             color: #fca5a5;
         }
+
+        /* Mermaid flowchart styles - LARGE FONT IN BOXES */
+        .mermaid svg text {
+            font-size: 28px !important;
+            font-weight: 700 !important;
+            fill: #000 !important;
+        }
+
+        .mermaid .node text,
+        .mermaid .label,
+        .mermaid text {
+            font-size: 28px !important;
+            font-weight: 700 !important;
+        }
+
+        .mermaid .edgeLabel,
+        .mermaid .edgeLabel text {
+            font-size: 26px !important;
+            font-weight: 700 !important;
+        }
+
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node polygon {
+            stroke-width: 3px !important;
+        }
+
+        .mermaid .nodeLabel {
+            padding: 14px !important;
+            font-size: 28px !important;
+            font-weight: 700 !important;
+        }
+
+        .mermaid .label-container {
+            font-size: 28px !important;
+        }
     </style>
 </head>
 <body>
@@ -1255,13 +1291,21 @@
         mermaid.initialize({ 
             startOnLoad: true,
             theme: 'default',
+            themeVariables: {
+                fontSize: '28px',
+                fontFamily: 'Segoe UI, system-ui, sans-serif',
+                primaryTextColor: '#000',
+                lineColor: '#333',
+                primaryBorderColor: '#333'
+            },
             flowchart: {
                 useMaxWidth: true,
                 htmlLabels: true,
                 curve: 'basis',
-                padding: 15,
-                nodeSpacing: 50,
-                rankSpacing: 80
+                padding: 30,
+                nodeSpacing: 80,
+                rankSpacing: 110,
+                diagramPadding: 25
             }
         });
     </script>
