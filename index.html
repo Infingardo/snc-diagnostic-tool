@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧠 Assistente Diagnostico SNC - WHO CNS5 Enhanced</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>CNS Tumor Diagnostic Tool - WHO CNS5 2021</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --bg-dark: #0f172a;
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
         }
@@ -24,64 +25,54 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            color: white;
-            line-height: 1.6;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #fff;
         }
 
-        .header {
-            text-align: center;
-            padding: 2rem 0;
+        .container {
+            max-width: 1400px;
+        }
+
+        .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .tab-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            margin-bottom: 2rem;
         }
 
         .tabs {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
-            border-bottom: 2px solid var(--glass-border);
+            flex-wrap: wrap;
         }
 
-        .tab-button {
-            padding: 1rem 2rem;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: #fff;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
             transition: all 0.3s;
-            border-bottom: 3px solid transparent;
+            font-weight: 500;
         }
 
-        .tab-button.active {
-            color: white;
-            border-bottom-color: #667eea;
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
-        .tab-button:hover {
-            color: white;
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--success), #059669);
+            border-color: var(--success);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
 
         .tab-content {
@@ -90,172 +81,150 @@
 
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary-gradient);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-group label {
+        .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #cbd5e1;
-            font-weight: 500;
+            font-weight: 600;
+            color: #e2e8f0;
         }
 
-        .input-field {
+        .form-control, .form-select {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #fff;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .input-field:focus {
+        .form-control:focus, .form-select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-select option {
+            background: var(--dark);
+            color: #fff;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--success), #059669);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
 
         .btn-secondary {
-            background: var(--secondary-gradient);
+            background: rgba(255, 255, 255, 0.2);
             color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .btn-success {
-            background: var(--success-color);
+            background: linear-gradient(135deg, var(--success), #059669);
             color: white;
         }
 
-        .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success-color);
-            color: #a7f3d0;
-        }
-
-        .alert-warning {
-            background: rgba(245, 158, 11, 0.2);
-            border: 1px solid var(--warning-color);
-            color: #fcd34d;
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--error-color);
-            color: #fca5a5;
-        }
-
-        .alert-info {
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid #3b82f6;
-            color: #93c5fd;
-        }
-
-        .diagnosis-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
-            border: 2px solid var(--success-color);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .confidence-meter {
-            width: 100%;
-            height: 20px;
+        .result-card {
             background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .diagnosis-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1rem;
             border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .confidence-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
             overflow: hidden;
-            margin: 1rem 0;
+            margin-top: 0.5rem;
         }
 
         .confidence-fill {
             height: 100%;
-            background: var(--primary-gradient);
+            background: linear-gradient(90deg, var(--success), #34d399);
+            transition: width 0.5s ease;
+        }
+
+        .alert {
+            padding: 1rem;
             border-radius: 10px;
-            transition: width 1s ease;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
         }
 
         .report-output {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
             padding: 1.5rem;
+            border-radius: 10px;
             font-family: 'Courier New', monospace;
             white-space: pre-wrap;
-            font-size: 0.9rem;
-            line-height: 1.8;
+            margin-top: 1rem;
+            color: #e2e8f0;
             max-height: 600px;
             overflow-y: auto;
         }
@@ -263,458 +232,340 @@
         .copy-buttons {
             display: flex;
             gap: 1rem;
-            justify-content: flex-end;
             margin-bottom: 1rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
         }
 
-        .ki67-interpretation {
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .case-button {
-            padding: 1rem;
-            border: 1px solid #667eea;
-            border-radius: 8px;
-            background: rgba(102, 126, 234, 0.1);
-            color: white;
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
         }
 
-        .case-button:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-2px);
+        h1, h2, h3 {
+            margin-bottom: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            .tabs {
-                flex-direction: column;
-            }
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-grade-2 {
+            background: #3b82f6;
+        }
+
+        .badge-grade-3 {
+            background: #f59e0b;
+        }
+
+        .badge-grade-4 {
+            background: #ef4444;
+        }
+
+        .molecular-upgrade {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .molecular-upgrade strong {
+            color: #fca5a5;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1><i class="fas fa-brain"></i> Assistente Diagnostico SNC</h1>
-        <p>WHO CNS5 2021 • Database Diagnostico + Report Generator • Solo Uso Educativo</p>
-    </header>
+    <div class="container">
+        <div class="glass-card">
+            <h1><i class="fas fa-brain"></i> CNS Tumor Diagnostic Tool</h1>
+            <p style="opacity: 0.9;">WHO Classification of CNS Tumours, 5th Edition (2021)</p>
+        </div>
 
-    <div class="tab-container">
         <div class="tabs">
-            <button class="tab-button active" onclick="switchTab('database')">
+            <button class="tab-btn active" onclick="switchTab('database')">
                 <i class="fas fa-database"></i> Database Diagnostico
             </button>
-            <button class="tab-button" onclick="switchTab('report')">
+            <button class="tab-btn" onclick="switchTab('report')">
                 <i class="fas fa-file-medical"></i> Report Generator
             </button>
         </div>
 
-        <!-- TAB 1: Database Diagnostico -->
+        <!-- TAB 1: DATABASE DIAGNOSTICO -->
         <div id="database-tab" class="tab-content active">
-            <div class="container">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span><strong>Database Diagnostico:</strong> Inserisci i dati e il sistema trova automaticamente le entità diagnostiche compatibili dal database WHO CNS5 (20 entità: gliomi, ependimomi, meningiomi).</span>
+            <div class="glass-card">
+                <h2>Database Diagnostico</h2>
+                
+                <div class="form-group">
+                    <label>Caso Clinico</label>
+                    <select id="caseSelect" class="form-select" onchange="loadCase()">
+                        <option value="">-- Seleziona un caso --</option>
+                        <option value="case1">Caso 1: Donna 35 anni, IDH+, ATRX-, 1p/19q-</option>
+                        <option value="case2">Caso 2: Uomo 55 anni, IDH+, ATRX+, 1p/19q codel</option>
+                        <option value="case3">Caso 3: Uomo 68 anni, IDH-, EGFR amp</option>
+                    </select>
                 </div>
 
-                <div class="grid">
-                    <!-- Clinical Context -->
-                    <div class="card">
-                        <h3><i class="fas fa-user-md"></i> Contesto Clinico</h3>
-                        
-                        <div class="input-group">
-                            <label for="dbAge">Età Paziente (anni):</label>
-                            <input type="number" id="dbAge" class="input-field" placeholder="Inserire età">
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbSite">Sede Anatomica:</label>
-                            <select id="dbSite" class="input-field">
-                                <option value="frontal_lobe">Lobo Frontale</option>
-                                <option value="temporal_lobe">Lobo Temporale</option>
-                                <option value="parietal_lobe">Lobo Parietale</option>
-                                <option value="hemispheric">Emisferico</option>
-                                <option value="cerebellum">Cervelletto</option>
-                                <option value="brainstem">Tronco Encefalico</option>
-                                <option value="fourth_ventricle">IV Ventricolo</option>
-                                <option value="lateral_ventricle">Ventricolo Laterale</option>
-                                <option value="spinal_cord">Midollo Spinale</option>
-                                <option value="convexity">Convessità</option>
-                                <option value="parasagittal">Parasagittale</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbPattern">Pattern Morfologico:</label>
-                            <select id="dbPattern" class="input-field">
-                                <option value="diffuse">Diffuso</option>
-                                <option value="circumscribed">Circoscritto</option>
-                                <option value="ependymal">Ependimale</option>
-                                <option value="meningothelial">Meningiomatoso</option>
-                            </select>
-                        </div>
-
-                        <div class="card" style="background: rgba(245, 158, 11, 0.1); margin-top: 1rem;">
-                            <h4>Criteri Morfologici</h4>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dbNecrosis" onchange="updateDbKi67()">
-                                <label for="dbNecrosis">Necrosi</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="dbMVP" onchange="updateDbKi67()">
-                                <label for="dbMVP">Proliferazione microvascolare</label>
-                            </div>
-                            <div class="input-group" style="margin-top: 0.5rem;">
-                                <label for="dbMitosis">Mitosi/10 HPF:</label>
-                                <input type="number" id="dbMitosis" class="input-field" placeholder="0-100" onchange="updateDbKi67()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- IHC -->
-                    <div class="card">
-                        <h3><i class="fas fa-flask"></i> Immunoistochimica</h3>
-                        
-                        <div class="input-group" style="background: rgba(102, 126, 234, 0.1); padding: 1rem; border-radius: 8px;">
-                            <label for="dbKi67"><strong>Ki-67 (%):</strong></label>
-                            <input type="number" id="dbKi67" class="input-field" placeholder="0-100" onchange="updateDbKi67()">
-                            <div id="dbKi67Interp" class="ki67-interpretation">
-                                Inserire valore per interpretazione
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbIDH1">IDH1 R132H:</label>
-                            <select id="dbIDH1" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Positivo</option>
-                                <option value="negative">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbATRX">ATRX:</label>
-                            <select id="dbATRX" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="loss">Perdita</option>
-                                <option value="retained">Conservato</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbGFAP">GFAP:</label>
-                            <select id="dbGFAP" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Positivo</option>
-                                <option value="negative">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbEMA">EMA:</label>
-                            <select id="dbEMA" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Positivo</option>
-                                <option value="negative">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbL1CAM">L1CAM:</label>
-                            <select id="dbL1CAM" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Positivo</option>
-                                <option value="negative">Negativo</option>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>IDH1/2 Status</label>
+                            <select id="idh" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="mutated">Mutato</option>
+                                <option value="wildtype">Wild-type</option>
                             </select>
                         </div>
                     </div>
-
-                    <!-- Molecular -->
-                    <div class="card">
-                        <h3><i class="fas fa-dna"></i> Biologia Molecolare</h3>
-                        
-                        <div class="input-group">
-                            <label for="dbIDHMut">Mutazione IDH1/2:</label>
-                            <select id="dbIDHMut" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Presente</option>
-                                <option value="negative">Assente</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="db1p19q">Codelezione 1p/19q:</label>
-                            <select id="db1p19q" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Presente</option>
-                                <option value="negative">Assente</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbEGFR">EGFR amplification:</label>
-                            <select id="dbEGFR" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Presente</option>
-                                <option value="negative">Assente</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbCDKN2A">CDKN2A/B:</label>
-                            <select id="dbCDKN2A" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Homozygous deletion</option>
-                                <option value="negative">Normale</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbZFTA">ZFTA Fusion:</label>
-                            <select id="dbZFTA" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Presente</option>
-                                <option value="negative">Assente</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="dbYAP1">YAP1 Fusion:</label>
-                            <select id="dbYAP1" class="input-field">
-                                <option value="">Non testato</option>
-                                <option value="positive">Presente</option>
-                                <option value="negative">Assente</option>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>ATRX Status</label>
+                            <select id="atrx" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="loss">Loss</option>
+                                <option value="preserved">Preserved</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Cases -->
-                <div class="card" style="margin-bottom: 2rem;">
-                    <h3><i class="fas fa-book-medical"></i> Casi Clinici Pre-Caricati</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                        <button onclick="loadDbCase1()" class="case-button">
-                            <strong>Caso 1: GBM Classico</strong><br>
-                            <small style="color: #94a3b8;">68 anni, IDH-wt, EGFR+</small>
-                        </button>
-                        <button onclick="loadDbCase2()" class="case-button">
-                            <strong>Caso 2: Oligodendroglioma</strong><br>
-                            <small style="color: #94a3b8;">42 anni, 1p/19q codeleto</small>
-                        </button>
-                        <button onclick="loadDbCase3()" class="case-button">
-                            <strong>Caso 3: Ependimoma PFA</strong><br>
-                            <small style="color: #94a3b8;">4 anni, L1CAM+</small>
-                        </button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>1p/19q Status</label>
+                            <select id="codeletion" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="codeleted">Co-deleto</option>
+                                <option value="intact">Intatto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>TP53 Status</label>
+                            <select id="tp53" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="mutated">Mutato</option>
+                                <option value="wildtype">Wild-type</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin: 2rem 0;">
-                    <button class="btn btn-primary" onclick="runDatabaseAnalysis()" style="font-size: 1.2rem; padding: 1rem 2rem;">
-                        <i class="fas fa-search"></i> Analizza con Database
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearDbFields()" style="margin-left: 1rem;">
-                        <i class="fas fa-eraser"></i> Reset
-                    </button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>TERT Promoter</label>
+                            <select id="tert" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="mutated">Mutato</option>
+                                <option value="wildtype">Wild-type</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>EGFR Status</label>
+                            <select id="egfr" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="amplified">Amplificato</option>
+                                <option value="normal">Normale</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div id="dbResults"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>CDKN2A/B Status</label>
+                            <select id="cdkn2ab" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="homozygous_deletion">Homozygous deletion</option>
+                                <option value="heterozygous">Heterozygous loss</option>
+                                <option value="normal">Normale</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Morfologia iniziale</label>
+                            <select id="morphology" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="grade2">Grade 2 (bassa cellularità)</option>
+                                <option value="grade3">Grade 3 (mitosi, atipia)</option>
+                                <option value="grade4">Grade 4 (necrosi/proliferazione)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="analyzeTumor()">
+                    <i class="fas fa-microscope"></i> Analizza
+                </button>
+
+                <div id="results"></div>
             </div>
         </div>
 
-        <!-- TAB 2: Report Generator -->
+        <!-- TAB 2: REPORT GENERATOR -->
         <div id="report-tab" class="tab-content">
-            <div class="container">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    <span><strong>Report Generator:</strong> Tool per generare report anatomopatologici formattati. Gestisce diagnosi pending e alert biologici - ideale per casi incompleti o con dati IHC negativi che richiedono sequenziamento.</span>
+            <div class="glass-card">
+                <h2>Report Generator</h2>
+                <p style="opacity: 0.8; margin-bottom: 2rem;">
+                    Genera report diagnostici strutturati con logica WHO CNS5 e validazione molecolare
+                </p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Dati Paziente</label>
+                            <input type="text" id="rptPatient" class="form-control" placeholder="Nome/ID paziente">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Età</label>
+                            <input type="number" id="rptAge" class="form-control" placeholder="es. 45">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Sesso</label>
+                            <select id="rptSex" class="form-select">
+                                <option value="M">M</option>
+                                <option value="F">F</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid">
-                    <div class="card">
-                        <h3><i class="fas fa-user-md"></i> Dati Clinici</h3>
-                        
-                        <div class="input-group">
-                            <label for="reportAge">Età (anni):</label>
-                            <input type="number" id="reportAge" class="input-field" placeholder="Es: 45">
-                        </div>
+                <div class="form-group">
+                    <label>Sede anatomica</label>
+                    <input type="text" id="rptLocation" class="form-control" placeholder="es. Lobo frontale sx">
+                </div>
 
-                        <div class="input-group">
-                            <label for="reportSite">Sede anatomica:</label>
-                            <input type="text" id="reportSite" class="input-field" placeholder="Es: lobo temporale sx">
-                        </div>
+                <div class="form-group">
+                    <label>Morfologia microscopica</label>
+                    <textarea id="rptMorphology" class="form-control" rows="3" placeholder="Descrizione istologica (cellularità, atipia, mitosi, necrosi...)"></textarea>
+                </div>
 
-                        <div class="input-group">
-                            <label for="reportPattern">Pattern:</label>
-                            <select id="reportPattern" class="input-field">
-                                <option value="diffuso">Diffuso</option>
-                                <option value="circoscritto">Circoscritto</option>
+                <h3 style="margin-top: 2rem;">Profilo Molecolare</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>IDH1 R132H (IHC)</label>
+                            <select id="rptIDH" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="positive">Positivo</option>
+                                <option value="negative">Negativo</option>
+                                <option value="pending">Pending sequenziamento</option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-microscope"></i> Morfologia</h3>
-                        
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="reportNecrosis">
-                            <label for="reportNecrosis">Necrosi</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="reportMVP">
-                            <label for="reportMVP">Proliferazione microvascolare</label>
-                        </div>
-
-                        <div class="input-group" style="margin-top: 1rem;">
-                            <label for="reportKi67">Ki-67 (%):</label>
-                            <input type="number" id="reportKi67" class="input-field" placeholder="0-100">
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3><i class="fas fa-flask"></i> Immunoistochimica</h3>
-                        
-                        <div class="input-group">
-                            <label for="reportGFAP">GFAP:</label>
-                            <select id="reportGFAP" class="input-field">
-                                <option value="">Non eseguito</option>
-                                <option value="positivo">Positivo</option>
-                                <option value="negativo">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="reportOLIG2">OLIG2:</label>
-                            <select id="reportOLIG2" class="input-field">
-                                <option value="">Non eseguito</option>
-                                <option value="positivo">Positivo</option>
-                                <option value="negativo">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="reportIDH1"><strong>IDH1 R132H:</strong></label>
-                            <select id="reportIDH1" class="input-field">
-                                <option value="">Non eseguito</option>
-                                <option value="positivo">Positivo</option>
-                                <option value="negativo">Negativo</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="reportATRX">ATRX:</label>
-                            <select id="reportATRX" class="input-field">
-                                <option value="pending">Non eseguito</option>
-                                <option value="conservato">Conservato</option>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>ATRX (IHC)</label>
+                            <select id="rptATRX" class="form-select">
+                                <option value="">-- Seleziona --</option>
                                 <option value="loss">Loss</option>
+                                <option value="preserved">Preserved</option>
                             </select>
                         </div>
                     </div>
+                </div>
 
-                    <div class="card">
-                        <h3><i class="fas fa-dna"></i> Biologia Molecolare</h3>
-                        
-                        <div class="input-group">
-                            <label for="reportIDHSeq"><strong>IDH sequencing:</strong></label>
-                            <select id="reportIDHSeq" class="input-field">
-                                <option value="pending">Pending/Non eseguito</option>
-                                <option value="mutato">Mutato</option>
-                                <option value="wild_type">Wild-type</option>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>1p/19q (FISH)</label>
+                            <select id="rpt1p19q" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="codeleted">Co-deleto</option>
+                                <option value="intact">Intatto</option>
                             </select>
                         </div>
-
-                        <div class="input-group">
-                            <label for="report1p19q">1p/19q codelezione:</label>
-                            <select id="report1p19q" class="input-field">
-                                <option value="pending">Pending</option>
-                                <option value="presente">Presente</option>
-                                <option value="assente">Assente</option>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>TP53 Status</label>
+                            <select id="rptTP53" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="mutated">Mutato</option>
+                                <option value="wildtype">Wild-type</option>
                             </select>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="input-group">
-                            <label for="reportTERT">TERT promoter:</label>
-                            <select id="reportTERT" class="input-field">
-                                <option value="pending">Pending</option>
-                                <option value="mutato">Mutato</option>
-                                <option value="wild_type">Wild-type</option>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>TERT Promoter</label>
+                            <select id="rptTERT" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="mutated">Mutato (C228T/C250T)</option>
+                                <option value="wildtype">Wild-type</option>
                             </select>
                         </div>
-
-                        <div class="input-group">
-                            <label for="reportEGFR">EGFR:</label>
-                            <select id="reportEGFR" class="input-field">
-                                <option value="pending">Pending</option>
-                                <option value="amplificato">Amplificato</option>
-                                <option value="normale">Normale</option>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>EGFR</label>
+                            <select id="rptEGFR" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="amplified">Amplificato</option>
+                                <option value="normal">Normale</option>
                             </select>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="input-group">
-                            <label for="reportChr7_10">Chr +7/-10:</label>
-                            <select id="reportChr7_10" class="input-field">
-                                <option value="pending">Pending</option>
-                                <option value="presente">Presente</option>
-                                <option value="assente">Assente</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group">
-                            <label for="reportCDKN2A">CDKN2A/B:</label>
-                            <select id="reportCDKN2A" class="input-field">
-                                <option value="pending">Pending</option>
-                                <option value="normale">Normale</option>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>CDKN2A/B Status</label>
+                            <select id="rptCDKN2AB" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="homozygous_deletion">Homozygous deletion</option>
                                 <option value="heterozygous">Heterozygous loss</option>
-                                <option value="homozygous">Homozygous deletion</option>
+                                <option value="normal">Normale</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Grading morfologico</label>
+                            <select id="rptGrade" class="form-select">
+                                <option value="">-- Seleziona --</option>
+                                <option value="grade2">Grade 2</option>
+                                <option value="grade3">Grade 3</option>
+                                <option value="grade4">Grade 4</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin: 2rem 0;">
-                    <button class="btn btn-primary" onclick="generateIntelligentReport()" style="font-size: 1.2rem; padding: 1rem 2rem;">
-                        <i class="fas fa-file-medical-alt"></i> Genera Report
-                    </button>
-                    <button class="btn btn-secondary" onclick="clearReportFields()" style="margin-left: 1rem;">
-                        <i class="fas fa-eraser"></i> Reset
-                    </button>
-                </div>
+                <button class="btn btn-primary" onclick="generateReport()" style="margin-top: 1rem;">
+                    <i class="fas fa-file-alt"></i> Genera Report
+                </button>
 
-                <div id="reportOutput" style="display: none;">
-                    <div class="card">
-                        <h3><i class="fas fa-file-alt"></i> Report Generato</h3>
-                        
-                        <div class="copy-buttons">
-                            <button class="btn btn-success" onclick="copyReport()">
-                                <i class="fas fa-copy"></i> Copia
-                            </button>
-                            <button class="btn btn-secondary" onclick="downloadReport()">
-                                <i class="fas fa-download"></i> Download
-                            </button>
-                        </div>
-
-                        <div id="reportText" class="report-output"></div>
-                    </div>
-
-                    <div id="reportAlerts"></div>
-                </div>
+                <div id="reportResults" style="margin-top: 2rem;"></div>
             </div>
         </div>
     </div>
@@ -726,691 +577,447 @@
         </button>
     </div>
 
-    <footer style="background: var(--glass-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); margin-top: 3rem; padding: 2rem; text-align: center;">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <h3 style="color: #94a3b8; margin-bottom: 1rem;">📚 Riferimenti</h3>
-            <p style="color: #cbd5e1; margin-bottom: 1rem;">
-                <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8328013/" target="_blank" style="color: #60a5fa; text-decoration: none;">
-                    <i class="fas fa-external-link-alt"></i> WHO CNS5 2021 - Louis DN et al.
-                </a>
-            </p>
-            <div style="color: #64748b; font-size: 0.9rem;">
-                ✅ WHO CNS5 2021 Compliant | ⚠️ Solo Uso Educativo | 🚫 Non per Decisioni Cliniche
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // Database entities (20 totali)
-        const diagnosticEntities = {
-            "Astrocytoma_IDH_mutant": {
+        // Database dei tumori
+        const tumorDatabase = [
+            {
                 name: "Astrocitoma, IDH-mutato",
-                baseGrade: "WHO Grade II",
-                pattern: "diffuse",
-                agePreference: ["adult"],
-                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe", "hemispheric"],
-                requiredIHC: { "IDH1_R132H": "positive" },
-                expectedIHC: { "ATRX": "loss", "GFAP": "positive" },
-                requiredMol: { "IDH1_2_mutation": "positive" },
-                prognosis: { medianOS: 78, fiveYearSurvival: 0.65 }
+                idh: "mutated",
+                atrx: "loss",
+                codeletion: "intact",
+                tp53: "mutated",
+                tert: "wildtype",
+                grade: "2-4",
+                confidence: 95,
+                notes: "Grade dipende da morfologia e CDKN2A/B"
             },
-            "Oligodendroglioma_IDH_mutant": {
-                name: "Oligodendroglioma, IDH-mutato e 1p/19q-codeleto",
-                baseGrade: "WHO Grade II",
-                pattern: "diffuse",
-                agePreference: ["adult"],
-                sitePreference: ["frontal_lobe", "temporal_lobe", "hemispheric"],
-                requiredIHC: { "IDH1_R132H": "positive" },
-                expectedIHC: { "ATRX": "retained" },
-                requiredMol: { "IDH1_2_mutation": "positive", "1p19q_codeletion": "positive" },
-                prognosis: { medianOS: 144, fiveYearSurvival: 0.85 }
+            {
+                name: "Oligodendroglioma, IDH-mutato, 1p/19q-codeleto",
+                idh: "mutated",
+                atrx: "preserved",
+                codeletion: "codeleted",
+                tert: "mutated",
+                grade: "2-3",
+                confidence: 98,
+                notes: "Necessaria co-delezione 1p/19q"
             },
-            "Glioblastoma_IDH_wildtype": {
+            {
                 name: "Glioblastoma, IDH-wildtype",
-                baseGrade: "WHO Grade IV",
-                pattern: "diffuse",
-                agePreference: ["adult", "elderly"],
-                sitePreference: ["frontal_lobe", "temporal_lobe", "parietal_lobe", "hemispheric"],
-                requiredIHC: { "IDH1_R132H": "negative" },
-                expectedIHC: { "GFAP": "positive" },
-                requiredMol: { "IDH1_2_mutation": "negative" },
-                expectedMol: { "EGFR_amplification": "positive" },
-                prognosis: { medianOS: 15, fiveYearSurvival: 0.05 }
+                idh: "wildtype",
+                tert: "mutated",
+                egfr: "amplified",
+                grade: "4",
+                confidence: 90,
+                notes: "Pattern molecolare tipico GBM"
             },
-            "Pilocytic_astrocytoma": {
-                name: "Astrocitoma pilocitico",
-                baseGrade: "WHO Grade I",
-                pattern: "circumscribed",
-                agePreference: ["pediatric"],
-                sitePreference: ["cerebellum", "brainstem"],
-                expectedIHC: { "GFAP": "positive" },
-                prognosis: { medianOS: 240, fiveYearSurvival: 0.95 }
+            {
+                name: "Glioma diffuso, IDH-wildtype, NOS",
+                idh: "wildtype",
+                tert: "wildtype",
+                egfr: "normal",
+                codeletion: "intact",
+                grade: "2-3",
+                confidence: 60,
+                notes: "Categoria di esclusione - considerare methylation profiling"
+            }
+        ];
+
+        // Casi clinici predefiniti
+        const clinicalCases = {
+            case1: {
+                idh: "mutated",
+                atrx: "loss",
+                codeletion: "intact",
+                tp53: "mutated",
+                tert: "wildtype",
+                egfr: "normal",
+                cdkn2ab: "normal",
+                morphology: "grade3"
             },
-            "Ependymoma_ZFTA": {
-                name: "Ependimoma, sovratentoriale ZFTA fusion-positive",
-                baseGrade: "WHO Grade II-III",
-                pattern: "ependymal",
-                agePreference: ["pediatric"],
-                sitePreference: ["hemispheric", "lateral_ventricle"],
-                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
-                requiredMol: { "ZFTA_fusion": "positive" },
-                prognosis: { medianOS: 84, fiveYearSurvival: 0.70 }
+            case2: {
+                idh: "mutated",
+                atrx: "preserved",
+                codeletion: "codeleted",
+                tp53: "wildtype",
+                tert: "mutated",
+                egfr: "normal",
+                cdkn2ab: "heterozygous",
+                morphology: "grade2"
             },
-            "Ependymoma_YAP1": {
-                name: "Ependimoma, sovratentoriale YAP1 fusion-positive",
-                baseGrade: "WHO Grade II",
-                pattern: "ependymal",
-                agePreference: ["pediatric"],
-                sitePreference: ["hemispheric", "lateral_ventricle"],
-                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
-                requiredMol: { "YAP1_fusion": "positive" },
-                prognosis: { medianOS: 120, fiveYearSurvival: 0.85 }
-            },
-            "Ependymoma_PFA": {
-                name: "Ependimoma, posterior fossa group A (PFA)",
-                baseGrade: "WHO Grade II-III",
-                pattern: "ependymal",
-                agePreference: ["pediatric"],
-                sitePreference: ["fourth_ventricle", "cerebellum"],
-                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "positive" },
-                prognosis: { medianOS: 48, fiveYearSurvival: 0.45 }
-            },
-            "Ependymoma_PFB": {
-                name: "Ependimoma, posterior fossa group B (PFB)",
-                baseGrade: "WHO Grade II",
-                pattern: "ependymal",
-                agePreference: ["adult"],
-                sitePreference: ["fourth_ventricle", "cerebellum"],
-                expectedIHC: { "GFAP": "positive", "EMA": "positive", "L1CAM": "negative" },
-                prognosis: { medianOS: 120, fiveYearSurvival: 0.80 }
-            },
-            "Meningioma_Grade1": {
-                name: "Meningioma (Grade I)",
-                baseGrade: "WHO Grade I",
-                pattern: "meningothelial",
-                agePreference: ["adult", "elderly"],
-                sitePreference: ["convexity", "parasagittal"],
-                expectedIHC: { "EMA": "positive" },
-                prognosis: { medianOS: 240, fiveYearSurvival: 0.93 }
-            },
-            "Meningioma_Atypical": {
-                name: "Meningioma atipico (Grade II)",
-                baseGrade: "WHO Grade II",
-                pattern: "meningothelial",
-                agePreference: ["adult", "elderly"],
-                sitePreference: ["convexity", "parasagittal"],
-                expectedIHC: { "EMA": "positive" },
-                prognosis: { medianOS: 144, fiveYearSurvival: 0.75 }
+            case3: {
+                idh: "wildtype",
+                atrx: "preserved",
+                codeletion: "intact",
+                tp53: "wildtype",
+                tert: "mutated",
+                egfr: "amplified",
+                cdkn2ab: "normal",
+                morphology: "grade4"
             }
         };
 
-        // Tab switching
         function switchTab(tab) {
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             
-            if (tab === 'database') {
-                document.querySelector('[onclick="switchTab(\'database\')"]').classList.add('active');
-                document.getElementById('database-tab').classList.add('active');
-            } else {
-                document.querySelector('[onclick="switchTab(\'report\')"]').classList.add('active');
-                document.getElementById('report-tab').classList.add('active');
-            }
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        // DATABASE TAB FUNCTIONS
-        function updateDbKi67() {
-            const ki67 = parseInt(document.getElementById('dbKi67').value) || 0;
-            const interp = document.getElementById('dbKi67Interp');
-            
-            if (ki67 === 0) {
-                interp.textContent = 'Inserire valore per interpretazione';
-                interp.style.color = '#cbd5e1';
-            } else if (ki67 < 5) {
-                interp.textContent = `Bassa proliferazione (<5%) - WHO Grade I-II`;
-                interp.style.color = '#10b981';
-            } else if (ki67 <= 20) {
-                interp.textContent = `Proliferazione intermedia (5-20%) - WHO Grade II-III`;
-                interp.style.color = '#f59e0b';
-            } else {
-                interp.textContent = `Alta proliferazione (>20%) - WHO Grade III-IV`;
-                interp.style.color = '#ef4444';
-            }
+        function loadCase() {
+            const caseId = document.getElementById('caseSelect').value;
+            if (!caseId) return;
+
+            const caseData = clinicalCases[caseId];
+            Object.keys(caseData).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) element.value = caseData[key];
+            });
+
+            analyzeTumor();
         }
 
-        function getAgeGroup(age) {
-            if (!age) return null;
-            return age < 18 ? 'pediatric' : age > 65 ? 'elderly' : 'adult';
-        }
-
-        function calculateDbGrade(entity, data) {
-            let grade = 2;
-            
-            // CDKN2A/B homozygous deletion
-            if (data.cdkn2a === 'positive' && entity.pattern === 'diffuse') {
-                return "WHO Grade IV";
-            }
-            
-            // IDH-wildtype diffuse glioma
-            if (data.idh_mut === 'negative' && entity.pattern === 'diffuse') {
-                return "WHO Grade IV";
-            }
-            
-            // Morphology
-            if (data.necrosis) grade = Math.max(grade, 4);
-            if (data.mvp) grade = Math.max(grade, 3);
-            
-            // Ki-67
-            if (data.ki67 > 30) grade = Math.max(grade, 4);
-            else if (data.ki67 > 15) grade = Math.max(grade, 3);
-            
-            // Meningioma mitosis
-            if (entity.pattern === 'meningothelial' && data.mitosis >= 4) {
-                return data.mitosis >= 20 ? "WHO Grade III" : "WHO Grade II";
-            }
-            
-            return entity.baseGrade || `WHO Grade ${grade === 1 ? 'I' : grade === 2 ? 'II' : grade === 3 ? 'III' : 'IV'}`;
-        }
-
-        function runDatabaseAnalysis() {
-            const age = parseInt(document.getElementById('dbAge').value);
+        function analyzeTumor() {
             const data = {
-                age: getAgeGroup(age),
-                site: document.getElementById('dbSite').value,
-                pattern: document.getElementById('dbPattern').value,
-                necrosis: document.getElementById('dbNecrosis').checked,
-                mvp: document.getElementById('dbMVP').checked,
-                ki67: parseInt(document.getElementById('dbKi67').value) || 0,
-                mitosis: parseInt(document.getElementById('dbMitosis').value) || 0,
-                idh1: document.getElementById('dbIDH1').value,
-                atrx: document.getElementById('dbATRX').value,
-                gfap: document.getElementById('dbGFAP').value,
-                ema: document.getElementById('dbEMA').value,
-                l1cam: document.getElementById('dbL1CAM').value,
-                idh_mut: document.getElementById('dbIDHMut').value,
-                codeletion: document.getElementById('db1p19q').value,
-                egfr: document.getElementById('dbEGFR').value,
-                cdkn2a: document.getElementById('dbCDKN2A').value,
-                zfta: document.getElementById('dbZFTA').value,
-                yap1: document.getElementById('dbYAP1').value
+                idh: document.getElementById('idh').value,
+                atrx: document.getElementById('atrx').value,
+                codeletion: document.getElementById('codeletion').value,
+                tp53: document.getElementById('tp53').value,
+                tert: document.getElementById('tert').value,
+                egfr: document.getElementById('egfr').value,
+                cdkn2ab: document.getElementById('cdkn2ab').value,
+                morphology: document.getElementById('morphology').value
             };
 
-            // Filter candidates
-            const candidates = [];
-            for (const [key, entity] of Object.entries(diagnosticEntities)) {
-                if (data.pattern !== entity.pattern) continue;
-                if (data.age && entity.agePreference && !entity.agePreference.includes(data.age)) continue;
-                if (entity.sitePreference && !entity.sitePreference.includes(data.site)) continue;
-                
-                // IDH exclusions
-                if (key === 'Glioblastoma_IDH_wildtype' && (data.idh1 === 'positive' || data.idh_mut === 'positive')) continue;
-                if ((key === 'Astrocytoma_IDH_mutant' || key === 'Oligodendroglioma_IDH_mutant') && 
-                    (data.idh1 === 'negative' || data.idh_mut === 'negative')) continue;
-                
-                candidates.push({ key, entity });
+            // Validazioni biologiche
+            const alerts = [];
+            
+            // Check impossibile: ATRX loss + 1p/19q codel
+            if (data.atrx === 'loss' && data.codeletion === 'codeleted') {
+                alerts.push({
+                    type: 'danger',
+                    message: '⚠️ IMPOSSIBILE BIOLOGICAMENTE: ATRX loss e 1p/19q co-delezione sono mutuamente esclusivi. Ripetere test (probabile artefatto tecnico).'
+                });
             }
 
-            if (candidates.length === 0) {
-                document.getElementById('dbResults').innerHTML = 
-                    '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> Nessuna entità trovata per questi parametri.</div>';
-                return;
-            }
-
-            // Calculate confidence
-            const results = candidates.map(({ key, entity }) => {
+            // Matching con database
+            const matches = tumorDatabase.filter(tumor => {
                 let score = 0;
-                let maxScore = 0;
+                let total = 0;
 
-                // Check required/expected markers
-                for (const [marker, expected] of Object.entries(entity.requiredIHC || {})) {
-                    maxScore += 1;
-                    const dataKey = marker === 'IDH1_R132H' ? 'idh1' : marker.toLowerCase();
-                    if (data[dataKey] === expected) score += 1;
+                if (tumor.idh) {
+                    total++;
+                    if (tumor.idh === data.idh) score++;
+                }
+                if (tumor.atrx) {
+                    total++;
+                    if (tumor.atrx === data.atrx) score++;
+                }
+                if (tumor.codeletion) {
+                    total++;
+                    if (tumor.codeletion === data.codeletion) score++;
+                }
+                if (tumor.tert) {
+                    total++;
+                    if (tumor.tert === data.tert) score++;
+                }
+                if (tumor.egfr) {
+                    total++;
+                    if (tumor.egfr === data.egfr) score++;
                 }
 
-                for (const [marker, expected] of Object.entries(entity.requiredMol || {})) {
-                    maxScore += 1;
-                    if (marker === 'IDH1_2_mutation' && data.idh_mut === expected) score += 1;
-                    if (marker === '1p19q_codeletion' && data.codeletion === expected) score += 1;
-                    if (marker === 'ZFTA_fusion' && data.zfta === expected) score += 1;
-                    if (marker === 'YAP1_fusion' && data.yap1 === expected) score += 1;
-                }
+                tumor.matchScore = total > 0 ? (score / total) * 100 : 0;
+                return tumor.matchScore > 50;
+            }).sort((a, b) => b.matchScore - a.matchScore);
 
-                const confidence = maxScore > 0 ? score / maxScore : 0.5;
-                const grade = calculateDbGrade(entity, data);
+            // Calcola grading finale con CDKN2A/B
+            let finalGrade = data.morphology;
+            let molecularUpgrade = false;
+            
+            if (data.cdkn2ab === 'homozygous_deletion' && 
+                data.idh === 'mutated' && 
+                (data.morphology === 'grade2' || data.morphology === 'grade3')) {
+                finalGrade = 'grade4';
+                molecularUpgrade = true;
+                alerts.push({
+                    type: 'warning',
+                    message: '⬆️ MOLECULAR UPGRADE: CDKN2A/B homozygous deletion → CNS WHO Grade 4 (anche con morfologia grade 2-3)'
+                });
+            }
 
-                return { entity: { ...entity, grade }, confidence };
-            }).sort((a, b) => b.confidence - a.confidence);
+            displayResults(matches, alerts, finalGrade, molecularUpgrade);
+        }
 
-            // Display
-            const top = results[0];
-            let html = `
-                <div class="diagnosis-card">
-                    <h2><i class="fas fa-bullseye"></i> Diagnosi Primaria</h2>
-                    <h3>${top.entity.name}</h3>
-                    <p><strong>Grado:</strong> ${top.entity.grade}</p>
-                    <p><strong>Confidenza:</strong> ${(top.confidence * 100).toFixed(1)}%</p>
-                    <div class="confidence-meter">
-                        <div class="confidence-fill" style="width: ${top.confidence * 100}%"></div>
-                    </div>
-            `;
+        function displayResults(matches, alerts, finalGrade, molecularUpgrade) {
+            let html = '';
 
-            if (top.entity.prognosis) {
+            // Alerts
+            if (alerts.length > 0) {
+                alerts.forEach(alert => {
+                    html += `
+                        <div class="alert alert-${alert.type}">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>${alert.message}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            // Results
+            if (matches.length > 0) {
+                html += '<div class="result-card">';
+                html += '<h3>Diagnosi compatibili:</h3>';
+                
+                matches.forEach(match => {
+                    const gradeClass = finalGrade.replace('grade', 'badge-grade-');
+                    html += `
+                        <div class="diagnosis-item">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong>${match.name}</strong>
+                                    <span class="badge ${gradeClass}" style="margin-left: 0.5rem;">
+                                        Grade ${finalGrade.replace('grade', '')}
+                                    </span>
+                                    ${molecularUpgrade ? '<span class="badge" style="background: #ef4444; margin-left: 0.5rem;">Molecular upgrade</span>' : ''}
+                                </div>
+                                <div style="text-align: right; opacity: 0.8;">
+                                    Match: ${match.matchScore.toFixed(0)}%
+                                </div>
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${match.matchScore}%"></div>
+                            </div>
+                            <p style="margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem;">
+                                ${match.notes}
+                            </p>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            } else {
                 html += `
-                    <div class="alert alert-success">
-                        <i class="fas fa-chart-line"></i>
-                        <span><strong>Prognosi:</strong> Sopravvivenza mediana ${top.entity.prognosis.medianOS} mesi, 
-                        5-year survival ${(top.entity.prognosis.fiveYearSurvival * 100).toFixed(0)}%</span>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <div>Nessuna corrispondenza nel database. Verifica i marker selezionati.</div>
                     </div>
                 `;
             }
 
-            html += '</div>';
-
-            if (results.length > 1) {
-                html += '<div class="card"><h3><i class="fas fa-list"></i> Diagnosi Differenziale</h3><table style="width:100%; border-collapse: collapse;">';
-                html += '<thead><tr style="border-bottom: 1px solid rgba(255,255,255,0.2);"><th style="padding:0.5rem; text-align:left;">Diagnosi</th><th style="padding:0.5rem; text-align:center;">Confidenza</th><th style="padding:0.5rem; text-align:center;">Grado</th></tr></thead><tbody>';
-                
-                results.forEach(r => {
-                    html += `<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <td style="padding:0.5rem;">${r.entity.name}</td>
-                        <td style="padding:0.5rem; text-align:center;">${(r.confidence * 100).toFixed(1)}%</td>
-                        <td style="padding:0.5rem; text-align:center;">${r.entity.grade}</td>
-                    </tr>`;
-                });
-                
-                html += '</tbody></table></div>';
-            }
-
-            document.getElementById('dbResults').innerHTML = html;
-            document.getElementById('dbResults').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('results').innerHTML = html;
         }
 
-        function clearDbFields() {
-            document.getElementById('dbAge').value = '';
-            document.getElementById('dbSite').value = 'frontal_lobe';
-            document.getElementById('dbPattern').value = 'diffuse';
-            document.getElementById('dbNecrosis').checked = false;
-            document.getElementById('dbMVP').checked = false;
-            document.getElementById('dbKi67').value = '';
-            document.getElementById('dbMitosis').value = '';
-            document.getElementById('dbIDH1').value = '';
-            document.getElementById('dbATRX').value = '';
-            document.getElementById('dbGFAP').value = '';
-            document.getElementById('dbEMA').value = '';
-            document.getElementById('dbL1CAM').value = '';
-            document.getElementById('dbIDHMut').value = '';
-            document.getElementById('db1p19q').value = '';
-            document.getElementById('dbEGFR').value = '';
-            document.getElementById('dbCDKN2A').value = '';
-            document.getElementById('dbZFTA').value = '';
-            document.getElementById('dbYAP1').value = '';
-            document.getElementById('dbResults').innerHTML = '';
-            updateDbKi67();
-        }
-
-        function loadDbCase1() {
-            clearDbFields();
-            document.getElementById('dbAge').value = '68';
-            document.getElementById('dbSite').value = 'temporal_lobe';
-            document.getElementById('dbPattern').value = 'diffuse';
-            document.getElementById('dbNecrosis').checked = true;
-            document.getElementById('dbMVP').checked = true;
-            document.getElementById('dbKi67').value = '35';
-            document.getElementById('dbIDH1').value = 'negative';
-            document.getElementById('dbGFAP').value = 'positive';
-            document.getElementById('dbIDHMut').value = 'negative';
-            document.getElementById('dbEGFR').value = 'positive';
-            updateDbKi67();
-            alert('Caso 1 caricato: GBM classico (68 anni, IDH-wt, EGFR+).\nClick "Analizza con Database".');
-        }
-
-        function loadDbCase2() {
-            clearDbFields();
-            document.getElementById('dbAge').value = '42';
-            document.getElementById('dbSite').value = 'frontal_lobe';
-            document.getElementById('dbPattern').value = 'diffuse';
-            document.getElementById('dbKi67').value = '8';
-            document.getElementById('dbIDH1').value = 'positive';
-            document.getElementById('dbATRX').value = 'retained';
-            document.getElementById('dbGFAP').value = 'positive';
-            document.getElementById('dbIDHMut').value = 'positive';
-            document.getElementById('db1p19q').value = 'positive';
-            updateDbKi67();
-            alert('Caso 2 caricato: Oligodendroglioma (42 anni, IDH+, 1p/19q codeleto).\nClick "Analizza con Database".');
-        }
-
-        function loadDbCase3() {
-            clearDbFields();
-            document.getElementById('dbAge').value = '4';
-            document.getElementById('dbSite').value = 'fourth_ventricle';
-            document.getElementById('dbPattern').value = 'ependymal';
-            document.getElementById('dbKi67').value = '15';
-            document.getElementById('dbGFAP').value = 'positive';
-            document.getElementById('dbEMA').value = 'positive';
-            document.getElementById('dbL1CAM').value = 'positive';
-            updateDbKi67();
-            alert('Caso 3 caricato: Ependimoma PFA (4 anni, L1CAM+, prognosi sfavorevole).\nClick "Analizza con Database".');
-        }
-
-        // REPORT GENERATOR FUNCTIONS
-        function generateIntelligentReport() {
+        function generateReport() {
             const data = {
-                age: document.getElementById('reportAge').value,
-                site: document.getElementById('reportSite').value,
-                pattern: document.getElementById('reportPattern').value,
-                necrosis: document.getElementById('reportNecrosis').checked,
-                mvp: document.getElementById('reportMVP').checked,
-                ki67: document.getElementById('reportKi67').value,
-                gfap: document.getElementById('reportGFAP').value,
-                olig2: document.getElementById('reportOLIG2').value,
-                idh1_ihc: document.getElementById('reportIDH1').value,
-                atrx: document.getElementById('reportATRX').value,
-                idh_seq: document.getElementById('reportIDHSeq').value,
-                codeletion: document.getElementById('report1p19q').value,
-                tert: document.getElementById('reportTERT').value,
-                egfr: document.getElementById('reportEGFR').value,
-                chr7_10: document.getElementById('reportChr7_10').value,
-                cdkn2a: document.getElementById('reportCDKN2A').value
+                patient: document.getElementById('rptPatient').value,
+                age: document.getElementById('rptAge').value,
+                sex: document.getElementById('rptSex').value,
+                location: document.getElementById('rptLocation').value,
+                morphology: document.getElementById('rptMorphology').value,
+                idh: document.getElementById('rptIDH').value,
+                atrx: document.getElementById('rptATRX').value,
+                codeletion: document.getElementById('rpt1p19q').value,
+                tp53: document.getElementById('rptTP53').value,
+                tert: document.getElementById('rptTERT').value,
+                egfr: document.getElementById('rptEGFR').value,
+                cdkn2ab: document.getElementById('rptCDKN2AB').value,
+                grade: document.getElementById('rptGrade').value
             };
 
-            const report = analyzeCase(data);
-            displayReport(report);
-        }
-
-        function analyzeCase(data) {
             const alerts = [];
-            const nextSteps = [];
-            let diagnosis = '';
-            let grading = '';
-            let confidence = 'alta';
+            
+            // Validazione biologica
+            if (data.atrx === 'loss' && data.codeletion === 'codeleted') {
+                alerts.push({
+                    type: 'danger',
+                    message: '🚨 ARTEFATTO TECNICO PROBABILE: ATRX loss + 1p/19q co-del sono incompatibili. Ripetere FISH.'
+                });
+            }
 
-            const ki67Val = parseFloat(data.ki67) || 0;
-            const age = parseInt(data.age) || 0;
+            // Alert IDH negativo
+            if (data.idh === 'negative') {
+                alerts.push({
+                    type: 'warning',
+                    message: '⚠️ IDH1 R132H negativo: considerare sequenziamento IDH1/2 (10% mutazioni non-R132H)'
+                });
+            }
 
-            // SCENARIO 1: IDH1 R132H IHC negativo
-            if (data.idh1_ihc === 'negativo') {
-                if (data.idh_seq === 'pending') {
-                    confidence = 'sospesa';
-                    diagnosis = 'Glioma diffuso, classificazione molecolare pending';
-                    
+            // Logica diagnostica
+            let diagnosis = "Diagnosi pending (profilo molecolare incompleto)";
+            let finalGrade = data.grade;
+            let molecularUpgrade = false;
+
+            if (data.idh === 'positive' && data.atrx === 'loss' && data.codeletion === 'intact') {
+                diagnosis = "Astrocitoma, IDH-mutato";
+                
+                // Check CDKN2A/B upgrade
+                if (data.cdkn2ab === 'homozygous_deletion' && 
+                    (data.grade === 'grade2' || data.grade === 'grade3')) {
+                    finalGrade = 'grade4';
+                    molecularUpgrade = true;
                     alerts.push({
                         type: 'warning',
-                        text: 'IDH1 R132H IHC negativo ≠ IDH wild-type definitivo. ~5-10% degli IDH-mutati sono R132H-negativi (R132C/G/S, o IDH2 R172K).'
+                        message: '⬆️ MOLECULAR UPGRADE: CDKN2A/B homozygous deletion → CNS WHO Grade 4'
                     });
-
-                    nextSteps.push('Sequenziamento IDH1 (esone 4, codon 132) e IDH2 (esone 4, codon 172)');
-
-                    if (!data.necrosis && !data.mvp && ki67Val < 20) {
-                        alerts.push({
-                            type: 'info',
-                            text: `Morfologia compatibile con grado 2-3. Ki-67 ${data.ki67}% è borderline per grado 2 ma non sufficiente da solo per upgrade a grado 4.`
-                        });
-                    }
-
-                } else if (data.idh_seq === 'mutato') {
-                    diagnosis = 'Astrocitoma, IDH-mutato';
-                    
-                    if (data.cdkn2a === 'homozygous') {
-                        grading = 'WHO Grade 4 (CDKN2A/B homozygous deletion)';
-                        alerts.push({
-                            type: 'error',
-                            text: 'CDKN2A/B homozygous deletion → upgrade automatico a Grade 4 secondo WHO CNS5, indipendentemente da morfologia.'
-                        });
-                    } else if (data.necrosis || data.mvp) {
-                        grading = 'WHO Grade 4';
-                    } else if (ki67Val >= 15) {
-                        grading = 'WHO Grade 3 (verosimile)';
-                    } else {
-                        grading = 'WHO Grade 2';
-                    }
-
-                    if (data.atrx === 'pending') {
-                        nextSteps.push('Valutare ATRX (loss atteso in >90% degli astrocitomi IDH-mutati)');
-                    }
-                    
-                    if (data.codeletion === 'presente') {
-                        alerts.push({
-                            type: 'error',
-                            text: '⚠️ INCOERENZA BIOLOGICA: IDH-mutato + 1p/19q codelezione + ATRX loss è impossibile. Rivedere risultati.'
-                        });
-                    }
-
-                } else if (data.idh_seq === 'wild_type') {
-                    const hasGBMmarkers = 
-                        data.tert === 'mutato' || 
-                        data.egfr === 'amplificato' || 
-                        data.chr7_10 === 'presente';
-
-                    if (data.necrosis || data.mvp || hasGBMmarkers) {
-                        diagnosis = 'Glioblastoma, IDH wild-type';
-                        grading = 'WHO Grade 4';
-                        
-                        if (!data.necrosis && !data.mvp && hasGBMmarkers) {
-                            alerts.push({
-                                type: 'info',
-                                text: 'Glioblastoma diagnosticato su base molecolare (TERT/EGFR/+7-10) in assenza di morfologia classica da GBM.'
-                            });
-                        }
-                    } else {
-                        diagnosis = 'Glioma diffuso, IDH wild-type, NOS';
-                        grading = 'WHO Grade 2-3 (da definire)';
-                        confidence = 'bassa';
-                        
-                        alerts.push({
-                            type: 'warning',
-                            text: 'IDH wild-type senza markers tipici da GBM. Diagnosi di ESCLUSIONE, richiede attenzione.'
-                        });
-
-                        if (age < 40) {
-                            alerts.push({
-                                type: 'error',
-                                text: 'Paziente giovane (<40 anni) con IDH-wt: considerare gliomi pediatric-type in adulto.'
-                            });
-                            nextSteps.push('Valutare H3 G34R/V (se sede emisferica)');
-                            nextSteps.push('Valutare BRAF V600E, FGFR alterations');
-                        }
-
-                        nextSteps.push('Methylation profiling (Heidelberg classifier) fortemente raccomandato');
-                    }
-
-                    if (diagnosis.includes('Glioblastoma')) {
-                        nextSteps.push('MGMT promoter methylation (valore prognostico per beneficio da temozolomide)');
-                    }
                 }
-            }
-
-            // SCENARIO 2: IDH1 R132H positivo
-            else if (data.idh1_ihc === 'positivo') {
-                if (data.codeletion === 'presente') {
-                    diagnosis = 'Oligodendroglioma, IDH-mutato e 1p/19q-codeleto';
-                    
-                    if (data.atrx === 'loss') {
-                        alerts.push({
-                            type: 'error',
-                            text: '⚠️ INCOERENZA: 1p/19q codelezione e ATRX loss sono MUTUALMENTE ESCLUSIVI. Rivedere risultati.'
-                        });
-                    }
-
-                    grading = (ki67Val < 10 && !data.necrosis && !data.mvp) ? 'WHO Grade 2' : 'WHO Grade 3';
-
-                } else {
-                    diagnosis = 'Astrocitoma, IDH-mutato';
-                    
-                    if (data.cdkn2a === 'homozygous') {
-                        grading = 'WHO Grade 4 (CDKN2A/B homozygous deletion)';
-                    } else if (data.necrosis || data.mvp) {
-                        grading = 'WHO Grade 4';
-                    } else if (ki67Val >= 15) {
-                        grading = 'WHO Grade 3 (verosimile)';
-                    } else {
-                        grading = 'WHO Grade 2';
-                    }
+            } else if (data.idh === 'positive' && data.atrx === 'preserved' && data.codeletion === 'codeleted') {
+                diagnosis = "Oligodendroglioma, IDH-mutato, 1p/19q-codeleto";
+                
+                // Check CDKN2A/B upgrade per oligodendroglioma
+                if (data.cdkn2ab === 'homozygous_deletion' && data.grade === 'grade3') {
+                    finalGrade = 'grade4';
+                    molecularUpgrade = true;
+                    alerts.push({
+                        type: 'warning',
+                        message: '⬆️ MOLECULAR UPGRADE: CDKN2A/B homozygous deletion → CNS WHO Grade 4'
+                    });
                 }
+            } else if (data.idh === 'negative' && data.tert === 'mutated' && data.egfr === 'amplified') {
+                diagnosis = "Glioblastoma, IDH-wildtype (profilo molecolare GBM)";
+                finalGrade = 'grade4';
+            } else if (data.idh === 'negative') {
+                diagnosis = "Glioma diffuso, IDH-wildtype, NOS (considerare methylation profiling)";
             }
 
-            // Ki-67 alerts
-            if (ki67Val > 10 && ki67Val < 20 && !data.necrosis && !data.mvp) {
-                alerts.push({
-                    type: 'info',
-                    text: `Ki-67 ${data.ki67}% è in range borderline. In contesto IDH-mutato suggerisce grado 3, in IDH-wt senza morfologia aggressiva è incongruente.`
-                });
+            // Genera report formattato
+            let report = `REPORT ANATOMIA PATOLOGICA\n`;
+            report += `═══════════════════════════════════════\n\n`;
+            report += `PAZIENTE: ${data.patient || 'N/A'}\n`;
+            report += `ETÀ: ${data.age || 'N/A'} anni | SESSO: ${data.sex}\n`;
+            report += `SEDE: ${data.location || 'N/A'}\n\n`;
+            report += `MORFOLOGIA\n`;
+            report += `─────────────────────────────────────\n`;
+            report += `${data.morphology || 'N/A'}\n\n`;
+            report += `PROFILO MOLECOLARE\n`;
+            report += `─────────────────────────────────────\n`;
+            report += `IDH1 R132H (IHC): ${formatStatus(data.idh)}\n`;
+            report += `ATRX (IHC): ${formatStatus(data.atrx)}\n`;
+            report += `1p/19q (FISH): ${formatStatus(data.codeletion)}\n`;
+            report += `TP53: ${formatStatus(data.tp53)}\n`;
+            report += `TERT promoter: ${formatStatus(data.tert)}\n`;
+            report += `EGFR: ${formatStatus(data.egfr)}\n`;
+            report += `CDKN2A/B: ${formatStatus(data.cdkn2ab)}\n\n`;
+            
+            if (molecularUpgrade) {
+                report += `⚠️ MOLECULAR GRADING\n`;
+                report += `─────────────────────────────────────\n`;
+                report += `Grading morfologico: ${data.grade.replace('grade', 'Grade ')}\n`;
+                report += `CDKN2A/B homozygous deletion presente\n`;
+                report += `→ UPGRADE A CNS WHO GRADE 4\n\n`;
             }
+            
+            report += `DIAGNOSI\n`;
+            report += `─────────────────────────────────────\n`;
+            report += `${diagnosis}\n`;
+            report += `CNS WHO Grade ${finalGrade.replace('grade', '')}\n`;
+            if (molecularUpgrade) {
+                report += `(molecular upgrade da CDKN2A/B deletion)\n`;
+            }
+            report += `\n═══════════════════════════════════════\n`;
+            report += `Riferimenti: WHO Classification CNS5 (2021)\n`;
 
-            return { diagnosis, grading, confidence, alerts, nextSteps, data };
+            displayReport(report, alerts, molecularUpgrade);
         }
 
-        function displayReport(report) {
-            const { diagnosis, grading, alerts, nextSteps, data, confidence } = report;
-            
-            let text = '';
-            
-            if (data.age) text += `Età: ${data.age} anni\n`;
-            if (data.site) text += `Sede: ${data.site}\n`;
-            text += '\n---\n\n';
+        function formatStatus(value) {
+            const statusMap = {
+                'positive': 'POSITIVO',
+                'negative': 'NEGATIVO',
+                'pending': 'PENDING',
+                'loss': 'LOSS',
+                'preserved': 'PRESERVED',
+                'codeleted': 'CO-DELETO',
+                'intact': 'INTATTO',
+                'mutated': 'MUTATO',
+                'wildtype': 'WILD-TYPE',
+                'amplified': 'AMPLIFICATO',
+                'normal': 'NORMALE',
+                'homozygous_deletion': 'HOMOZYGOUS DELETION',
+                'heterozygous': 'HETEROZYGOUS LOSS'
+            };
+            return statusMap[value] || value || 'N/A';
+        }
 
-            text += '## MORFOLOGIA\n\n';
-            text += `Pattern di crescita: ${data.pattern}\n`;
-            text += `Necrosi: ${data.necrosis ? 'Presente' : 'Assente'}\n`;
-            text += `Proliferazione microvascolare: ${data.mvp ? 'Presente' : 'Assente'}\n`;
-            if (data.ki67) text += `Ki-67: ${data.ki67}%\n`;
-            text += '\n';
-
-            text += '## IMMUNOISTOCHIMICA\n\n';
-            if (data.gfap) text += `GFAP: ${data.gfap}\n`;
-            if (data.olig2) text += `OLIG2: ${data.olig2}\n`;
-            if (data.idh1_ihc) text += `IDH1 R132H: ${data.idh1_ihc}\n`;
-            if (data.atrx && data.atrx !== 'pending') text += `ATRX: ${data.atrx}\n`;
-            text += '\n';
-
-            const hasMolecular = data.idh_seq !== 'pending' || data.codeletion !== 'pending' || 
-                                 data.tert !== 'pending' || data.egfr !== 'pending' || 
-                                 data.chr7_10 !== 'pending' || data.cdkn2a !== 'pending';
-
-            if (hasMolecular) {
-                text += '## BIOLOGIA MOLECOLARE\n\n';
-                if (data.idh_seq !== 'pending') text += `IDH sequencing: ${data.idh_seq}\n`;
-                if (data.codeletion !== 'pending') text += `1p/19q codelezione: ${data.codeletion}\n`;
-                if (data.tert !== 'pending') text += `TERT promoter: ${data.tert}\n`;
-                if (data.egfr !== 'pending') text += `EGFR: ${data.egfr}\n`;
-                if (data.chr7_10 !== 'pending') text += `Chr +7/-10: ${data.chr7_10}\n`;
-                if (data.cdkn2a !== 'pending') text += `CDKN2A/B: ${data.cdkn2a}\n`;
-                text += '\n';
-            }
-
-            text += '## DIAGNOSI\n\n';
-            text += `**${diagnosis}**\n`;
-            if (grading) text += `**${grading}**\n`;
-            text += `\n(Classificazione WHO CNS5 2021)\n`;
-            if (confidence !== 'alta') {
-                text += `\n⚠️ Confidenza diagnostica: ${confidence}\n`;
-            }
-            text += '\n';
+        function displayReport(report, alerts, molecularUpgrade) {
+            let html = '';
 
             if (alerts.length > 0) {
-                text += '## NOTE CLINICHE\n\n';
+                html += '<div id="reportAlerts">';
                 alerts.forEach(alert => {
-                    const icon = alert.type === 'error' ? '🔴' : alert.type === 'warning' ? '⚠️' : 'ℹ️';
-                    text += `${icon} ${alert.text}\n\n`;
+                    html += `
+                        <div class="alert alert-${alert.type}">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>${alert.message}</div>
+                        </div>
+                    `;
                 });
+                html += '</div>';
             }
 
-            if (nextSteps.length > 0) {
-                text += '## TEST MOLECOLARI SUGGERITI\n\n';
-                nextSteps.forEach((step, i) => {
-                    text += `${i + 1}. ${step}\n`;
-                });
-                text += '\n';
+            if (molecularUpgrade) {
+                html += `
+                    <div class="molecular-upgrade">
+                        <h4><i class="fas fa-arrow-up"></i> Molecular Upgrade Applicato</h4>
+                        <p><strong>CDKN2A/B homozygous deletion</strong> determina upgrade a CNS WHO Grade 4 indipendentemente dalla morfologia</p>
+                        <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 0.5rem;">
+                            Riferimento: Louis DN et al. The 2021 WHO Classification of Tumors of the Central Nervous System
+                        </p>
+                    </div>
+                `;
             }
 
-            text += '---\n\n';
-            text += '📚 Riferimento: WHO Classification of Tumours - CNS (5th edition, 2021)\n';
+            html += '<div class="result-card">';
+            html += '<h3>Report Generato</h3>';
+            html += '<div class="copy-buttons">';
+            html += '<button class="btn btn-success" onclick="copyReport()"><i class="fas fa-copy"></i> Copia</button>';
+            html += '<button class="btn btn-secondary" onclick="downloadReport()"><i class="fas fa-download"></i> Download</button>';
+            html += '</div>';
+            html += `<div id="reportText" class="report-output">${report}</div>`;
+            html += '</div>';
 
-            document.getElementById('reportText').textContent = text;
-            document.getElementById('reportOutput').style.display = 'block';
-
-            let alertsHTML = '';
-            alerts.forEach(alert => {
-                const alertClass = alert.type === 'error' ? 'alert-error' :
-                                  alert.type === 'warning' ? 'alert-warning' :
-                                  alert.type === 'info' ? 'alert-info' : 'alert-success';
-                alertsHTML += `<div class="alert ${alertClass}">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>${alert.text}</span>
-                </div>`;
-            });
-            document.getElementById('reportAlerts').innerHTML = alertsHTML;
-
-            document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('reportResults').innerHTML = html;
         }
 
         function copyReport() {
             const text = document.getElementById('reportText').textContent;
             navigator.clipboard.writeText(text).then(() => {
-                const btn = event.target.closest('button');
-                const originalHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-check"></i> Copiato!';
-                setTimeout(() => {
-                    btn.innerHTML = originalHTML;
-                }, 2000);
+                alert('Report copiato negli appunti!');
             });
         }
 
         function downloadReport() {
             const text = document.getElementById('reportText').textContent;
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const date = new Date().toISOString().split('T')[0];
-            a.download = `report_glioma_${date}.txt`;
-            document.body.appendChild(a);
+            a.download = 'report_glioma.txt';
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        function clearReportFields() {
-            document.getElementById('reportAge').value = '';
-            document.getElementById('reportSite').value = '';
-            document.getElementById('reportPattern').value = 'diffuso';
-            document.getElementById('reportNecrosis').checked = false;
-            document.getElementById('reportMVP').checked = false;
-            document.getElementById('reportKi67').value = '';
-            document.getElementById('reportGFAP').value = '';
-            document.getElementById('reportOLIG2').value = '';
-            document.getElementById('reportIDH1').value = '';
-            document.getElementById('reportATRX').value = 'pending';
-            document.getElementById('reportIDHSeq').value = 'pending';
-            document.getElementById('report1p19q').value = 'pending';
-            document.getElementById('reportTERT').value = 'pending';
-            document.getElementById('reportEGFR').value = 'pending';
-            document.getElementById('reportChr7_10').value = 'pending';
-            document.getElementById('reportCDKN2A').value = 'pending';
-            
-            document.getElementById('reportOutput').style.display = 'none';
-        }
-
         function loadReportExample() {
-            clearReportFields();
-            
-            // Your email case
-            document.getElementById('reportAge').value = '45';
-            document.getElementById('reportSite').value = 'lobo temporale';
-            document.getElementById('reportPattern').value = 'diffuso';
-            document.getElementById('reportNecrosis').checked = false;
-            document.getElementById('reportMVP').checked = false;
-            document.getElementById('reportKi67').value = '15';
-            
-            document.getElementById('reportGFAP').value = 'positivo';
-            document.getElementById('reportOLIG2').value = 'positivo';
-            document.getElementById('reportIDH1').value = 'negativo';
-            document.getElementById('reportIDHSeq').value = 'pending';
-            
+            // Caso dalla tua mail
+            document.getElementById('rptPatient').value = 'Caso clinico email';
+            document.getElementById('rptAge').value = '52';
+            document.getElementById('rptSex').value = 'F';
+            document.getElementById('rptLocation').value = 'Lobo frontale destro';
+            document.getElementById('rptMorphology').value = 'Proliferazione gliale con cellularità aumentata, nucli allungati, mitosi occasionali. Assenza di necrosi.';
+            document.getElementById('rptIDH').value = 'negative';
+            document.getElementById('rptATRX').value = 'preserved';
+            document.getElementById('rpt1p19q').value = 'intact';
+            document.getElementById('rptTP53').value = 'wildtype';
+            document.getElementById('rptTERT').value = 'mutated';
+            document.getElementById('rptEGFR').value = 'normal';
+            document.getElementById('rptCDKN2AB').value = 'normal';
+            document.getElementById('rptGrade').value = 'grade3';
+
             switchTab('report');
-            
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+
             setTimeout(() => {
-                alert('Caso dalla tua mail caricato!\n\n• Morfologia: diffuso, G2-3, no necrosi/MVP\n• Ki-67: 15%\n• GFAP e OLIG2: positivi\n• IDH1 R132H IHC: NEGATIVO\n• Sequenziamento: PENDING\n\nClick "Genera Report" per vedere l\'output formattato tipo la tua mail.');
+                document.getElementById('rptPatient').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 300);
         }
     </script>
