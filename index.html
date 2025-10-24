@@ -374,7 +374,22 @@
                 </div>
                 
                 <div class="field-group">
-                    <label for="celltype">Tipo cellulare prevalente</label>
+                    <label>Architettura/Pattern</label>
+                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="hist-perivascular">
+                            <label for="hist-perivascular" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Iperplasia perivascolare</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="hist-necrosis">
+                            <label for="hist-necrosis" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Necrosi</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="hist-microvascular">
+                            <label for="hist-microvascular" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Proliferazione microvascolare</label>
+                        </div>
+                    </div>
+                </div>
                     <select id="celltype">
                         <option value="">-- Seleziona --</option>
                         <option value="astrocytic">Astrocitario</option>
@@ -680,7 +695,12 @@
                 p53: document.getElementById('p53').value,
                 olig2: document.getElementById('olig2').value,
                 ki67: parseInt(document.getElementById('ki67').value) || 0,
-                'idh-ngs': document.getElementById('idh-ngs').value
+                'idh-ngs': document.getElementById('idh-ngs').value,
+                histFeatures: {
+                    perivascular: document.getElementById('hist-perivascular').checked,
+                    necrosis: document.getElementById('hist-necrosis').checked,
+                    microvascular: document.getElementById('hist-microvascular').checked
+                }
             };
             
             const diagnosis = computeDiagnosis(data);
@@ -747,12 +767,24 @@
                 diagnosis.entity = 'Glioma diffuso, IDH-mutated (classificazione incompleta)';
                 diagnosis.confidence = 'Basso - manca 1p/19q';
                 
-                if (data.mitosis < 4) {
-                    diagnosis.grade = 'WHO Grade 2 (probabile)';
-                } else if (data.mitosis <= 9) {
-                    diagnosis.grade = 'WHO Grade 3 (probabile)';
-                } else {
+                // GRADING: mitosi + features istologiche + cellularità
+                let hasAggressive = data.histFeatures && (data.histFeatures.necrosis || data.histFeatures.microvascular);
+                let hasNecrosisMicro = data.histFeatures && data.histFeatures.necrosis && data.histFeatures.microvascular;
+                let highCellularity = data.cellularity === 'high';
+                
+                // Gr. 4: necrosi + proliferazione microvascolare (anche con mitosi basse)
+                if (hasNecrosisMicro) {
                     diagnosis.grade = 'WHO Grade 4';
+                }
+                // Gr. 3: mitosi 4-9, oppure cellularità alta, oppure features aggressive (necrosi o microvascolare)
+                else if (data.mitosis >= 4 && data.mitosis <= 9 || hasAggressive || highCellularity) {
+                    diagnosis.grade = 'WHO Grade 3';
+                }
+                // Gr. 2: mitosi <4 + cellularità bassa/moderata + nessun pattern aggressivo
+                else if (data.mitosis < 4 && !hasAggressive && data.cellularity !== 'high') {
+                    diagnosis.grade = 'WHO Grade 2';
+                } else {
+                    diagnosis.grade = 'WHO Grade 2-3';
                 }
                 
                 if (data.atrx === 'lost') {
@@ -808,7 +840,13 @@
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; width: 50%;"><strong>Età / Sede</strong></td><td>' + (data.age || 'N/A') + ' a. / ' + data.location + '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>GFAP / S100 / OLIG2</strong></td><td>' + data.gfap + ' / ' + data.s100 + ' / ' + data.olig2 + '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>IDH (IHC+NGS)</strong></td><td>' + data.idh + ' / ' + data['idh-ngs'] + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>ATRX / p53</strong></td><td>' + data.atrx + ' / ' + data.p53 + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; width: 50%;"><strong>ATRX / p53</strong></td><td>' + data.atrx + ' / ' + data.p53 + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Pattern istologico</strong></td><td>' + 
+                (data.histFeatures.necrosis ? '✓ Necrosi' : '') + 
+                (data.histFeatures.microvascular ? ' | ✓ Prolif. microvasc.' : '') + 
+                (data.histFeatures.perivascular ? ' | ✓ Ipepl. perivascolare' : '') + 
+                (!data.histFeatures.necrosis && !data.histFeatures.microvascular && !data.histFeatures.perivascular ? 'Nessuno' : '') + 
+                '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Mitosi / Ki-67</strong></td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
             html += '<tr style="border-top: 2px solid #ddd; background: #fff9e6;"><td style="padding: 8px;"><strong>MGMT</strong></td><td><strong>' + (document.getElementById('mgmt').value || 'Non eseguito') + '</strong></td></tr>';
             html += '</table>';
