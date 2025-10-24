@@ -711,45 +711,49 @@
             let alerts = [];
             let diagnosis = {};
             
-            // CHECK: IDH NGS NON DISPONIBILE - DIAGNOSI PROVVISORIA
-            if (data['idh-ngs'] === '' || data['idh-ngs'] === 'not-done') {
-                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IN ATTESA REFERTO MOLECOLARE IDH1/2'});
-                alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati NGS IDH1/2'});
+            // Determina IDH status: priorità a NGS, ma se non disponibile usa IHC
+            let idhStatus = data['idh-ngs'];
+            let idhFromIHC = false;
+            let idhPendingRare = false;
+            
+            if (!idhStatus || idhStatus === '' || idhStatus === 'not-done') {
+                // IDH NGS non disponibile, usa IHC
+                if (data.idh === 'positive') {
+                    idhStatus = 'mut-from-ihc';
+                    idhFromIHC = true;
+                    // IDH IHC positivo = diagnosi già fatta, non serve NGS per IDH
+                } else if (data.idh === 'negative') {
+                    idhStatus = 'wildtype-from-ihc';
+                    idhFromIHC = true;
+                    idhPendingRare = true; // Bisogna fare NGS per escludere rare
+                }
+            }
+            
+            // CHECK: IDH status ancora non disponibile - DIAGNOSI PROVVISORIA
+            if (!idhStatus || idhStatus === '' || idhStatus === 'not-done') {
+                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IN ATTESA IDH STATUS (IHC e/o NGS)'});
+                alerts.push({type: 'warning', msg: '⚠ IDH IHC e NGS sono FONDAMENTALI per classificazione WHO'});
                 
                 diagnosis.provisional = true;
-                diagnosis.entity = 'Glioma diffuso (tipo da determinare - in attesa NGS)';
-                
-                // Grading provvisorio da istologia
-                if (data.mitosis < 4) {
-                    diagnosis.grade = 'WHO Grade 2 (provvisorio)';
-                    diagnosis.entity = 'Glioma diffuso basso-grado (in attesa NGS per sottotipo)';
-                } else if (data.mitosis <= 9) {
-                    diagnosis.grade = 'WHO Grade 3 (provvisorio)';
-                    diagnosis.entity = 'Glioma diffuso WHO Grade 3 (in attesa NGS per sottotipo)';
-                } else {
-                    diagnosis.grade = 'WHO Grade 4 (provvisorio)';
-                    if (data.idh === 'negative') {
-                        diagnosis.entity = 'Glioblastoma IDH-wildtype (morfologia compatibile, in attesa conferma NGS)';
-                    } else {
-                        diagnosis.entity = 'Glioma diffuso grado alto (in attesa NGS IDH per classificazione)';
-                    }
-                }
-                
-                // Note IHC per orientamento
-                if (data.atrx === 'lost' && data.idh === 'positive') {
-                    alerts.push({type: 'success', msg: '💡 IHC: ATRX loss + IDH1 pos → suggestivo astrocitoma IDH-mutato'});
-                } else if (data.atrx === 'retained' && data.olig2 === 'positive' && data.idh === 'positive') {
-                    alerts.push({type: 'success', msg: '💡 IHC: ATRX retained + OLIG2+ + IDH1 pos → suggestivo oligodendroglioma IDH-mutato'});
-                } else if (data.idh === 'negative') {
-                    alerts.push({type: 'success', msg: '💡 IHC: IDH1 negativo → suggestivo IDH-wildtype (richiedere NGS per rare mutazioni)'});
-                }
-                
-                diagnosis.confidence = 'PROVVISORIA - Pendente NGS IDH1/2';
+                diagnosis.entity = 'Glioma diffuso (tipo da determinare - in attesa IDH)';
+                diagnosis.grade = 'Grade indeterminato';
+                diagnosis.confidence = 'PROVVISORIA - Pendente IDH status';
                 diagnosis.alerts = alerts;
                 return diagnosis;
             }
             
-            // ALTRIMENTI, DIAGNOSI COMPLETA CON IDH DISPONIBILE
+            // Se IDH IHC positivo: diagnosi già fatta, non serve avvertimento su NGS IDH
+            if (idhFromIHC && data.idh === 'positive') {
+                alerts.push({type: 'success', msg: '✓ IDH1 R132H positivo all\'IHC: mutazione confermata. NGS IDH non necessario.'});
+            }
+            
+            // Se IDH IHC negativo: BISOGNA fare NGS per escludere rare mutazioni
+            if (idhPendingRare) {
+                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IN ATTESA NGS IDH PER ESCLUDERE MUTAZIONI RARE'});
+                alerts.push({type: 'warning', msg: '⚠ IDH1 R132H negativo: necessario NGS per confermare se è veramente wildtype o mutato (rare: IDH2, IDH1 non-R132H)'});
+                alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati NGS IDH1/2'});
+            }
+            
             alerts.push({type: 'warning', msg: '⚠ NOTA: Pannello NGS attuale limita la classificazione. Da gennaio 2026 disponibili TERT e TP53.'});
             
             // PEDIATRIC
@@ -763,7 +767,7 @@
             }
             
             // ADULT IDH-MUTATED
-            if (data['idh-ngs'] === 'mut-r132h' || data['idh-ngs'] === 'mut-other') {
+            if (idhStatus === 'mut-r132h' || idhStatus === 'mut-other' || idhStatus === 'mut-from-ihc') {
                 diagnosis.entity = 'Glioma diffuso, IDH-mutated (classificazione incompleta)';
                 diagnosis.confidence = 'Basso - manca 1p/19q';
                 
@@ -796,15 +800,15 @@
                 }
             }
             
-            // ADULT IDH-WILDTYPE
-            if (data['idh-ngs'] === 'wildtype' && data.age >= 18) {
+            // ADULT IDH-WILDTYPE (confermato da NGS)
+            if ((idhStatus === 'wildtype') && data.age >= 18) {
                 diagnosis.entity = 'Glioma diffuso, IDH-wildtype';
                 diagnosis.confidence = 'Basso senza marker molecolari completi';
                 
                 if (data.mitosis > 10) {
                     diagnosis.grade = 'WHO Grade 4 (Glioblastoma probabile)';
                     diagnosis.entity = 'Glioblastoma, IDH-wildtype (da morfologia)';
-                    alerts.push({type: 'success', msg: '✓ Mitosi elevate + IDH-wt: GBM probabile'});
+                    alerts.push({type: 'success', msg: '✓ Mitosi elevate + IDH-wt confermato NGS: GBM probabile'});
                 } else {
                     diagnosis.grade = 'Grade 2-3 (incerto senza marker molecolari)';
                     alerts.push({type: 'warning', msg: '⚠ IDH-wt a basso grado: richiedere methylation profiling'});
