@@ -780,7 +780,13 @@
                 if (excludesOligo) {
                     alerts.push({type: 'success', msg: '✓ Oligodendroglioma escluso (OLIG2 negativo/ATRX lost)'});
                 }
-                alerts.push({type: 'warning', msg: '⚠ Necessario: NGS IDH1/2 per escludere mutazioni rare + Methylation profiling per conferma molecolare'});
+                
+                // Impatto diagnostico di NGS
+                alerts.push({type: 'warning', msg: '🧬 <strong>NGS IDH1/2 - Interpretazione dei risultati:</strong>'});
+                alerts.push({type: 'warning', msg: '&nbsp;&nbsp;• Se <strong>CONFERMATO wildtype</strong>: ' + diffDiag});
+                alerts.push({type: 'warning', msg: '&nbsp;&nbsp;• Se <strong>MUTATO</strong> (rare: IDH2, IDH1 non-R132H): Reclassificazione a Astrocitoma IDH-mutato'});
+                
+                alerts.push({type: 'warning', msg: '⚠ Inoltre: Methylation profiling per conferma molecolare e potenziali subclassi'});
                 alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati'});
             }
             
