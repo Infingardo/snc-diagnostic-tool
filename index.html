@@ -377,10 +377,6 @@
                     <label>Architettura/Pattern</label>
                     <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <input type="checkbox" id="hist-perivascular">
-                            <label for="hist-perivascular" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Iperplasia perivascolare</label>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
                             <input type="checkbox" id="hist-necrosis">
                             <label for="hist-necrosis" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Necrosi</label>
                         </div>
@@ -697,7 +693,6 @@
                 ki67: parseInt(document.getElementById('ki67').value) || 0,
                 'idh-ngs': document.getElementById('idh-ngs').value,
                 histFeatures: {
-                    perivascular: document.getElementById('hist-perivascular').checked,
                     necrosis: document.getElementById('hist-necrosis').checked,
                     microvascular: document.getElementById('hist-microvascular').checked
                 }
@@ -749,9 +744,44 @@
             
             // Se IDH IHC negativo: BISOGNA fare NGS per escludere rare mutazioni
             if (idhPendingRare) {
-                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IN ATTESA NGS IDH PER ESCLUDERE MUTAZIONI RARE'});
-                alerts.push({type: 'warning', msg: '⚠ IDH1 R132H negativo: necessario NGS per confermare se è veramente wildtype o mutato (rare: IDH2, IDH1 non-R132H)'});
-                alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati NGS IDH1/2'});
+                // RAGIONAMENTO DIAGNOSTICO: analizza pattern istologico
+                let astrocyticPattern = data.celltype === 'astrocytic' || data.celltype === 'glioblastic' || data.celltype === 'mixed';
+                let oligoPattern = data.celltype === 'oligodendroglial';
+                let olig2Negative = data.olig2 === 'negative' || data.olig2 === '';
+                let atrxLost = data.atrx === 'lost';
+                let highMitosis = data.mitosis >= 10;
+                let hasNecrosisMicro = data.histFeatures && data.histFeatures.necrosis && data.histFeatures.microvascular;
+                let highCellularity = data.cellularity === 'high';
+                
+                // Escludi oligodendroglioma
+                let excludesOligo = olig2Negative || atrxLost;
+                
+                // Suggerisci diagnosi differenziale
+                let diffDiag = '';
+                if (astrocyticPattern && !oligoPattern) {
+                    if (highMitosis || hasNecrosisMicro) {
+                        diffDiag = 'Astrocitoma IDH-wildtype grado 3-4 versus Glioblastoma IDH-wildtype';
+                    } else if (data.mitosis >= 4) {
+                        diffDiag = 'Astrocitoma IDH-wildtype grado 3';
+                    } else {
+                        diffDiag = 'Astrocitoma IDH-wildtype grado 2-3 (basso grado anomalo)';
+                    }
+                } else if (oligoPattern && !olig2Negative) {
+                    diffDiag = 'Oligodendroglioma IDH-wildtype (entità rara, considerare methylation profiling)';
+                } else {
+                    diffDiag = 'Glioma diffuso IDH-wildtype (tipo da determinare)';
+                }
+                
+                diagnosis.entity = diffDiag;
+                diagnosis.confidence = 'Bassa - diagnosi differenziale, pendente NGS';
+                
+                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI DIFFERENZIALE - IN ATTESA NGS'});
+                alerts.push({type: 'warning', msg: '📊 Pattern istologico suggestivo di: <strong>' + diffDiag + '</strong>'});
+                if (excludesOligo) {
+                    alerts.push({type: 'success', msg: '✓ Oligodendroglioma escluso (OLIG2 negativo/ATRX lost)'});
+                }
+                alerts.push({type: 'warning', msg: '⚠ Necessario: NGS IDH1/2 per escludere mutazioni rare + Methylation profiling per conferma molecolare'});
+                alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati'});
             }
             
             alerts.push({type: 'warning', msg: '⚠ NOTA: Pannello NGS attuale limita la classificazione. Da gennaio 2026 disponibili TERT e TP53.'});
@@ -848,8 +878,7 @@
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Pattern istologico</strong></td><td>' + 
                 (data.histFeatures.necrosis ? '✓ Necrosi' : '') + 
                 (data.histFeatures.microvascular ? ' | ✓ Prolif. microvasc.' : '') + 
-                (data.histFeatures.perivascular ? ' | ✓ Ipepl. perivascolare' : '') + 
-                (!data.histFeatures.necrosis && !data.histFeatures.microvascular && !data.histFeatures.perivascular ? 'Nessuno' : '') + 
+                (!data.histFeatures.necrosis && !data.histFeatures.microvascular ? 'Nessuno' : '') + 
                 '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Mitosi / Ki-67</strong></td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
             html += '<tr style="border-top: 2px solid #ddd; background: #fff9e6;"><td style="padding: 8px;"><strong>MGMT</strong></td><td><strong>' + (document.getElementById('mgmt').value || 'Non eseguito') + '</strong></td></tr>';
