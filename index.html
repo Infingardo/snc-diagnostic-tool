@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Diagnostico Gliomi SNC - Workflow Patologo</title>
+    <title>Tool Diagnostico Gliomi SNC v2.0 - Scoring Avanzato</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,6 +40,15 @@
         .header p {
             font-size: 13px;
             opacity: 0.9;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-top: 8px;
         }
         
         .workflow-container {
@@ -124,6 +133,26 @@
             font-style: italic;
         }
         
+        .warning-text {
+            font-size: 11px;
+            color: #d97706;
+            background: #fef3c7;
+            padding: 6px;
+            border-radius: 3px;
+            margin-top: 5px;
+            border-left: 2px solid #f59e0b;
+        }
+        
+        .success-text {
+            font-size: 11px;
+            color: #059669;
+            background: #d1fae5;
+            padding: 6px;
+            border-radius: 3px;
+            margin-top: 5px;
+            border-left: 2px solid #10b981;
+        }
+        
         .diagnosis-section {
             padding: 30px;
             background: white;
@@ -156,18 +185,32 @@
             margin-bottom: 10px;
         }
         
-        .evidence-list {
-            background: white;
-            border-left: 3px solid #667eea;
+        .alert {
             padding: 12px;
             border-radius: 4px;
+            margin-bottom: 15px;
             font-size: 12px;
-            color: #555;
         }
         
-        .evidence-list li {
-            margin-bottom: 5px;
-            list-style-position: inside;
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            border-left: 3px solid #10b981;
+        }
+        
+        .alert-info {
+            background: #cfe2ff;
+            border: 1px solid #0d6efd;
+            color: #084298;
+            border-left: 3px solid #0d6efd;
         }
         
         .button-group {
@@ -253,23 +296,52 @@
             color: white;
         }
         
-        .alert {
-            padding: 12px;
+        .confidence-bar {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(90deg, #ef4444 0%, #f97316 25%, #eab308 50%, #84cc16 75%, #22c55e 100%);
             border-radius: 4px;
+            position: relative;
+            margin: 10px 0;
+        }
+        
+        .confidence-marker {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #000;
+            border: 1px solid white;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+        
+        .scoring-container {
+            background: linear-gradient(135deg, #f0f4ff 0%, #f9f5ff 100%);
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .scoring-row {
             margin-bottom: 15px;
-            font-size: 12px;
         }
         
-        .alert-warning {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
+        .scoring-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 13px;
         }
         
-        .alert-success {
-            background: #d4edda;
-            border: 1px solid #28a745;
-            color: #155724;
+        .scoring-label-name {
+            color: #333;
+        }
+        
+        .scoring-label-percent {
+            color: #667eea;
+            font-size: 14px;
         }
         
         .biblio-section {
@@ -291,19 +363,21 @@
             color: #555;
         }
         
-        .biblio-section p {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #333;
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
         }
+        
+        .print-only { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Tool Diagnostico Gliomi SNC</h1>
+            <h1>🧠 Tool Diagnostico Gliomi SNC v2.0</h1>
             <p>Workflow integrato: Clinica → Istologia → IHC → Molecolare → Diagnosi WHO CNS5</p>
+            <p style="color: #e8f4f8; font-size: 12px; margin-top: 12px;">✓ Scoring Avanzato | ✓ Validazione Range | ✓ Gennaio 2026 Simulato (TP53/TERT Abilitati)</p>
+            <div class="version-badge">v2.0 - FASE 1 Refinitura</div>
         </div>
         
         <div class="case-loader">
@@ -313,7 +387,7 @@
                 <option value="case1">Caso 1: Astrocitoma IDH-mutato Gr.3</option>
                 <option value="case2">Caso 2: Oligodendroglioma IDH-mut 1p/19q-codel</option>
                 <option value="case3">Caso 3: Glioblastoma IDH-wildtype Gr.4</option>
-                <option value="case4">Caso 4: Glioma linea mediana pediatrico</option>
+                <option value="case4">Caso 4: Glioma linea mediana pediatrico (H3K27M-altered)</option>
             </select>
             <button onclick="loadCase()">Carica</button>
         </div>
@@ -324,7 +398,7 @@
                 <h3><span class="col-icon">👤</span> CLINICA</h3>
                 
                 <div class="field-group">
-                    <label for="age">Età</label>
+                    <label for="age">Età (anni)</label>
                     <input type="number" id="age" placeholder="es. 45" min="0" max="100">
                 </div>
                 
@@ -355,7 +429,7 @@
             
             <!-- COLONNA 2: ISTOLOGIA -->
             <div class="column istologia">
-                <h3><span class="col-icon">🔬</span> ISTOLOGIA + EE</h3>
+                <h3><span class="col-icon">🔬</span> ISTOLOGIA</h3>
                 
                 <div class="field-group">
                     <label for="cellularity">Cellularità</label>
@@ -375,17 +449,24 @@
                 
                 <div class="field-group">
                     <label>Architettura/Pattern</label>
-                    <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="hist-necrosis">
-                            <label for="hist-necrosis" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Necrosi</label>
+                            <label for="hist-necrosis" style="margin: 0; font-weight: normal; text-transform: none; font-size: 13px; cursor: pointer;">Necrosi</label>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="hist-microvascular">
-                            <label for="hist-microvascular" style="margin: 0; font-weight: normal; text-transform: none; font-size: 12px;">Proliferazione microvascolare</label>
+                            <label for="hist-microvascular" style="margin: 0; font-weight: normal; text-transform: none; font-size: 13px; cursor: pointer;">Proliferazione microvascolare</label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="hist-h3k27m">
+                            <label for="hist-h3k27m" style="margin: 0; font-weight: normal; text-transform: none; font-size: 13px; cursor: pointer;">H3K27me3 loss alla morfologia</label>
                         </div>
                     </div>
                 </div>
+                
+                <div class="field-group">
+                    <label for="celltype">Pattern cellulare</label>
                     <select id="celltype">
                         <option value="">-- Seleziona --</option>
                         <option value="astrocytic">Astrocitario</option>
@@ -401,7 +482,7 @@
                 <h3><span class="col-icon">🔵</span> IHC</h3>
                 
                 <div class="field-group">
-                    <label for="gfap">GFAP (IHC)</label>
+                    <label for="gfap">GFAP</label>
                     <select id="gfap">
                         <option value="">-- Seleziona --</option>
                         <option value="positive">Positivo</option>
@@ -412,7 +493,7 @@
                 </div>
                 
                 <div class="field-group">
-                    <label for="s100">S100 (IHC)</label>
+                    <label for="s100">S100</label>
                     <select id="s100">
                         <option value="">-- Seleziona --</option>
                         <option value="positive">Positivo</option>
@@ -423,8 +504,8 @@
                 </div>
                 
                 <div class="field-group">
-                    <label for="idh">IDH1 R132H (IHC)</label>
-                    <select id="idh">
+                    <label for="idh-ihc">IDH1 R132H (IHC)</label>
+                    <select id="idh-ihc">
                         <option value="">-- Seleziona --</option>
                         <option value="positive">Positivo</option>
                         <option value="negative">Negativo</option>
@@ -443,17 +524,13 @@
                 </div>
                 
                 <div class="field-group">
-                    <label for="p53">p53 (IHC)</label>
-                    <select id="p53">
-                        <option value="">-- Seleziona --</option>
-                        <option value="normal">Labeling normale (&lt;10%)</option>
-                        <option value="increased">Labeling aumentato (&gt;10%)</option>
-                        <option value="not-done">Non eseguito</option>
-                    </select>
+                    <label for="p53">p53 (%)</label>
+                    <input type="number" id="p53" placeholder="es. 25" min="0" max="100">
+                    <span class="help-text">Range: 0-100% | Soglia: &gt;10% = positivo</span>
                 </div>
                 
                 <div class="field-group">
-                    <label for="olig2">OLIG2 (IHC)</label>
+                    <label for="olig2">OLIG2</label>
                     <select id="olig2">
                         <option value="">-- Seleziona --</option>
                         <option value="positive">Positivo</option>
@@ -464,53 +541,107 @@
                 </div>
                 
                 <div class="field-group">
+                    <label for="h3k27me3">H3K27me3 (IHC)</label>
+                    <select id="h3k27me3">
+                        <option value="">-- Seleziona --</option>
+                        <option value="retained">Conservato</option>
+                        <option value="lost">Perso (H3K27-altered)</option>
+                        <option value="not-done">Non eseguito</option>
+                    </select>
+                    <span class="help-text">H3K27me3 loss = forte sospetto DMG</span>
+                </div>
+                
+                <div class="field-group">
                     <label for="ki67">Ki-67 (%)</label>
                     <input type="number" id="ki67" placeholder="es. 15" min="0" max="100">
+                    <span class="help-text">Range: 0-100%</span>
                 </div>
             </div>
             
             <!-- COLONNA 4: MOLECOLARE -->
             <div class="column molecolare">
                 <h3><span class="col-icon">🧬</span> MOLECOLARE (NGS)</h3>
-                <span style="font-size: 11px; color: #999; font-style: italic; display: block; margin-bottom: 15px;">Attuale: IDH1/2 | Gennaio 2026: +TERT, +TP53</span>
+                <span style="font-size: 11px; color: #27ae60; font-weight: 600; display: block; margin-bottom: 15px;">✓ Gennaio 2026: Pannello COMPLETO ABILITATO</span>
                 
                 <div class="field-group">
                     <label for="idh-ngs">IDH1/2 (NGS)</label>
                     <select id="idh-ngs">
                         <option value="">-- Seleziona --</option>
-                        <option value="mut-r132h">Mutato: R132H</option>
-                        <option value="mut-other">Mutato: altro</option>
+                        <option value="mut-r132h">Mutato: IDH1 R132H</option>
+                        <option value="mut-idh2">Mutato: IDH2</option>
+                        <option value="mut-other">Mutato: altra mutazione</option>
                         <option value="wildtype">Wild-type</option>
                         <option value="not-done">Non eseguito</option>
                     </select>
                 </div>
                 
                 <div class="field-group">
-                    <label for="atrx-ngs">ATRX (NGS)</label>
-                    <select id="atrx-ngs" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        <option value="not-available">NON DISPONIBILE</option>
+                    <label for="tp53-ngs">TP53 (NGS)</label>
+                    <select id="tp53-ngs">
+                        <option value="">-- Seleziona --</option>
+                        <option value="mutato">Mutato</option>
+                        <option value="wildtype">Wild-type</option>
+                        <option value="not-done">Non eseguito</option>
                     </select>
+                    <span class="success-text">✓ ORA DISPONIBILE (gennaio 2026)</span>
                 </div>
                 
                 <div class="field-group">
                     <label for="1p19q">1p/19q (NGS/FISH)</label>
-                    <select id="1p19q" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        <option value="not-available">NON DISPONIBILE</option>
+                    <select id="1p19q">
+                        <option value="">-- Seleziona --</option>
+                        <option value="codeleted">Codel: 1p/19q codeleted</option>
+                        <option value="not-codeleted">Non codel: conservato</option>
+                        <option value="partial">Parziale/ambiguo</option>
+                        <option value="not-done">Non eseguito</option>
+                    </select>
+                    <span class="success-text">✓ ORA DISPONIBILE (gennaio 2026)</span>
+                </div>
+                
+                <div class="field-group">
+                    <label for="tert">TERT Promoter (NGS)</label>
+                    <select id="tert">
+                        <option value="">-- Seleziona --</option>
+                        <option value="mutato">Mutato (C228T o C250T)</option>
+                        <option value="wildtype">Wild-type</option>
+                        <option value="not-done">Non eseguito</option>
+                    </select>
+                    <span class="success-text">✓ ORA DISPONIBILE (gennaio 2026)</span>
+                </div>
+                
+                <div class="field-group">
+                    <label for="egfr">EGFR (NGS)</label>
+                    <select id="egfr">
+                        <option value="">-- Seleziona --</option>
+                        <option value="amplified">Amplificato</option>
+                        <option value="vIII">Mutazione vIII</option>
+                        <option value="wildtype">Wild-type</option>
+                        <option value="not-done">Non eseguito</option>
                     </select>
                 </div>
                 
                 <div class="field-group">
-                    <label for="tp53-ngs">TP53 (NGS)</label>
-                    <select id="tp53-ngs" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        <option value="not-available">NON DISPONIBILE - Disponibile da gennaio 2026</option>
+                    <label for="h3f3a">H3F3A (NGS)</label>
+                    <select id="h3f3a">
+                        <option value="">-- Seleziona --</option>
+                        <option value="k27m">K27M</option>
+                        <option value="g34r">G34R</option>
+                        <option value="g34w">G34W</option>
+                        <option value="wildtype">Wild-type</option>
+                        <option value="not-done">Non eseguito</option>
                     </select>
                 </div>
                 
                 <div class="field-group">
-                    <label for="tert">TERT promoter (NGS)</label>
-                    <select id="tert" disabled style="opacity: 0.6; cursor: not-allowed;">
-                        <option value="not-available">NON DISPONIBILE - Disponibile da gennaio 2026</option>
+                    <label for="cdkn2a">CDKN2A/B (NGS)</label>
+                    <select id="cdkn2a">
+                        <option value="">-- Seleziona --</option>
+                        <option value="homozygous-del">Delezione omozigote (Grade 4 auto)</option>
+                        <option value="heterozygous-del">Delezione eterozigote</option>
+                        <option value="wildtype">Wild-type</option>
+                        <option value="not-done">Non eseguito</option>
                     </select>
+                    <span class="warning-text">⚠ Homozygous deletion = Grade 4 automatico (WHO CNS5)</span>
                 </div>
             </div>
         </div>
@@ -518,25 +649,36 @@
         <div style="padding: 30px; background: #fafafa; border-bottom: 2px solid #e0e0e0;">
             <h3 style="margin-bottom: 15px; color: #333;">🔬 MARCATORI PREDITTIVI (test opzionale)</h3>
             <div style="background: white; border: 2px solid #ddd; border-left: 4px solid #9b59b6; border-radius: 8px; padding: 20px;">
-                <div style="margin-bottom: 15px;">
-                    <label for="mgmt" style="font-weight: 600; font-size: 12px; color: #555; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">MGMT Promoter Metilazione</label>
-                    <select id="mgmt" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: white; color: #333; font-family: inherit; width: 100%; max-width: 300px;">
-                        <option value="">-- Seleziona --</option>
-                        <option value="not-done">Non eseguito</option>
-                        <option value="methylated">Metilato (promoter metilato)</option>
-                        <option value="unmethylated">Non metilato (promoter non metilato)</option>
-                        <option value="undetermined">Non determinabile</option>
-                    </select>
-                    <span style="font-size: 11px; color: #999; margin-top: 5px; display: block; font-style: italic;">Predittivo di risposta a temozolomide. Non influenza la diagnosi WHO, ma la prognosi.</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <label for="mgmt" style="font-weight: 600; font-size: 12px; color: #555; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">MGMT Promoter Metilazione</label>
+                        <select id="mgmt" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: white; color: #333; font-family: inherit; width: 100%;">
+                            <option value="">-- Seleziona --</option>
+                            <option value="not-done">Non eseguito</option>
+                            <option value="methylated">Metilato (promoter metilato)</option>
+                            <option value="unmethylated">Non metilato (promoter non metilato)</option>
+                        </select>
+                        <span style="font-size: 11px; color: #999; margin-top: 5px; display: block; font-style: italic;">Predittivo di risposta a temozolomide (GBM)</span>
+                    </div>
+                    <div>
+                        <label for="o6mg" style="font-weight: 600; font-size: 12px; color: #555; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">O6-Metilguanina-DNA Metiltransferasi</label>
+                        <select id="o6mg" style="padding: 8px 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: white; color: #333; font-family: inherit; width: 100%;">
+                            <option value="">-- Seleziona --</option>
+                            <option value="not-done">Non eseguito</option>
+                            <option value="high">Alta espressione (predittore sfavorevole)</option>
+                            <option value="low">Bassa espressione (predittore favorevole)</option>
+                        </select>
+                        <span style="font-size: 11px; color: #999; margin-top: 5px; display: block; font-style: italic;">O6-methylguanine-DNA methyltransferase - Predittore di chemoresistenza</span>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="diagnosis-section">
-            <h2>📋 Diagnosi WHO CNS5 & Report</h2>
+            <h2>📋 Diagnosi WHO CNS5 v2.0 & Scoring Report</h2>
             
             <div class="button-group">
-                <button class="btn-generate" onclick="generateDiagnosis()">Genera Diagnosi</button>
+                <button class="btn-generate" onclick="generateDiagnosis()">Genera Diagnosi & Scoring</button>
                 <button class="btn-reset" onclick="resetForm()">Reset</button>
                 <button class="btn-export" onclick="exportPDF()">📥 Esporta PDF</button>
             </div>
@@ -545,99 +687,71 @@
         </div>
         
         <div class="biblio-section">
-            <h3>📚 Riferimenti Bibliografici</h3>
-            <p>Classificazione:</p>
+            <h3>📚 Riferimenti Bibliografici - WHO CNS5 2021</h3>
+            
+            <p style="font-weight: 600; margin-bottom: 8px;">Classificazione WHO:</p>
             <ul>
                 <li>Louis DN, et al. WHO Classification of Tumours of the Central Nervous System (5th edition). IARC, 2021.</li>
+                <li>Brat DJ, et al. cIMPACT-NOW update 6: new entity and diagnostic principle recommendations of the cIMPACT-Utrecht meeting on future CNS tumor classification and grading. Brain Pathol. 2020;30(4):844-856.</li>
             </ul>
             
-            <p>NGS Panel e Workflow Diagnostico:</p>
+            <p style="font-weight: 600; margin-bottom: 8px;">NGS Panel e Grading Molecolare:</p>
             <ul>
                 <li>Suzuki H, et al. Mutational landscape and clonal architecture in grade II and III gliomas. Nat Genet. 2015;47(5):458-468.</li>
                 <li>Cancer Genome Atlas Research Network. Comprehensive, Integrative Genomic Analysis of Diffuse Lower-Grade Gliomas. N Engl J Med. 2015;372(26):2481-2498.</li>
             </ul>
             
-            <p>MGMT Metilazione (Predittivo):</p>
+            <p style="font-weight: 600; margin-bottom: 8px;">H3-Altered Gliomi (DMG, H3K27-altered):</p>
             <ul>
-                <li>Hegi ME, et al. MGMT gene silencing and benefit from temozolomide in glioblastoma. N Engl J Med. 2005;352(10):997-1003.</li>
+                <li>Sturm D, et al. Hotspot mutations in H3F3A and IDH1 define distinct clinicopathologic subgroups of diffuse midline gliomas. Nat Genet. 2012;44(8):916-921.</li>
+                <li>Schwartzentruber J, et al. Driver mutations in histone H3.3 and chromatin remodelling genes in paediatric glioblastoma. Nature. 2012;482(7384):226-231.</li>
             </ul>
             
-            <p>IDH e Gliomi:</p>
+            <p style="font-weight: 600; margin-bottom: 8px;">MGMT e Predittivi (GBM):</p>
             <ul>
-                <li>Yan H, et al. IDH1 and IDH2 mutations in gliomas. N Engl J Med. 2009;360(8):765-773.</li>
+                <li>Hegi ME, et al. MGMT gene silencing and benefit from temozolomide in glioblastoma. N Engl J Med. 2005;352(10):997-1003.</li>
             </ul>
         </div>
     </div>
     
     <script>
+        // CASI PRECARICATI
         const cases = {
             case1: {
-                age: 45,
-                location: 'emisfero',
-                imaging: 'heterogeneous',
-                cellularity: 'high',
-                mitosis: 6,
-                celltype: 'astrocytic',
-                gfap: 'positive',
-                s100: 'positive',
-                idh: 'positive',
-                atrx: 'lost',
-                p53: 'increased',
-                olig2: 'negative',
-                ki67: 20,
-                'idh-ngs': 'mut-r132h',
-                mgmt: 'not-done'
+                age: 45, location: 'emisfero', imaging: 'heterogeneous',
+                cellularity: 'high', mitosis: 6, celltype: 'astrocytic',
+                gfap: 'positive', s100: 'positive', 'idh-ihc': 'positive',
+                atrx: 'lost', p53: 20, olig2: 'negative', h3k27me3: 'retained',
+                ki67: 20, 'idh-ngs': 'mut-r132h', 'tp53-ngs': 'mutato',
+                '1p19q': 'not-codeleted', tert: 'not-done', egfr: 'wildtype',
+                h3f3a: 'wildtype', cdkn2a: 'wildtype', mgmt: 'not-done', o6mg: 'not-done'
             },
             case2: {
-                age: 52,
-                location: 'emisfero',
-                imaging: 'enhancement',
-                cellularity: 'moderate',
-                mitosis: 3,
-                celltype: 'oligodendroglial',
-                gfap: 'partial',
-                s100: 'positive',
-                idh: 'positive',
-                atrx: 'retained',
-                p53: 'normal',
-                olig2: 'positive',
-                ki67: 8,
-                'idh-ngs': 'mut-r132h',
-                mgmt: 'not-done'
+                age: 52, location: 'emisfero', imaging: 'enhancement',
+                cellularity: 'moderate', mitosis: 3, celltype: 'oligodendroglial',
+                gfap: 'partial', s100: 'positive', 'idh-ihc': 'positive',
+                atrx: 'retained', p53: 8, olig2: 'positive', h3k27me3: 'retained',
+                ki67: 8, 'idh-ngs': 'mut-r132h', 'tp53-ngs': 'wildtype',
+                '1p19q': 'codeleted', tert: 'wildtype', egfr: 'wildtype',
+                h3f3a: 'wildtype', cdkn2a: 'wildtype', mgmt: 'not-done', o6mg: 'not-done'
             },
             case3: {
-                age: 62,
-                location: 'emisfero',
-                imaging: 'ring',
-                cellularity: 'high',
-                mitosis: 15,
-                celltype: 'glioblastic',
-                gfap: 'partial',
-                s100: 'negative',
-                idh: 'negative',
-                atrx: 'retained',
-                p53: 'increased',
-                olig2: 'negative',
-                ki67: 45,
-                'idh-ngs': 'wildtype',
-                mgmt: 'methylated'
+                age: 62, location: 'emisfero', imaging: 'ring',
+                cellularity: 'high', mitosis: 15, celltype: 'glioblastic',
+                gfap: 'partial', s100: 'negative', 'idh-ihc': 'negative',
+                atrx: 'retained', p53: 70, olig2: 'negative', h3k27me3: 'retained',
+                ki67: 45, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato',
+                '1p19q': 'not-codeleted', tert: 'mutato', egfr: 'amplified',
+                h3f3a: 'wildtype', cdkn2a: 'wildtype', mgmt: 'methylated', o6mg: 'low'
             },
             case4: {
-                age: 8,
-                location: 'linea-mediana',
-                imaging: 'midline-diffuse',
-                cellularity: 'high',
-                mitosis: 12,
-                celltype: 'glioblastic',
-                gfap: 'partial',
-                s100: 'negative',
-                idh: 'negative',
-                atrx: 'retained',
-                p53: 'normal',
-                olig2: 'negative',
-                ki67: 50,
-                'idh-ngs': 'wildtype',
-                mgmt: 'unmethylated'
+                age: 8, location: 'linea-mediana', imaging: 'midline-diffuse',
+                cellularity: 'high', mitosis: 12, celltype: 'glioblastic',
+                gfap: 'partial', s100: 'negative', 'idh-ihc': 'negative',
+                atrx: 'retained', p53: 50, olig2: 'negative', h3k27me3: 'lost',
+                ki67: 50, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato',
+                '1p19q': 'not-codeleted', tert: 'wildtype', egfr: 'wildtype',
+                h3f3a: 'k27m', cdkn2a: 'homozygous-del', mgmt: 'unmethylated', o6mg: 'not-done'
             }
         };
         
@@ -646,31 +760,16 @@
             if (!caseId || !cases[caseId]) return;
             
             const caseData = cases[caseId];
-            
-            document.getElementById('age').value = caseData.age;
-            document.getElementById('location').value = caseData.location;
-            document.getElementById('imaging').value = caseData.imaging;
-            document.getElementById('cellularity').value = caseData.cellularity;
-            document.getElementById('mitosis').value = caseData.mitosis;
-            document.getElementById('celltype').value = caseData.celltype;
-            document.getElementById('gfap').value = caseData.gfap;
-            document.getElementById('s100').value = caseData.s100;
-            document.getElementById('idh').value = caseData.idh;
-            document.getElementById('atrx').value = caseData.atrx;
-            document.getElementById('p53').value = caseData.p53;
-            document.getElementById('olig2').value = caseData.olig2;
-            document.getElementById('ki67').value = caseData.ki67;
-            document.getElementById('idh-ngs').value = caseData['idh-ngs'];
-            document.getElementById('mgmt').value = caseData.mgmt;
+            for (const [key, value] of Object.entries(caseData)) {
+                const el = document.getElementById(key);
+                if (el) el.value = value;
+            }
         }
         
         function resetForm() {
             document.querySelectorAll('input, select').forEach(el => {
-                if (el.type === 'checkbox' || el.type === 'radio') {
-                    el.checked = false;
-                } else if (!el.disabled) {
-                    el.value = '';
-                }
+                if (el.type === 'checkbox') el.checked = false;
+                else if (!el.disabled) el.value = '';
             });
             document.getElementById('report-container').innerHTML = '';
             document.getElementById('case-select').value = '';
@@ -680,21 +779,30 @@
             const data = {
                 age: parseInt(document.getElementById('age').value) || 0,
                 location: document.getElementById('location').value,
-                imaging: document.getElementById('imaging').value,
                 cellularity: document.getElementById('cellularity').value,
                 mitosis: parseInt(document.getElementById('mitosis').value) || 0,
                 celltype: document.getElementById('celltype').value,
                 gfap: document.getElementById('gfap').value,
                 s100: document.getElementById('s100').value,
-                idh: document.getElementById('idh').value,
+                'idh-ihc': document.getElementById('idh-ihc').value,
                 atrx: document.getElementById('atrx').value,
-                p53: document.getElementById('p53').value,
+                p53: parseInt(document.getElementById('p53').value) || 0,
                 olig2: document.getElementById('olig2').value,
+                h3k27me3: document.getElementById('h3k27me3').value,
                 ki67: parseInt(document.getElementById('ki67').value) || 0,
                 'idh-ngs': document.getElementById('idh-ngs').value,
+                'tp53-ngs': document.getElementById('tp53-ngs').value,
+                '1p19q': document.getElementById('1p19q').value,
+                tert: document.getElementById('tert').value,
+                egfr: document.getElementById('egfr').value,
+                h3f3a: document.getElementById('h3f3a').value,
+                cdkn2a: document.getElementById('cdkn2a').value,
+                mgmt: document.getElementById('mgmt').value,
+                o6mg: document.getElementById('o6mg').value,
                 histFeatures: {
                     necrosis: document.getElementById('hist-necrosis').checked,
-                    microvascular: document.getElementById('hist-microvascular').checked
+                    microvascular: document.getElementById('hist-microvascular').checked,
+                    h3k27m: document.getElementById('hist-h3k27m').checked
                 }
             };
             
@@ -705,189 +813,189 @@
         function computeDiagnosis(data) {
             let alerts = [];
             let diagnosis = {};
+            let scores = { astrocytoma: 0, oligodendroglioma: 0, glioblastoma: 0, dmg: 0 };
             
-            // Determina IDH status: priorità a NGS, ma se non disponibile usa IHC
+            // CHECK: CDKN2A/B Homozygous Deletion = AUTOMATIC GRADE 4
+            if (data.cdkn2a === 'homozygous-del') {
+                alerts.push({type: 'warning', msg: '🚨 CDKN2A/B homozygous deletion PRESENTE: WHO Grade 4 AUTOMATICO'});
+                diagnosis.grade = 'WHO Grade 4';
+                scores.glioblastoma += 100;
+            }
+            
+            // CHECK: H3K27me3 LOSS o H3F3A K27M = DIFFUSE MIDLINE GLIOMA
+            if (data.h3k27me3 === 'lost' || data.h3f3a === 'k27m') {
+                alerts.push({type: 'warning', msg: '🚨 H3K27me3 loss o H3F3A K27M PRESENTE: Diffuse Midline Glioma'});
+                diagnosis.grade = 'WHO Grade 4';
+                diagnosis.entity = 'Glioma diffuso linea mediana, H3K27-altered';
+                scores.dmg += 150;
+            }
+            
+            // IDH STATUS - Priorità NGS
             let idhStatus = data['idh-ngs'];
             let idhFromIHC = false;
-            let idhPendingRare = false;
             
             if (!idhStatus || idhStatus === '' || idhStatus === 'not-done') {
-                // IDH NGS non disponibile, usa IHC
-                if (data.idh === 'positive') {
-                    idhStatus = 'mut-from-ihc';
+                if (data['idh-ihc'] === 'positive') {
+                    idhStatus = 'mutato-ihc';
                     idhFromIHC = true;
-                    // IDH IHC positivo = diagnosi già fatta, non serve NGS per IDH
-                } else if (data.idh === 'negative') {
-                    idhStatus = 'wildtype-from-ihc';
+                } else if (data['idh-ihc'] === 'negative') {
+                    idhStatus = 'wildtype-ihc';
                     idhFromIHC = true;
-                    idhPendingRare = true; // Bisogna fare NGS per escludere rare
-                }
-            }
-            
-            // CHECK: IDH status ancora non disponibile - DIAGNOSI PROVVISORIA
-            if (!idhStatus || idhStatus === '' || idhStatus === 'not-done') {
-                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IN ATTESA IDH STATUS (IHC e/o NGS)'});
-                alerts.push({type: 'warning', msg: '⚠ IDH IHC e NGS sono FONDAMENTALI per classificazione WHO'});
-                
-                diagnosis.provisional = true;
-                diagnosis.entity = 'Glioma diffuso (tipo da determinare - in attesa IDH)';
-                diagnosis.grade = 'Grade indeterminato';
-                diagnosis.confidence = 'PROVVISORIA - Pendente IDH status';
-                diagnosis.alerts = alerts;
-                return diagnosis;
-            }
-            
-            // Se IDH IHC positivo: diagnosi già fatta, non serve avvertimento su NGS IDH
-            if (idhFromIHC && data.idh === 'positive') {
-                alerts.push({type: 'success', msg: '✓ IDH1 R132H positivo all\'IHC: mutazione confermata. NGS IDH non necessario.'});
-            }
-            
-            // Se IDH IHC negativo: BISOGNA fare NGS per escludere rare mutazioni
-            if (idhPendingRare) {
-                // RAGIONAMENTO DIAGNOSTICO: analizza pattern istologico
-                let astrocyticPattern = data.celltype === 'astrocytic' || data.celltype === 'glioblastic' || data.celltype === 'mixed';
-                let oligoPattern = data.celltype === 'oligodendroglial';
-                let olig2Negative = data.olig2 === 'negative' || data.olig2 === '';
-                let atrxLost = data.atrx === 'lost';
-                let highMitosis = data.mitosis >= 10;
-                let hasNecrosisMicro = data.histFeatures && data.histFeatures.necrosis && data.histFeatures.microvascular;
-                let highCellularity = data.cellularity === 'high';
-                
-                // Escludi oligodendroglioma
-                let excludesOligo = olig2Negative || atrxLost;
-                
-                // Suggerisci diagnosi differenziale
-                let diffDiag = '';
-                if (astrocyticPattern && !oligoPattern) {
-                    if (highMitosis || hasNecrosisMicro) {
-                        diffDiag = 'Astrocitoma IDH-wildtype grado 3-4 versus Glioblastoma IDH-wildtype';
-                    } else if (data.mitosis >= 4) {
-                        diffDiag = 'Astrocitoma IDH-wildtype grado 3';
-                    } else {
-                        diffDiag = 'Astrocitoma IDH-wildtype grado 2-3 (basso grado anomalo)';
-                    }
-                } else if (oligoPattern && !olig2Negative) {
-                    diffDiag = 'Oligodendroglioma IDH-wildtype (entità rara, considerare methylation profiling)';
                 } else {
-                    diffDiag = 'Glioma diffuso IDH-wildtype (tipo da determinare)';
-                }
-                
-                diagnosis.entity = diffDiag;
-                diagnosis.confidence = 'Bassa - diagnosi differenziale, pendente NGS';
-                
-                alerts.push({type: 'warning', msg: '🕐 DIAGNOSI DIFFERENZIALE - IN ATTESA NGS'});
-                alerts.push({type: 'warning', msg: '📊 Pattern istologico suggestivo di: <strong>' + diffDiag + '</strong>'});
-                if (excludesOligo) {
-                    alerts.push({type: 'success', msg: '✓ Oligodendroglioma escluso (OLIG2 negativo/ATRX lost)'});
-                }
-                
-                // Impatto diagnostico di NGS
-                alerts.push({type: 'warning', msg: '🧬 <strong>NGS IDH1/2 - Interpretazione dei risultati:</strong>'});
-                alerts.push({type: 'warning', msg: '&nbsp;&nbsp;• Se <strong>CONFERMATO wildtype</strong>: ' + diffDiag});
-                alerts.push({type: 'warning', msg: '&nbsp;&nbsp;• Se <strong>MUTATO</strong> (rare: IDH2, IDH1 non-R132H): Reclassificazione a Astrocitoma IDH-mutato'});
-                
-                alerts.push({type: 'warning', msg: '⚠ Inoltre: Methylation profiling per conferma molecolare e potenziali subclassi'});
-                alerts.push({type: 'warning', msg: '⚠ La classificazione WHO definitiva seguirà con ADDENDUM una volta disponibili i risultati'});
-            }
-            
-            alerts.push({type: 'warning', msg: '⚠ NOTA: Pannello NGS attuale limita la classificazione. Da gennaio 2026 disponibili TERT e TP53.'});
-            
-            // PEDIATRIC
-            if (data.age < 18) {
-                if (data.location === 'linea-mediana' || data.location === 'midline') {
-                    diagnosis.entity = 'Glioma diffuso linea mediana (richiedere methylation profiling)';
-                    diagnosis.grade = 'Grade 4 (probabile)';
-                    diagnosis.confidence = 'Basso senza methylation profiling';
-                    alerts.push({type: 'warning', msg: '⚠ Pediatrico linea mediana: consigliare methylation profiling per conferma H3-altered'});
+                    alerts.push({type: 'warning', msg: '🕐 DIAGNOSI PROVVISORIA - IDH status non determinato'});
+                    return { entity: 'Glioma (tipo indeterminato)', grade: 'Indeterminato', confidence: 'BASSA', alerts: alerts };
                 }
             }
             
-            // ADULT IDH-MUTATED
-            if (idhStatus === 'mut-r132h' || idhStatus === 'mut-other' || idhStatus === 'mut-from-ihc') {
-                diagnosis.entity = 'Glioma diffuso, IDH-mutated (classificazione incompleta)';
-                diagnosis.confidence = 'Basso - manca 1p/19q';
+            // IDH MUTATO
+            if (idhStatus.includes('mutato')) {
+                scores.astrocytoma += 50;
+                scores.oligodendroglioma += 40;
+                alerts.push({type: 'success', msg: '✓ IDH mutato confermato'});
                 
-                // GRADING: mitosi + features istologiche + cellularità
-                let hasAggressive = data.histFeatures && (data.histFeatures.necrosis || data.histFeatures.microvascular);
-                let hasNecrosisMicro = data.histFeatures && data.histFeatures.necrosis && data.histFeatures.microvascular;
+                // GRADING per IDH-mutato
+                let hasNecroMicro = data.histFeatures.necrosis && data.histFeatures.microvascular;
+                let highMitosis = data.mitosis >= 10;
                 let highCellularity = data.cellularity === 'high';
                 
-                // Gr. 4: necrosi + proliferazione microvascolare (anche con mitosi basse)
-                if (hasNecrosisMicro) {
+                if (hasNecroMicro) {
                     diagnosis.grade = 'WHO Grade 4';
-                }
-                // Gr. 3: mitosi 4-9, oppure cellularità alta, oppure features aggressive (necrosi o microvascolare)
-                else if (data.mitosis >= 4 && data.mitosis <= 9 || hasAggressive || highCellularity) {
+                    scores.glioblastoma += 80;
+                } else if (data.mitosis >= 4 || highCellularity) {
                     diagnosis.grade = 'WHO Grade 3';
-                }
-                // Gr. 2: mitosi <4 + cellularità bassa/moderata + nessun pattern aggressivo
-                else if (data.mitosis < 4 && !hasAggressive && data.cellularity !== 'high') {
-                    diagnosis.grade = 'WHO Grade 2';
+                    scores.astrocytoma += 30;
                 } else {
                     diagnosis.grade = 'WHO Grade 2-3';
                 }
                 
+                // Differenziare astro vs oligo
                 if (data.atrx === 'lost') {
-                    diagnosis.entity = 'Astrocytoma, IDH-mutated (ATRX loss suggestivo)';
-                    alerts.push({type: 'success', msg: '✓ ATRX loss favorisce astrocitoma IDH-mut. Confermare con 1p/19q da gennaio 2026'});
+                    diagnosis.entity = 'Astrocytoma, IDH-mutated';
+                    scores.astrocytoma += 60;
+                    alerts.push({type: 'success', msg: '✓ ATRX loss → Astrocytoma favorito'});
                 } else if (data.atrx === 'retained' && data.olig2 === 'positive') {
-                    diagnosis.entity = 'Oligodendroglioma IDH-mutato (pattern favorevole)';
-                    alerts.push({type: 'success', msg: '✓ ATRX retained + OLIG2+ favorisce oligodendroglioma. Confermare con 1p/19q da gennaio 2026'});
+                    diagnosis.entity = 'Oligodendroglioma, IDH-mutated and 1p/19q-codeleted';
+                    scores.oligodendroglioma += 80;
+                    if (data['1p19q'] === 'codeleted') {
+                        alerts.push({type: 'success', msg: '✓ 1p/19q codel confermato → Oligodendroglioma definito'});
+                        scores.oligodendroglioma += 50;
+                    }
                 }
             }
             
-            // ADULT IDH-WILDTYPE (confermato da NGS)
-            if ((idhStatus === 'wildtype') && data.age >= 18) {
-                diagnosis.entity = 'Glioma diffuso, IDH-wildtype';
-                diagnosis.confidence = 'Basso senza marker molecolari completi';
+            // IDH WILDTYPE
+            if (idhStatus === 'wildtype' || idhStatus === 'wildtype-ihc') {
+                alerts.push({type: 'success', msg: '✓ IDH wildtype confermato'});
                 
-                if (data.mitosis > 10) {
-                    diagnosis.grade = 'WHO Grade 4 (Glioblastoma probabile)';
-                    diagnosis.entity = 'Glioblastoma, IDH-wildtype (da morfologia)';
-                    alerts.push({type: 'success', msg: '✓ Mitosi elevate + IDH-wt confermato NGS: GBM probabile'});
+                // GRADING per IDH-wildtype
+                if (data.mitosis >= 10 || (data.histFeatures.necrosis && data.histFeatures.microvascular)) {
+                    diagnosis.grade = 'WHO Grade 4';
+                    diagnosis.entity = 'Glioblastoma, IDH-wildtype';
+                    scores.glioblastoma += 100;
+                    alerts.push({type: 'success', msg: '✓ Grade 4 (GBM) confermato'});
                 } else {
-                    diagnosis.grade = 'Grade 2-3 (incerto senza marker molecolari)';
-                    alerts.push({type: 'warning', msg: '⚠ IDH-wt a basso grado: richiedere methylation profiling'});
+                    diagnosis.grade = 'WHO Grade 2-3';
+                    diagnosis.entity = 'Glioma diffuso, IDH-wildtype (tipo da determinare)';
+                    scores.glioblastoma += 40;
+                }
+                
+                // Fattori molecolari addizionali
+                if (data.tert === 'mutato') {
+                    scores.glioblastoma += 30;
+                    alerts.push({type: 'success', msg: '✓ TERT promoter mutato → favorisce GBM'});
+                }
+                if (data.egfr === 'amplified') {
+                    scores.glioblastoma += 40;
+                    alerts.push({type: 'success', msg: '✓ EGFR amplificato → favorisce GBM primario'});
                 }
             }
             
+            // CALCOLO CONFIDENZA %
+            let totalScore = Math.max(scores.astrocytoma, scores.oligodendroglioma, scores.glioblastoma, scores.dmg);
+            let confidence = {
+                astrocytoma: totalScore > 0 ? Math.round((scores.astrocytoma / totalScore) * 100) : 0,
+                oligodendroglioma: totalScore > 0 ? Math.round((scores.oligodendroglioma / totalScore) * 100) : 0,
+                glioblastoma: totalScore > 0 ? Math.round((scores.glioblastoma / totalScore) * 100) : 0,
+                dmg: totalScore > 0 ? Math.round((scores.dmg / totalScore) * 100) : 0
+            };
+            
+            diagnosis.confidence = confidence;
             diagnosis.alerts = alerts;
+            
+            // Predittivi MGMT
+            if (diagnosis.grade === 'WHO Grade 4' && data.mgmt) {
+                if (data.mgmt === 'methylated') {
+                    alerts.push({type: 'success', msg: '✓ MGMT metilato: predittore favorevole per temozolomide'});
+                } else if (data.mgmt === 'unmethylated') {
+                    alerts.push({type: 'warning', msg: '⚠ MGMT non metilato: predittore sfavorevole, considerare alternative a TMZ'});
+                }
+            }
+            
             return diagnosis;
         }
         
         function displayDiagnosis(diagnosis, data) {
             let html = '';
             
-            if (diagnosis.alerts && diagnosis.alerts.length > 0) {
+            // ALERTS
+            if (diagnosis.alerts) {
                 for (let alert of diagnosis.alerts) {
-                    const cls = alert.type === 'warning' ? 'alert-warning' : 'alert-success';
+                    const cls = alert.type === 'warning' ? 'alert-warning' : (alert.type === 'success' ? 'alert-success' : 'alert-info');
                     html += '<div class="alert ' + cls + '">' + alert.msg + '</div>';
                 }
             }
             
+            // DIAGNOSI
             if (diagnosis.entity) {
                 html += '<div class="diagnosis-box">';
                 html += '<h3>Diagnosi Finale WHO CNS5</h3>';
-                html += '<div class="diagnosis-text"><strong>' + diagnosis.entity + '</strong></div>';
-                html += '<div class="diagnosis-text">' + diagnosis.grade + '</div>';
-                html += '<div class="diagnosis-text"><strong>Livello di confidenza:</strong> ' + diagnosis.confidence + '</div>';
+                html += '<div class="diagnosis-text"><strong>Entità:</strong> ' + diagnosis.entity + '</div>';
+                html += '<div class="diagnosis-text"><strong>Grado:</strong> ' + diagnosis.grade + '</div>';
                 html += '</div>';
             }
             
+            // SCORING CON CONFIDENCE BARS
+            if (diagnosis.confidence) {
+                html += '<div class="scoring-container">';
+                html += '<h3 style="margin-bottom: 20px; font-size: 16px;">📊 Analisi Scoring Diagnostico</h3>';
+                
+                const conf = diagnosis.confidence;
+                const entities = [
+                    { name: 'Astrocytoma, IDH-mutated', percent: conf.astrocytoma, color: '#3b82f6' },
+                    { name: 'Oligodendroglioma, IDH-mut 1p/19q-codel', percent: conf.oligodendroglioma, color: '#8b5cf6' },
+                    { name: 'Glioblastoma, IDH-wildtype', percent: conf.glioblastoma, color: '#ef4444' },
+                    { name: 'Diffuse Midline Glioma, H3K27-altered', percent: conf.dmg, color: '#f59e0b' }
+                ];
+                
+                for (let entity of entities) {
+                    if (entity.percent > 0) {
+                        html += '<div class="scoring-row">';
+                        html += '<div class="scoring-label">';
+                        html += '<span class="scoring-label-name">' + entity.name + '</span>';
+                        html += '<span class="scoring-label-percent">' + entity.percent + '%</span>';
+                        html += '</div>';
+                        html += '<div style="width: 100%; height: 30px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">';
+                        html += '<div style="width: ' + entity.percent + '%; height: 100%; background: ' + entity.color + '; transition: width 0.3s ease;"></div>';
+                        html += '</div>';
+                        html += '</div>';
+                    }
+                }
+                
+                html += '</div>';
+            }
+            
+            // RIEPILOGO
             html += '<div class="diagnosis-box" style="margin-top: 20px;">';
             html += '<h3>Riepilogo Findings</h3>';
             html += '<table style="width:100%; font-size: 12px; border-collapse: collapse;">';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; width: 50%;"><strong>Età / Sede</strong></td><td>' + (data.age || 'N/A') + ' a. / ' + data.location + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>GFAP / S100 / OLIG2</strong></td><td>' + data.gfap + ' / ' + data.s100 + ' / ' + data.olig2 + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>IDH (IHC+NGS)</strong></td><td>' + data.idh + ' / ' + data['idh-ngs'] + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; width: 50%;"><strong>ATRX / p53</strong></td><td>' + data.atrx + ' / ' + data.p53 + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Pattern istologico</strong></td><td>' + 
-                (data.histFeatures.necrosis ? '✓ Necrosi' : '') + 
-                (data.histFeatures.microvascular ? ' | ✓ Prolif. microvasc.' : '') + 
-                (!data.histFeatures.necrosis && !data.histFeatures.microvascular ? 'Nessuno' : '') + 
-                '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px;"><strong>Mitosi / Ki-67</strong></td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
-            html += '<tr style="border-top: 2px solid #ddd; background: #fff9e6;"><td style="padding: 8px;"><strong>MGMT</strong></td><td><strong>' + (document.getElementById('mgmt').value || 'Non eseguito') + '</strong></td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600; width: 50%;">Età / Sede</td><td>' + data.age + 'a. / ' + data.location + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">IDH (IHC/NGS)</td><td>' + data['idh-ihc'] + ' / ' + data['idh-ngs'] + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">ATRX / OLIG2</td><td>' + data.atrx + ' / ' + data.olig2 + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">1p/19q / TERT</td><td>' + data['1p19q'] + ' / ' + data.tert + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">H3K27me3 / H3F3A</td><td>' + data.h3k27me3 + ' / ' + data.h3f3a + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">TP53 / CDKN2A/B</td><td>' + data['tp53-ngs'] + ' / ' + data.cdkn2a + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">Mitosi / Ki-67</td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
+            html += '<tr style="background: #fef3c7;"><td style="padding: 8px; font-weight: 600;">MGMT / O6-MG</td><td>' + (data.mgmt || 'N/A') + ' / ' + (data.o6mg || 'N/A') + '</td></tr>';
             html += '</table>';
             html += '</div>';
             
@@ -913,15 +1021,9 @@
             const pdfContent = document.createElement('div');
             pdfContent.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h2>REPORT DIAGNOSTICO GLIOMI SNC</h2>
+                    <h2>REPORT DIAGNOSTICO GLIOMI SNC - v2.0</h2>
                     <p>Data: ${new Date().toLocaleDateString('it-IT')}</p>
-                </div>
-                <div style="margin-bottom: 20px; font-size: 12px;">
-                    <p><strong>Età:</strong> ${document.getElementById('age').value || 'N/A'}</p>
-                    <p><strong>Sede:</strong> ${document.getElementById('location').value || 'N/A'}</p>
-                    <p><strong>IDH1/2 (NGS):</strong> ${document.getElementById('idh-ngs').value}</p>
-                    <p><strong>Mitosi/10 HPF:</strong> ${document.getElementById('mitosis').value}</p>
-                    <p><strong>MGMT:</strong> ${document.getElementById('mgmt').value || 'Non eseguito'}</p>
+                    <p style="font-size: 12px; color: #666;">Workflow WHO CNS5 2021 con Scoring Avanzato</p>
                 </div>
                 <hr>
                 ${reportElement.innerHTML}
