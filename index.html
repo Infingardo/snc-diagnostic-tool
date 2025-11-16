@@ -442,6 +442,16 @@
                 </div>
                 
                 <div class="field-group">
+                    <label for="atypia">Atipia Nucleare</label>
+                    <select id="atypia">
+                        <option value="">-- Seleziona --</option>
+                        <option value="scarse">Scarse</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="numerose">Numerose</option>
+                    </select>
+                </div>
+                
+                <div class="field-group">
                     <label for="mitosis">Mitosi per 10 HPF</label>
                     <input type="number" id="mitosis" placeholder="es. 5" min="0" max="100">
                     <span class="help-text">Gr.2: &lt;4 | Gr.3: 4-9 | Gr.4: ≥10</span>
@@ -522,7 +532,8 @@
                 <div class="field-group">
                     <label for="p53">p53 (%)</label>
                     <input type="number" id="p53" placeholder="es. 25" min="0" max="100">
-                    <span class="help-text">Range: 0-100% | Soglia: &gt;10% = positivo</span>
+                    <span class="help-text">Range: 0-100% | Soglia: &gt;10% = positivo (accumulo proteico)</span>
+                    <span class="warning-text">⚠ p53 IHC>10% suggerisce mutazione TP53 | Confermare con NGS</span>
                 </div>
                 
                 <div class="field-group">
@@ -580,6 +591,7 @@
                         <option value="not-done">Non eseguito</option>
                     </select>
                     <span class="success-text">✓ ORA DISPONIBILE (gennaio 2026)</span>
+                    <span class="help-text">TP53 mutato = marker di aggressività, predice Grade 3-4 anche se morfologia lieve | Concordanza con p53 IHC>10%</span>
                 </div>
                 
                 <div class="field-group">
@@ -715,7 +727,7 @@
         const cases = {
             case1: {
                 age: 45, location: 'emisfero', imaging: 'heterogeneous',
-                cellularity: 'high', mitosis: 6, celltype: 'astrocytic',
+                cellularity: 'high', atypia: 'moderate', mitosis: 6, celltype: 'astrocytic',
                 gfap: 'positive', s100: 'positive', 'idh-ihc': 'positive',
                 atrx: 'lost', p53: 20, olig2: 'negative', h3k27me3: 'retained',
                 ki67: 20, 'idh-ngs': 'mut-r132h', 'tp53-ngs': 'mutato',
@@ -724,7 +736,7 @@
             },
             case2: {
                 age: 52, location: 'emisfero', imaging: 'enhancement',
-                cellularity: 'moderate', mitosis: 3, celltype: 'oligodendroglial',
+                cellularity: 'moderate', atypia: 'scarse', mitosis: 3, celltype: 'oligodendroglial',
                 gfap: 'partial', s100: 'positive', 'idh-ihc': 'positive',
                 atrx: 'retained', p53: 8, olig2: 'positive', h3k27me3: 'retained',
                 ki67: 8, 'idh-ngs': 'mut-r132h', 'tp53-ngs': 'wildtype',
@@ -733,7 +745,7 @@
             },
             case3: {
                 age: 62, location: 'emisfero', imaging: 'ring',
-                cellularity: 'high', mitosis: 15, celltype: 'glioblastic',
+                cellularity: 'high', atypia: 'numerose', mitosis: 15, celltype: 'glioblastic',
                 gfap: 'partial', s100: 'negative', 'idh-ihc': 'negative',
                 atrx: 'retained', p53: 70, olig2: 'negative', h3k27me3: 'retained',
                 ki67: 45, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato',
@@ -742,7 +754,7 @@
             },
             case4: {
                 age: 8, location: 'linea-mediana', imaging: 'midline-diffuse',
-                cellularity: 'high', mitosis: 12, celltype: 'glioblastic',
+                cellularity: 'high', atypia: 'numerose', mitosis: 12, celltype: 'glioblastic',
                 gfap: 'partial', s100: 'negative', 'idh-ihc': 'negative',
                 atrx: 'retained', p53: 50, olig2: 'negative', h3k27me3: 'lost',
                 ki67: 50, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato',
@@ -776,6 +788,7 @@
                 age: parseInt(document.getElementById('age').value) || 0,
                 location: document.getElementById('location').value,
                 cellularity: document.getElementById('cellularity').value,
+                atypia: document.getElementById('atypia').value,
                 mitosis: parseInt(document.getElementById('mitosis').value) || 0,
                 celltype: document.getElementById('celltype').value,
                 gfap: document.getElementById('gfap').value,
@@ -848,25 +861,60 @@
                 scores.oligodendroglioma += 40;
                 alerts.push({type: 'success', msg: '✓ IDH mutato confermato'});
                 
-                // GRADING per IDH-mutato
+                // GRADING per IDH-mutato: mitosi + atipia + architettura + TP53
                 let hasNecroMicro = data.histFeatures.necrosis && data.histFeatures.microvascular;
-                let highMitosis = data.mitosis >= 10;
-                let highCellularity = data.cellularity === 'high';
+                let atypiaScore = 0;
                 
-                if (hasNecroMicro) {
+                if (data.atypia === 'scarse') atypiaScore = 1;
+                else if (data.atypia === 'moderate') atypiaScore = 2;
+                else if (data.atypia === 'numerose') atypiaScore = 3;
+                
+                // CHECK TP53 ALTERATO (IHC >10% O NGS mutato)
+                let tp53Altered = (data.p53 > 10) || (data['tp53-ngs'] === 'mutato');
+                
+                if (tp53Altered) {
+                    alerts.push({type: 'warning', msg: '🚨 TP53 alterato (IHC>10% O NGS mutato): marker di aggressività - Grade 3 minimo'});
+                    scores.glioblastoma += 50;
+                }
+                
+                // Grading logic con TP53:
+                if (hasNecroMicro || data.mitosis >= 10) {
                     diagnosis.grade = 'WHO Grade 4';
                     scores.glioblastoma += 80;
-                } else if (data.mitosis >= 4 || highCellularity) {
+                    alerts.push({type: 'warning', msg: '⚠ Necrosi + proliferazione microvascolare/alto numero mitosi: Grade 4'});
+                } else if (tp53Altered && data.mitosis >= 4) {
+                    // TP53 alterato + mitosi elevate = Grade 3-4 border
+                    diagnosis.grade = 'WHO Grade 3';
+                    scores.glioblastoma += 60;
+                    scores.astrocytoma += 40;
+                    alerts.push({type: 'warning', msg: '⚠ TP53 alterato + mitosi elevate: Grade 3 (considerare Grade 4)'});
+                } else if (tp53Altered) {
+                    // TP53 alterato anche senza molte mitosi = Grade 3
+                    diagnosis.grade = 'WHO Grade 3';
+                    scores.astrocytoma += 50;
+                    alerts.push({type: 'success', msg: '✓ TP53 alterato: Grade 3 (aggressività intrinseca)'});
+                } else if (atypiaScore === 3 && data.mitosis >= 4) {
+                    diagnosis.grade = 'WHO Grade 3';
+                    scores.astrocytoma += 40;
+                    alerts.push({type: 'success', msg: '✓ Atipia numerose + mitosi elevate: Grade 3'});
+                } else if (data.mitosis >= 4 || atypiaScore >= 2) {
                     diagnosis.grade = 'WHO Grade 3';
                     scores.astrocytoma += 30;
+                    alerts.push({type: 'success', msg: '✓ Mitosi e/o atipia moderata-numerosa: Grade 3'});
                 } else {
-                    diagnosis.grade = 'WHO Grade 2-3';
+                    diagnosis.grade = 'WHO Grade 2';
+                    scores.astrocytoma += 20;
+                    alerts.push({type: 'success', msg: '✓ Morfologia di basso grado (TP53 wild-type): Grade 2'});
                 }
                 
                 // Differenziare astro vs oligo
                 if (data.atrx === 'lost') {
                     diagnosis.entity = 'Astrocytoma, IDH-mutated';
                     scores.astrocytoma += 60;
+                    if (tp53Altered) {
+                        diagnosis.entity = 'Astrocytoma, IDH-mutated, TP53-altered';
+                        scores.astrocytoma += 30;
+                    }
                     alerts.push({type: 'success', msg: '✓ ATRX loss → Astrocytoma favorito'});
                 } else if (data.atrx === 'retained' && data.olig2 === 'positive') {
                     diagnosis.entity = 'Oligodendroglioma, IDH-mutated and 1p/19q-codeleted';
@@ -984,12 +1032,14 @@
             html += '<h3>Riepilogo Findings</h3>';
             html += '<table style="width:100%; font-size: 12px; border-collapse: collapse;">';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600; width: 50%;">Età / Sede</td><td>' + data.age + 'a. / ' + data.location + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">Cellularità / Atipia</td><td>' + data.cellularity + ' / ' + data.atypia + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">Mitosi / Ki-67</td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">IDH (IHC/NGS)</td><td>' + data['idh-ihc'] + ' / ' + data['idh-ngs'] + '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">ATRX / OLIG2</td><td>' + data.atrx + ' / ' + data.olig2 + '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">1p/19q / TERT</td><td>' + data['1p19q'] + ' / ' + data.tert + '</td></tr>';
             html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">H3K27me3 / H3F3A</td><td>' + data.h3k27me3 + ' / ' + data.h3f3a + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">TP53 / CDKN2A/B</td><td>' + data['tp53-ngs'] + ' / ' + data.cdkn2a + '</td></tr>';
-            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">Mitosi / Ki-67</td><td>' + data.mitosis + ' / ' + data.ki67 + '%</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">p53 IHC / TP53 NGS</td><td>' + data.p53 + '% / ' + data['tp53-ngs'] + '</td></tr>';
+            html += '<tr style="border-bottom: 1px solid #ddd;"><td style="padding: 8px; font-weight: 600;">CDKN2A/B</td><td>' + data.cdkn2a + '</td></tr>';
             html += '<tr style="background: #fef3c7;"><td style="padding: 8px; font-weight: 600;">MGMT / O6-MG</td><td>' + (data.mgmt || 'N/A') + ' / ' + (data.o6mg || 'N/A') + '</td></tr>';
             html += '</table>';
             html += '</div>';
