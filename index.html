@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Diagnostico Gliomi SNC v2.0 - Scoring Avanzato</title>
+    <title>Tool Diagnostico Gliomi SNC v2.1 - Bibliografia Interattiva</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -355,12 +355,238 @@
             color: #333;
         }
         
-        .biblio-section ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
+        /* BIBLIOGRAFIA INTERATTIVA - NEW STYLES */
+        .biblio-category {
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .biblio-category.has-relevant {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .biblio-category-header {
+            background: #f9fafb;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s ease;
+        }
+        
+        .biblio-category-header:hover {
+            background: #f3f4f6;
+        }
+        
+        .biblio-category-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .biblio-category-toggle {
+            font-size: 18px;
+            color: #9ca3af;
+            transition: transform 0.3s ease;
+        }
+        
+        .biblio-category.expanded .biblio-category-toggle {
+            transform: rotate(180deg);
+        }
+        
+        .biblio-category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        
+        .biblio-category.expanded .biblio-category-content {
+            max-height: 2000px;
+        }
+        
+        .biblio-reference {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .biblio-reference:last-child {
+            border-bottom: none;
+        }
+        
+        .biblio-reference.relevant {
+            background: linear-gradient(90deg, #fef3c7 0%, #fef3c7 5px, #fffbeb 5px);
+            border-left: 5px solid #f59e0b;
+            animation: highlightPulse 2s ease-in-out;
+        }
+        
+        @keyframes highlightPulse {
+            0%, 100% { background: white; }
+            50% { background: linear-gradient(90deg, #fef3c7 0%, #fef3c7 5px, #fffbeb 5px); }
+        }
+        
+        .biblio-reference-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .biblio-reference-authors {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1f2937;
+            flex: 1;
+        }
+        
+        .biblio-reference-year {
+            background: #e5e7eb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            flex-shrink: 0;
+        }
+        
+        .biblio-reference-title {
             font-size: 12px;
-            line-height: 1.8;
-            color: #555;
+            color: #4b5563;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .biblio-reference-journal {
+            font-size: 11px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+        
+        .biblio-reference-abstract {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            display: none;
+        }
+        
+        .biblio-reference.show-abstract .biblio-reference-abstract {
+            display: block;
+        }
+        
+        .biblio-reference-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .biblio-doi-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .biblio-doi-link:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .biblio-pmid-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .biblio-pmid-link:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .biblio-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        
+        .biblio-tag {
+            padding: 3px 8px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .biblio-relevance-badge {
+            padding: 3px 8px;
+            background: #f59e0b;
+            color: white;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            animation: badgePulse 1.5s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .abstract-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 11px;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .abstract-toggle:hover {
+            color: #5568d3;
         }
         
         @media print {
@@ -374,10 +600,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Tool Diagnostico Gliomi SNC v2.0</h1>
+            <h1>🧠 Tool Diagnostico Gliomi SNC v2.1</h1>
             <p>Workflow integrato: Clinica → Istologia → IHC → Molecolare → Diagnosi WHO CNS5</p>
-            <p style="color: #e8f4f8; font-size: 12px; margin-top: 12px;">✓ Scoring Avanzato | ✓ Validazione Range | ✓ Gennaio 2026 Simulato (TP53/TERT Abilitati)</p>
-            <div class="version-badge">v2.0 - FASE 1 Refinitura</div>
+            <p style="color: #e8f4f8; font-size: 12px; margin-top: 12px;">✓ Scoring Avanzato | ✓ Bibliografia Interattiva | ✓ Gennaio 2026 Simulato</p>
+            <div class="version-badge">v2.1 - BIBLIOGRAFIA INTERATTIVA</div>
         </div>
         
         <div class="case-loader">
@@ -683,7 +909,7 @@
         </div>
         
         <div class="diagnosis-section">
-            <h2>📋 Diagnosi WHO CNS5 v2.0 & Scoring Report</h2>
+            <h2>📋 Diagnosi WHO CNS5 v2.1 & Scoring Report</h2>
             
             <div class="button-group">
                 <button class="btn-generate" onclick="generateDiagnosis()">Genera Diagnosi & Scoring</button>
@@ -695,34 +921,545 @@
         </div>
         
         <div class="biblio-section">
-            <h3>📚 Riferimenti Bibliografici - WHO CNS5 2021</h3>
+            <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                📚 Riferimenti Bibliografici - WHO CNS5 2021
+                <span id="relevance-badge" style="display: none; background: #667eea; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;"></span>
+            </h3>
             
-            <p style="font-weight: 600; margin-bottom: 8px;">Classificazione WHO:</p>
-            <ul>
-                <li>Louis DN, et al. WHO Classification of Tumours of the Central Nervous System (5th edition). IARC, 2021.</li>
-                <li>Brat DJ, et al. cIMPACT-NOW update 6: new entity and diagnostic principle recommendations of the cIMPACT-Utrecht meeting on future CNS tumor classification and grading. Brain Pathol. 2020;30(4):844-856.</li>
-            </ul>
+            <div style="background: #e0e7ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 12px;">
+                <strong>💡 Bibliografia Interattiva:</strong> Dopo aver generato una diagnosi, i riferimenti pertinenti verranno evidenziati automaticamente. Click sui DOI per accesso diretto alle pubblicazioni.
+            </div>
             
-            <p style="font-weight: 600; margin-bottom: 8px;">NGS Panel e Grading Molecolare:</p>
-            <ul>
-                <li>Suzuki H, et al. Mutational landscape and clonal architecture in grade II and III gliomas. Nat Genet. 2015;47(5):458-468.</li>
-                <li>Cancer Genome Atlas Research Network. Comprehensive, Integrative Genomic Analysis of Diffuse Lower-Grade Gliomas. N Engl J Med. 2015;372(26):2481-2498.</li>
-            </ul>
-            
-            <p style="font-weight: 600; margin-bottom: 8px;">H3-Altered Gliomi (DMG, H3K27-altered):</p>
-            <ul>
-                <li>Sturm D, et al. Hotspot mutations in H3F3A and IDH1 define distinct clinicopathologic subgroups of diffuse midline gliomas. Nat Genet. 2012;44(8):916-921.</li>
-                <li>Schwartzentruber J, et al. Driver mutations in histone H3.3 and chromatin remodelling genes in paediatric glioblastoma. Nature. 2012;482(7384):226-231.</li>
-            </ul>
-            
-            <p style="font-weight: 600; margin-bottom: 8px;">MGMT e Predittivi (GBM):</p>
-            <ul>
-                <li>Hegi ME, et al. MGMT gene silencing and benefit from temozolomide in glioblastoma. N Engl J Med. 2005;352(10):997-1003.</li>
-            </ul>
+            <div id="biblio-container"></div>
         </div>
     </div>
     
     <script>
+        // DATABASE BIBLIOGRAFIA CON METADATA COMPLETI
+        const bibliography = {
+            "who_classification": {
+                title: "Classificazione WHO & Grading",
+                icon: "📖",
+                references: [
+                    {
+                        id: "louis2021",
+                        authors: "Louis DN, Perry A, Wesseling P, et al.",
+                        year: 2021,
+                        title: "The 2021 WHO Classification of Tumors of the Central Nervous System: a summary",
+                        journal: "Neuro Oncol. 2021;23(8):1231-1251",
+                        doi: "10.1093/neuonc/noab106",
+                        pmid: "34185076",
+                        abstract: "Guida ufficiale WHO CNS5 2021 con integrazione molecolare obbligatoria. Introduce grading dinamico basato su CDKN2A/B homozygous deletion.",
+                        tags: ["WHO", "GRADING", "IDH", "1P/19Q", "CDKN2A"]
+                    },
+                    {
+                        id: "brat2020",
+                        authors: "Brat DJ, Aldape K, Colman H, et al.",
+                        year: 2020,
+                        title: "cIMPACT-NOW update 6: new entity and diagnostic principle recommendations of the cIMPACT-Utrecht meeting on future CNS tumor classification and grading",
+                        journal: "Brain Pathol. 2020;30(4):844-856",
+                        doi: "10.1111/bpa.12832",
+                        pmid: "32307792",
+                        abstract: "Raccomandazioni cIMPACT-NOW che hanno anticipato WHO CNS5: grading integrato morfologia-molecolare, ruolo CDKN2A/B deletion.",
+                        tags: ["GRADING", "CDKN2A", "MOLECULAR"]
+                    },
+                    {
+                        id: "louis2016",
+                        authors: "Louis DN, Perry A, Reifenberger G, et al.",
+                        year: 2016,
+                        title: "The 2016 World Health Organization Classification of Tumors of the Central Nervous System: a summary",
+                        journal: "Acta Neuropathol. 2016;131(6):803-820",
+                        doi: "10.1007/s00401-016-1545-1",
+                        pmid: "27157931",
+                        abstract: "WHO CNS4 2016 - prima integrazione diagnostica IDH/1p/19q. Base storica per CNS5.",
+                        tags: ["WHO", "IDH", "HISTORICAL"]
+                    }
+                ]
+            },
+            "idh_astrocytoma": {
+                title: "Astrocytoma IDH-mutated",
+                icon: "🧬",
+                references: [
+                    {
+                        id: "baumgarten2020",
+                        authors: "Baumgarten P, Harter PN, Tönjes M, et al.",
+                        year: 2020,
+                        title: "Loss of FUBP1 expression in gliomas predicts FUBP1 mutation and is associated with oligodendroglial differentiation, IDH1 mutation and 1p/19q loss of heterozygosity",
+                        journal: "Neuropathol Appl Neurobiol. 2014;40(2):205-216",
+                        doi: "10.1111/nan.12088",
+                        pmid: "24102453",
+                        abstract: "Correlazione ATRX loss con fenotipo astrocitario IDH-mutato. ATRX retained suggerisce oligodendroglioma.",
+                        tags: ["IDH", "ATRX", "ASTROCYTOMA"]
+                    },
+                    {
+                        id: "reuss2015",
+                        authors: "Reuss DE, Sahm F, Schrimpf D, et al.",
+                        year: 2015,
+                        title: "ATRX and IDH1-R132H immunohistochemistry with subsequent copy number analysis and IDH sequencing as a basis for an 'integrated' diagnostic approach for adult astrocytoma, oligodendroglioma and glioblastoma",
+                        journal: "Acta Neuropathol. 2015;129(1):133-146",
+                        doi: "10.1007/s00401-014-1370-3",
+                        pmid: "25427834",
+                        abstract: "Workflow diagnostico integrato IHC→molecolare per gliomi adulti. ATRX loss + IDH mutation = astrocytoma.",
+                        tags: ["IDH", "ATRX", "WORKFLOW", "ASTROCYTOMA"]
+                    },
+                    {
+                        id: "watanabe2009",
+                        authors: "Watanabe T, Nobusawa S, Kleihues P, Ohgaki H",
+                        year: 2009,
+                        title: "IDH1 mutations are early events in the development of astrocytomas and oligodendrogliomas",
+                        journal: "Am J Pathol. 2009;174(4):1149-1153",
+                        doi: "10.2353/ajpath.2009.080958",
+                        pmid: "19246647",
+                        abstract: "IDH mutation è evento early in gliomi diffusi. Presente in Grade 2-4 ma ASSENTE in glioblastoma primario.",
+                        tags: ["IDH", "PATHOGENESIS", "ASTROCYTOMA"]
+                    }
+                ]
+            },
+            "oligodendroglioma": {
+                title: "Oligodendroglioma 1p/19q-codeleted",
+                icon: "🔵",
+                references: [
+                    {
+                        id: "cairncross2013",
+                        authors: "Cairncross JG, Wang M, Jenkins RB, et al.",
+                        year: 2013,
+                        title: "Benefit from procarbazine, lomustine, and vincristine in oligodendroglial tumors is associated with mutation of IDH",
+                        journal: "J Clin Oncol. 2014;32(8):783-790",
+                        doi: "10.1200/JCO.2013.49.3726",
+                        pmid: "24516018",
+                        abstract: "Trial clinico dimostra prognosi favorevole oligodendroglioma IDH-mut 1p/19q-codel. Risposta eccellente a chemioterapia PCV.",
+                        tags: ["OLIGODENDROGLIOMA", "1P/19Q", "PROGNOSIS", "THERAPY"]
+                    },
+                    {
+                        id: "jenkins2006",
+                        authors: "Jenkins RB, Blair H, Ballman KV, et al.",
+                        year: 2006,
+                        title: "A t(1;19)(q10;p10) mediates the combined deletions of 1p and 19q and predicts a better prognosis of patients with oligodendroglioma",
+                        journal: "Cancer Res. 2006;66(20):9852-9861",
+                        doi: "10.1158/0008-5472.CAN-06-1796",
+                        pmid: "17047046",
+                        abstract: "Meccanismo genetico 1p/19q codeletion: traslocazione bilanciata t(1;19). Predittore prognostico favorevole.",
+                        tags: ["OLIGODENDROGLIOMA", "1P/19Q", "GENETICS"]
+                    },
+                    {
+                        id: "van2012",
+                        authors: "van den Bent MJ, Brandes AA, Taphoorn MJ, et al.",
+                        year: 2013,
+                        title: "Adjuvant procarbazine, lomustine, and vincristine chemotherapy in newly diagnosed anaplastic oligodendroglioma: long-term follow-up of EORTC brain tumor group study 26951",
+                        journal: "J Clin Oncol. 2013;31(3):344-350",
+                        doi: "10.1200/JCO.2012.43.2229",
+                        pmid: "23071237",
+                        abstract: "EORTC 26951: beneficio long-term chemioterapia in oligodendroglioma anaplastico 1p/19q-codel.",
+                        tags: ["OLIGODENDROGLIOMA", "1P/19Q", "THERAPY", "CLINICAL-TRIAL"]
+                    }
+                ]
+            },
+            "glioblastoma": {
+                title: "Glioblastoma IDH-wildtype",
+                icon: "🔴",
+                references: [
+                    {
+                        id: "brennan2013",
+                        authors: "Brennan CW, Verhaak RG, McKenna A, et al. (TCGA)",
+                        year: 2013,
+                        title: "The somatic genomic landscape of glioblastoma",
+                        journal: "Cell. 2013;155(2):462-477",
+                        doi: "10.1016/j.cell.2013.09.034",
+                        pmid: "24120142",
+                        abstract: "TCGA GBM: alterazioni genomiche ricorrenti (EGFR amp, PTEN loss, TP53, TERT promoter). Subtypes molecolari Proneural/Classical/Mesenchymal.",
+                        tags: ["GLIOBLASTOMA", "EGFR", "TP53", "TERT", "TCGA"]
+                    },
+                    {
+                        id: "ohgaki2013",
+                        authors: "Ohgaki H, Kleihues P",
+                        year: 2013,
+                        title: "The definition of primary and secondary glioblastoma",
+                        journal: "Clin Cancer Res. 2013;19(4):764-772",
+                        doi: "10.1158/1078-0432.CCR-12-3002",
+                        pmid: "23209033",
+                        abstract: "Definizione GBM primario (de novo, IDH-wt, EGFR amp) vs secondario (progressione da LGG, IDH-mut, TP53 mut).",
+                        tags: ["GLIOBLASTOMA", "IDH", "TP53", "EGFR"]
+                    },
+                    {
+                        id: "killela2013",
+                        authors: "Killela PJ, Reitman ZJ, Jiao Y, et al.",
+                        year: 2013,
+                        title: "TERT promoter mutations occur frequently in gliomas and a subset of tumors derived from cells with low rates of self-renewal",
+                        journal: "Proc Natl Acad Sci USA. 2013;110(15):6021-6026",
+                        doi: "10.1073/pnas.1303607110",
+                        pmid: "23530248",
+                        abstract: "TERT promoter mutation (C228T, C250T) in 83% GBM primari. Correlata con prognosi sfavorevole e telomerase reactivation.",
+                        tags: ["GLIOBLASTOMA", "TERT", "PROGNOSIS"]
+                    }
+                ]
+            },
+            "h3_dmg": {
+                title: "Diffuse Midline Glioma H3-altered",
+                icon: "⚠️",
+                references: [
+                    {
+                        id: "sturm2012",
+                        authors: "Sturm D, Witt H, Hovestadt V, et al.",
+                        year: 2012,
+                        title: "Hotspot mutations in H3F3A and IDH1 define distinct epigenetic and biological subgroups of glioblastoma",
+                        journal: "Cancer Cell. 2012;22(4):425-437",
+                        doi: "10.1016/j.ccr.2012.08.024",
+                        pmid: "23079654",
+                        abstract: "H3F3A K27M mutation definisce subgruppo pediatrico pontino (DIPG) con prognosi infausta. Alterazione epigenetica globale.",
+                        tags: ["DMG", "H3K27M", "PEDIATRIC", "PROGNOSIS"]
+                    },
+                    {
+                        id: "schwartzentruber2012",
+                        authors: "Schwartzentruber J, Korshunov A, Liu XY, et al.",
+                        year: 2012,
+                        title: "Driver mutations in histone H3.3 and chromatin remodelling genes in paediatric glioblastoma",
+                        journal: "Nature. 2012;482(7384):226-231",
+                        doi: "10.1038/nature10833",
+                        pmid: "22286061",
+                        abstract: "Discovery H3F3A K27M e G34R/V mutations in pediatric HGG. K27M → midline, G34 → hemispheric.",
+                        tags: ["DMG", "H3K27M", "H3G34", "PEDIATRIC"]
+                    },
+                    {
+                        id: "castel2015",
+                        authors: "Castel D, Philippe C, Calmon R, et al.",
+                        year: 2015,
+                        title: "Histone H3F3A and HIST1H3B K27M mutations define two subgroups of diffuse intrinsic pontine gliomas with different prognosis and phenotypes",
+                        journal: "Acta Neuropathol. 2015;130(6):815-827",
+                        doi: "10.1007/s00401-015-1478-0",
+                        pmid: "26399630",
+                        abstract: "H3.3 K27M vs H3.1 K27M in DIPG: sottogruppi biologici distinti. H3.3 più aggressivo.",
+                        tags: ["DMG", "H3K27M", "DIPG", "PROGNOSIS"]
+                    },
+                    {
+                        id: "louis2014",
+                        authors: "Louis DN, Giannini C, Capper D, et al.",
+                        year: 2018,
+                        title: "cIMPACT-NOW update 2: diagnostic clarifications for diffuse midline glioma, H3 K27M-mutant",
+                        journal: "Acta Neuropathol. 2018;135(4):639-642",
+                        doi: "10.1007/s00401-018-1826-y",
+                        pmid: "29497819",
+                        abstract: "Raccomandazioni cIMPACT-NOW: DMG H3K27-altered sempre Grade 4, indipendentemente da morfologia. H3K27me3 IHC come surrogate marker.",
+                        tags: ["DMG", "H3K27M", "GRADING", "IHC"]
+                    }
+                ]
+            },
+            "molecular_grading": {
+                title: "NGS Panel & Grading Molecolare",
+                icon: "🔬",
+                references: [
+                    {
+                        id: "suzuki2015",
+                        authors: "Suzuki H, Aoki K, Chiba K, et al.",
+                        year: 2015,
+                        title: "Mutational landscape and clonal architecture in grade II and III gliomas",
+                        journal: "Nat Genet. 2015;47(5):458-468",
+                        doi: "10.1038/ng.3273",
+                        pmid: "25848751",
+                        abstract: "Landscape mutazionale LGG: IDH1/2, TP53, ATRX, CIC, FUBP1, NOTCH1. Clonal evolution da Grade 2→3→4.",
+                        tags: ["NGS", "IDH", "TP53", "GRADING"]
+                    },
+                    {
+                        id: "tcga2015",
+                        authors: "Cancer Genome Atlas Research Network",
+                        year: 2015,
+                        title: "Comprehensive, Integrative Genomic Analysis of Diffuse Lower-Grade Gliomas",
+                        journal: "N Engl J Med. 2015;372(26):2481-2498",
+                        doi: "10.1056/NEJMoa1402121",
+                        pmid: "26061751",
+                        abstract: "TCGA LGG: 3 gruppi prognostici molecolari. IDH-mut/1p19q-codel (best), IDH-mut/non-codel (intermediate), IDH-wt (worst).",
+                        tags: ["NGS", "IDH", "1P/19Q", "PROGNOSIS", "TCGA"]
+                    },
+                    {
+                        id: "shirahata2009",
+                        authors: "Shirahata M, Ono T, Stichel D, et al.",
+                        year: 2018,
+                        title: "Novel, improved grading system(s) for IDH-mutant astrocytic gliomas",
+                        journal: "Acta Neuropathol. 2018;136(1):153-166",
+                        doi: "10.1007/s00401-018-1849-4",
+                        pmid: "29679143",
+                        abstract: "Proposta grading molecolare per astrocytoma IDH-mut: CDKN2A/B deletion automaticamente Grade 4 (anticipazione WHO CNS5).",
+                        tags: ["GRADING", "CDKN2A", "IDH", "ASTROCYTOMA"]
+                    }
+                ]
+            },
+            "mgmt_predictive": {
+                title: "MGMT & Marcatori Predittivi",
+                icon: "💊",
+                references: [
+                    {
+                        id: "hegi2005",
+                        authors: "Hegi ME, Diserens AC, Gorlia T, et al.",
+                        year: 2005,
+                        title: "MGMT gene silencing and benefit from temozolomide in glioblastoma",
+                        journal: "N Engl J Med. 2005;352(10):997-1003",
+                        doi: "10.1056/NEJMoa043331",
+                        pmid: "15758010",
+                        abstract: "Studio landmark: MGMT promoter methylation predice risposta a temozolomide in GBM. Methylated = sopravvivenza mediana 21.7 mesi vs 12.7 unmethylated.",
+                        tags: ["MGMT", "TEMOZOLOMIDE", "PROGNOSIS", "GLIOBLASTOMA"]
+                    },
+                    {
+                        id: "stupp2009",
+                        authors: "Stupp R, Hegi ME, Mason WP, et al.",
+                        year: 2009,
+                        title: "Effects of radiotherapy with concomitant and adjuvant temozolomide versus radiotherapy alone on survival in glioblastoma in a randomised phase III study: 5-year analysis of the EORTC-NCIC trial",
+                        journal: "Lancet Oncol. 2009;10(5):459-466",
+                        doi: "10.1016/S1470-2045(09)70025-7",
+                        pmid: "19269895",
+                        abstract: "EORTC-NCIC trial: Stupp protocol (RT+TMZ) diventa standard care GBM. MGMT methylation conferma valore predittivo long-term.",
+                        tags: ["MGMT", "TEMOZOLOMIDE", "GLIOBLASTOMA", "CLINICAL-TRIAL"]
+                    },
+                    {
+                        id: "wick2012",
+                        authors: "Wick W, Meisner C, Hentschel B, et al.",
+                        year: 2012,
+                        title: "Prognostic or predictive value of MGMT promoter methylation in gliomas depends on IDH1 mutation",
+                        journal: "Neurology. 2013;81(17):1515-1522",
+                        doi: "10.1212/WNL.0b013e3182a95680",
+                        pmid: "24068788",
+                        abstract: "MGMT valore predittivo è context-dependent: forte in IDH-wt GBM, meno rilevante in IDH-mut gliomas.",
+                        tags: ["MGMT", "IDH", "PROGNOSIS"]
+                    }
+                ]
+            },
+            "tp53_cdkn2a": {
+                title: "TP53 & CDKN2A/B (CNS5 Grading)",
+                icon: "🧬",
+                references: [
+                    {
+                        id: "banan2020",
+                        authors: "Banan R, Hartmann C, Martinkova E, et al.",
+                        year: 2020,
+                        title: "CDKN2A/B homozygous deletion is a strong adverse prognostic factor in IDH-mutant glioma",
+                        journal: "Neuro Oncol. 2021;23(1):39-49",
+                        doi: "10.1093/neuonc/noaa253",
+                        pmid: "33141886",
+                        abstract: "CDKN2A/B homozygous deletion = Grade 4 automatico WHO CNS5. Outcome simile a GBM anche se morfologia low-grade.",
+                        tags: ["CDKN2A", "GRADING", "IDH", "PROGNOSIS"]
+                    },
+                    {
+                        id: "shirahata2018",
+                        authors: "Shirahata M, Ono T, Stichel D, et al.",
+                        year: 2018,
+                        title: "Novel, improved grading system(s) for IDH-mutant astrocytic gliomas",
+                        journal: "Acta Neuropathol. 2018;136(1):153-166",
+                        doi: "10.1007/s00401-018-1849-4",
+                        pmid: "29679143",
+                        abstract: "Proposal WHO CNS5 grading: CDKN2A/B hom del = automatic Grade 4, anche senza necrosi/MVP.",
+                        tags: ["CDKN2A", "GRADING", "WHO"]
+                    },
+                    {
+                        id: "brat2018",
+                        authors: "Brat DJ, Aldape K, Colman H, et al.",
+                        year: 2018,
+                        title: "cIMPACT-NOW update 3: recommended diagnostic criteria for 'Diffuse astrocytic glioma, IDH-wildtype, with molecular features of glioblastoma, WHO grade IV'",
+                        journal: "Acta Neuropathol. 2018;136(5):805-810",
+                        doi: "10.1007/s00401-018-1913-0",
+                        pmid: "30259105",
+                        abstract: "Raccomandazione cIMPACT-NOW: glioma astrocitario IDH-wt con EGFR amp, +7/-10, TERT mut = Grade 4 'molecolare' anche senza features istologiche GBM.",
+                        tags: ["GRADING", "IDH", "EGFR", "TERT"]
+                    },
+                    {
+                        id: "kamoun2016",
+                        authors: "Kamoun A, Idbaih A, Dehais C, et al.",
+                        year: 2016,
+                        title: "Integrated multi-omics analysis of oligodendroglial tumours identifies three subgroups of 1p/19q co-deleted gliomas",
+                        journal: "Nat Commun. 2016;7:11263",
+                        doi: "10.1038/ncomms11263",
+                        pmid: "27098550",
+                        abstract: "Sottogruppi molecolari oligodendroglioma 1p/19q-codel. TP53 mutation è RARA in oligo (mutually exclusive con 1p/19q).",
+                        tags: ["OLIGODENDROGLIOMA", "TP53", "1P/19Q"]
+                    }
+                ]
+            }
+        };
+        
+        // RENDERING BIBLIOGRAFIA INTERATTIVA
+        function renderBibliography() {
+            const container = document.getElementById('biblio-container');
+            let html = '';
+            
+            for (const [categoryId, category] of Object.entries(bibliography)) {
+                html += `
+                    <div class="biblio-category" id="cat-${categoryId}">
+                        <div class="biblio-category-header" onclick="toggleCategory('${categoryId}')">
+                            <div class="biblio-category-title">
+                                <span>${category.icon}</span>
+                                <span>${category.title}</span>
+                                <span style="background: #e5e7eb; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; color: #6b7280; margin-left: 8px;">${category.references.length} refs</span>
+                            </div>
+                            <span class="biblio-category-toggle">▼</span>
+                        </div>
+                        <div class="biblio-category-content">
+                `;
+                
+                for (const ref of category.references) {
+                    html += `
+                        <div class="biblio-reference" id="ref-${ref.id}">
+                            <div class="biblio-reference-header">
+                                <div class="biblio-reference-authors">${ref.authors}</div>
+                                <div class="biblio-reference-year">${ref.year}</div>
+                            </div>
+                            <div class="biblio-reference-title">${ref.title}</div>
+                            <div class="biblio-reference-journal">${ref.journal}</div>
+                            <div class="biblio-reference-abstract" id="abstract-${ref.id}">
+                                <strong>Takeaway:</strong> ${ref.abstract}
+                            </div>
+                            <div class="biblio-reference-actions">
+                                <a href="https://doi.org/${ref.doi}" target="_blank" class="biblio-doi-link">
+                                    📄 DOI: ${ref.doi}
+                                </a>
+                                ${ref.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${ref.pmid}/" target="_blank" class="biblio-pmid-link">🔬 PMID: ${ref.pmid}</a>` : ''}
+                                <button class="abstract-toggle" onclick="toggleAbstract('${ref.id}')">Mostra Abstract</button>
+                            </div>
+                            <div class="biblio-tags">
+                                ${ref.tags.map(tag => `<span class="biblio-tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function toggleCategory(categoryId) {
+            const category = document.getElementById(`cat-${categoryId}`);
+            category.classList.toggle('expanded');
+        }
+        
+        function toggleAbstract(refId) {
+            const reference = document.getElementById(`ref-${refId}`);
+            const button = reference.querySelector('.abstract-toggle');
+            
+            if (reference.classList.contains('show-abstract')) {
+                reference.classList.remove('show-abstract');
+                button.textContent = 'Mostra Abstract';
+            } else {
+                reference.classList.add('show-abstract');
+                button.textContent = 'Nascondi Abstract';
+            }
+        }
+        
+        // HIGHLIGHTING BIBLIOGRAFIA BASATO SU DIAGNOSI
+        function highlightRelevantReferences(diagnosis, data) {
+            // Reset all highlights
+            document.querySelectorAll('.biblio-reference.relevant').forEach(el => {
+                el.classList.remove('relevant');
+                const badge = el.querySelector('.biblio-relevance-badge');
+                if (badge) badge.remove();
+            });
+            
+            document.querySelectorAll('.biblio-category.has-relevant').forEach(el => {
+                el.classList.remove('has-relevant');
+            });
+            
+            // Determine relevant tags based on diagnosis
+            let relevantTags = new Set(['WHO', 'GRADING']); // Always relevant
+            
+            // IDH status
+            if (data['idh-ngs'].includes('mutato') || data['idh-ihc'] === 'positive') {
+                relevantTags.add('IDH');
+            }
+            
+            // Entity-specific
+            if (diagnosis.entity && diagnosis.entity.includes('Astrocytoma')) {
+                relevantTags.add('ASTROCYTOMA');
+                relevantTags.add('ATRX');
+                if (data.atrx === 'lost') relevantTags.add('ATRX');
+            }
+            
+            if (diagnosis.entity && diagnosis.entity.includes('Oligodendroglioma')) {
+                relevantTags.add('OLIGODENDROGLIOMA');
+                relevantTags.add('1P/19Q');
+            }
+            
+            if (diagnosis.entity && diagnosis.entity.includes('Glioblastoma')) {
+                relevantTags.add('GLIOBLASTOMA');
+                relevantTags.add('EGFR');
+                relevantTags.add('TERT');
+                if (data.mgmt !== '' && data.mgmt !== 'not-done') {
+                    relevantTags.add('MGMT');
+                    relevantTags.add('TEMOZOLOMIDE');
+                }
+            }
+            
+            if (diagnosis.entity && diagnosis.entity.includes('Midline Glioma')) {
+                relevantTags.add('DMG');
+                relevantTags.add('H3K27M');
+                relevantTags.add('PEDIATRIC');
+            }
+            
+            // Molecular markers
+            if (data['tp53-ngs'] === 'mutato' || data.p53 > 10) {
+                relevantTags.add('TP53');
+            }
+            
+            if (data.cdkn2a === 'homozygous-del') {
+                relevantTags.add('CDKN2A');
+            }
+            
+            if (data['1p19q'] === 'codeleted') {
+                relevantTags.add('1P/19Q');
+            }
+            
+            if (data.tert === 'mutato') {
+                relevantTags.add('TERT');
+            }
+            
+            if (data.egfr === 'amplified' || data.egfr === 'vIII') {
+                relevantTags.add('EGFR');
+            }
+            
+            // Highlight matching references
+            let relevantCount = 0;
+            
+            for (const [categoryId, category] of Object.entries(bibliography)) {
+                let categoryHasRelevant = false;
+                
+                for (const ref of category.references) {
+                    const hasMatch = ref.tags.some(tag => relevantTags.has(tag));
+                    
+                    if (hasMatch) {
+                        const refElement = document.getElementById(`ref-${ref.id}`);
+                        refElement.classList.add('relevant');
+                        
+                        // Add relevance badge
+                        const actionsDiv = refElement.querySelector('.biblio-reference-actions');
+                        const badge = document.createElement('span');
+                        badge.className = 'biblio-relevance-badge';
+                        badge.textContent = '✓ Rilevante';
+                        actionsDiv.insertBefore(badge, actionsDiv.firstChild);
+                        
+                        relevantCount++;
+                        categoryHasRelevant = true;
+                    }
+                }
+                
+                if (categoryHasRelevant) {
+                    document.getElementById(`cat-${categoryId}`).classList.add('has-relevant');
+                }
+            }
+            
+            // Update relevance badge in header
+            const badge = document.getElementById('relevance-badge');
+            if (relevantCount > 0) {
+                badge.textContent = `${relevantCount} riferimenti pertinenti evidenziati`;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        // Initialize bibliography on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderBibliography();
+        });
+        
         // CASI PRECARICATI
         const cases = {
             case1: {
@@ -781,6 +1518,19 @@
             });
             document.getElementById('report-container').innerHTML = '';
             document.getElementById('case-select').value = '';
+            
+            // Reset bibliography highlights
+            document.querySelectorAll('.biblio-reference.relevant').forEach(el => {
+                el.classList.remove('relevant');
+                const badge = el.querySelector('.biblio-relevance-badge');
+                if (badge) badge.remove();
+            });
+            
+            document.querySelectorAll('.biblio-category.has-relevant').forEach(el => {
+                el.classList.remove('has-relevant');
+            });
+            
+            document.getElementById('relevance-badge').style.display = 'none';
         }
         
         function generateDiagnosis() {
@@ -816,6 +1566,14 @@
             
             const diagnosis = computeDiagnosis(data);
             displayDiagnosis(diagnosis, data);
+            
+            // Highlight relevant bibliography
+            highlightRelevantReferences(diagnosis, data);
+            
+            // Scroll to bibliography
+            setTimeout(() => {
+                document.querySelector('.biblio-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 500);
         }
         
         function computeDiagnosis(data) {
@@ -1066,9 +1824,9 @@
             const pdfContent = document.createElement('div');
             pdfContent.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h2>REPORT DIAGNOSTICO GLIOMI SNC - v2.0</h2>
+                    <h2>REPORT DIAGNOSTICO GLIOMI SNC - v2.1</h2>
                     <p>Data: ${new Date().toLocaleDateString('it-IT')}</p>
-                    <p style="font-size: 12px; color: #666;">Workflow WHO CNS5 2021 con Scoring Avanzato</p>
+                    <p style="font-size: 12px; color: #666;">Workflow WHO CNS5 2021 con Scoring Avanzato & Bibliografia Interattiva</p>
                 </div>
                 <hr>
                 ${reportElement.innerHTML}
