@@ -2,7 +2,7 @@
 
 Sistema educativo interattivo per apprendere la classificazione WHO CNS5 2021 dei tumori del sistema nervoso centrale, con integrazione di criteri morfologici, immunoistochimici e molecolari.
 
-[![Versione](https://img.shields.io/badge/versione-2.1.4-blue.svg)](https://github.com/tuousername/snc-diagnostic-tool)
+[![Versione](https://img.shields.io/badge/versione-2.1.3-blue.svg)](https://github.com/tuousername/snc-diagnostic-tool)
 [![WHO CNS5](https://img.shields.io/badge/WHO-CNS5%202021-green.svg)](https://www.who.int/)
 [![Licenza](https://img.shields.io/badge/licenza-Educational-orange.svg)](LICENSE)
 
@@ -193,43 +193,6 @@ Alert:
 
 ## 🆕 Changelog
 
-### v2.1.4 (Novembre 2024) - Perfect Release
-
-**✨ Validazioni Biologiche Complete + Alert Ki-67**
-
-Questa release raggiunge la **perfezione assoluta** con validazioni biologiche complete e alert informativi stratificati.
-
-**🛡️ Validazioni Biologiche Aggiunte:**
-
-1. **Validazione IDH-mut + EGFR amplification**
-   - Alert automatico se IDH mutato + EGFR amplificato (biologicamente impossibile)
-   - EGFR amplification si trova SOLO in GBM primario IDH-wildtype
-   - Segnala possibile errore tecnico o contaminazione campione
-
-2. **Validazione ATRX loss + 1p/19q codeletion**
-   - Alert automatico se ATRX loss + 1p/19q codeletion (mutually exclusive)
-   - ATRX loss → Astrocytoma (1p/19q intact)
-   - 1p/19q codel → Oligodendroglioma (ATRX retained)
-   - Segnala possibile errore FISH/IHC
-
-**📊 Alert Informativi Ki-67:**
-
-3. **Ki-67 stratificato per range**
-   - Ki-67 ≥50% → Alert "supporta Grade 4 (alta attività proliferativa)"
-   - Ki-67 30-49% → Alert "compatibile con Grade 3-4"
-   - Ki-67 20-29% → Alert "compatibile con Grade 2-3"
-   - Ki-67 <20% → Nessun alert (compatibile low-grade)
-
-**📈 Risultato:**
-- Accuracy: 99.9% (perfetta)
-- Issue residui: 0 (zero)
-- Validazioni biologiche: Complete
-- Alert informativi: Completi
-
-**✅ RELEASE PERFETTA**: Tool production-ready con validazioni complete e zero issue residui.
-
----
-
 ### v2.1.3 (Novembre 2024) - Critical Hotfix
 
 **🐛 Bug Critico Risolto:**
@@ -407,4 +370,4 @@ Questo software è fornito "così com'è", senza garanzie di alcun tipo. Gli aut
 
 ---
 
-**Versione corrente: 2.1.4** | **Ultimo aggiornamento: Novembre 2024** | **WHO CNS5 2021 compliant**
+**Versione corrente: 2.1.3** | **Ultimo aggiornamento: Novembre 2024** | **WHO CNS5 2021 compliant**
