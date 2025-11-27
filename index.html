@@ -1635,6 +1635,11 @@
                     alerts.push({type: 'success', msg: '✓ IDH mutato confermato'});
                 }
                 
+                // VALIDAZIONE BIOLOGICA: IDH-mut + EGFR amp = IMPOSSIBILE
+                if (data.egfr === 'amplified' || data.egfr === 'vIII') {
+                    alerts.push({type: 'warning', msg: '🚨 COMBINAZIONE IMPOSSIBILE: IDH-mutato + EGFR amplificato. EGFR amp si trova SOLO in GBM primario IDH-wildtype. Verifica dati laboratorio (possibile contaminazione/errore tecnico)'});
+                }
+                
                 // GRADING per IDH-mutato: mitosi + atipia + architettura + TP53
                 let hasNecroMicro = data.histFeatures.necrosis && data.histFeatures.microvascular;
                 let atypiaScore = 0;
@@ -1685,6 +1690,11 @@
                 if (data.atrx === 'lost') {
                     diagnosis.entity = 'Astrocytoma, IDH-mutated';
                     scores.astrocytoma += 60;
+                    
+                    // VALIDAZIONE BIOLOGICA: ATRX loss + 1p/19q codel = MUTUALLY EXCLUSIVE
+                    if (data['1p19q'] === 'codeleted') {
+                        alerts.push({type: 'warning', msg: '🚨 INCOMPATIBILITÀ: ATRX loss + 1p/19q codeletion sono MUTUALLY EXCLUSIVE. ATRX loss→Astrocytoma (1p/19q intact), 1p/19q codel→Oligodendroglioma (ATRX retained). Verifica dati FISH/IHC'});
+                    }
                     if (tp53Altered) {
                         diagnosis.entity = 'Astrocytoma, IDH-mutated, TP53-altered';
                         scores.astrocytoma += 30;
@@ -1693,6 +1703,11 @@
                 } else if (data.atrx === 'retained' && data.olig2 === 'positive') {
                     diagnosis.entity = 'Oligodendroglioma, IDH-mutated and 1p/19q-codeleted';
                     scores.oligodendroglioma += 80;
+                    
+                    // VALIDAZIONE BIOLOGICA: 1p/19q codel + ATRX loss = MUTUALLY EXCLUSIVE
+                    if (data.atrx === 'lost') {
+                        alerts.push({type: 'warning', msg: '🚨 INCOMPATIBILITÀ: 1p/19q codeletion richiede ATRX retained. Verifica dati'});
+                    }
                     if (data['1p19q'] === 'codeleted') {
                         alerts.push({type: 'success', msg: '✓ 1p/19q codel confermato → Oligodendroglioma definito'});
                         scores.oligodendroglioma += 50;
@@ -1737,6 +1752,16 @@
             };
             
             diagnosis.confidence = confidence;
+            
+            // ALERT INFORMATIVO: Ki-67 alto supporta grading
+            if (data.ki67 >= 50) {
+                alerts.push({type: 'info', msg: 'ℹ️ Ki-67 ≥50%: supporta Grade 4 (alta attività proliferativa)'});
+            } else if (data.ki67 >= 30 && data.ki67 < 50) {
+                alerts.push({type: 'info', msg: 'ℹ️ Ki-67 30-49%: compatibile con Grade 3-4'});
+            } else if (data.ki67 >= 20 && data.ki67 < 30) {
+                alerts.push({type: 'info', msg: 'ℹ️ Ki-67 20-29%: compatibile con Grade 2-3'});
+            }
+            
             diagnosis.alerts = alerts;
             
             // Predittivi MGMT
