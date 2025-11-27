@@ -1624,10 +1624,16 @@
             }
             
             // IDH MUTATO
-            if (idhStatus.includes('mutato')) {
+            if (idhStatus.includes('mut') && idhStatus !== 'wildtype' && idhStatus !== 'wildtype-ihc') {
                 scores.astrocytoma += 50;
                 scores.oligodendroglioma += 40;
-                alerts.push({type: 'success', msg: '✓ IDH mutato confermato'});
+                
+                // Check discordanza IHC-/NGS+
+                if (data['idh-ihc'] === 'negative' && idhStatus.includes('mut')) {
+                    alerts.push({type: 'warning', msg: '⚠️ DISCORDANZA: IHC IDH1 R132H negativo ma NGS mutato → Mutazione NON-R132H (es. R132C, R132G, IDH2) o errore tecnico'});
+                } else {
+                    alerts.push({type: 'success', msg: '✓ IDH mutato confermato'});
+                }
                 
                 // GRADING per IDH-mutato: mitosi + atipia + architettura + TP53
                 let hasNecroMicro = data.histFeatures.necrosis && data.histFeatures.microvascular;

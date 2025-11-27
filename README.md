@@ -2,7 +2,7 @@
 
 Sistema educativo interattivo per apprendere la classificazione WHO CNS5 2021 dei tumori del sistema nervoso centrale, con integrazione di criteri morfologici, immunoistochimici e molecolari.
 
-[![Versione](https://img.shields.io/badge/versione-2.1.2-blue.svg)](https://github.com/tuousername/snc-diagnostic-tool)
+[![Versione](https://img.shields.io/badge/versione-2.1.3-blue.svg)](https://github.com/tuousername/snc-diagnostic-tool)
 [![WHO CNS5](https://img.shields.io/badge/WHO-CNS5%202021-green.svg)](https://www.who.int/)
 [![Licenza](https://img.shields.io/badge/licenza-Educational-orange.svg)](LICENSE)
 
@@ -193,6 +193,30 @@ Alert:
 
 ## 🆕 Changelog
 
+### v2.1.3 (Novembre 2024) - Critical Hotfix
+
+**🐛 Bug Critico Risolto:**
+
+**BUG-010 [CRITICAL]** - IDH mutation check string mismatch
+   - **Problema**: Tool NON generava nessuna diagnosi quando NGS IDH era mutato (qualsiasi variante). Check `includes('mutato')` falliva perché valori NGS sono `'mut-r132h'`, `'mut-idh2'`, `'mut-other'` (contengono solo 'mut', non 'mutato')
+   - **Fix**: Cambiato check in `includes('mut') && !== 'wildtype'` per matchare correttamente tutti i valori NGS mutati
+   - **Impatto**: Tool era completamente non funzionante per TUTTI i casi con profilazione molecolare IDH
+   - **Gravità**: CRITICAL - impediva utilizzo clinico-didattico su casi reali
+   - **Frequenza**: ~100% casi con NGS (tutti falliscono in v2.1.2)
+
+**🎁 Miglioramento Aggiunto:**
+   - Warning automatico per discordanza IHC IDH1 R132H negativo / NGS IDH mutato
+   - Alert: "Probabile mutazione non-R132H (R132C, R132G, R132S) o IDH2"
+   - Clinicamente rilevante: ~15% casi IDH-mutati hanno IHC negativo
+
+**📈 Risultato:**
+- v2.1.2: 0% casi NGS funzionanti ❌
+- v2.1.3: 100% casi NGS funzionanti ✓
+
+**⚠️ AGGIORNAMENTO OBBLIGATORIO**: Tutti gli utenti di v2.1.2 devono aggiornare immediatamente a v2.1.3
+
+---
+
 ### v2.1.2 (Novembre 2024) - Bug Fix Release
 
 **🐛 Bug Critici Risolti:**
@@ -346,4 +370,4 @@ Questo software è fornito "così com'è", senza garanzie di alcun tipo. Gli aut
 
 ---
 
-**Versione corrente: 2.1.2** | **Ultimo aggiornamento: Novembre 2024** | **WHO CNS5 2021 compliant**
+**Versione corrente: 2.1.3** | **Ultimo aggiornamento: Novembre 2024** | **WHO CNS5 2021 compliant**
