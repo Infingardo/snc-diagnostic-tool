@@ -981,9 +981,9 @@
                 icon: "🧬",
                 references: [
                     {
-                        id: "baumgarten2020",
+                        id: "baumgarten2014",
                         authors: "Baumgarten P, Harter PN, Tönjes M, et al.",
-                        year: 2020,
+                        year: 2014,
                         title: "Loss of FUBP1 expression in gliomas predicts FUBP1 mutation and is associated with oligodendroglial differentiation, IDH1 mutation and 1p/19q loss of heterozygosity",
                         journal: "Neuropathol Appl Neurobiol. 2014;40(2):205-216",
                         doi: "10.1111/nan.12088",
@@ -1131,7 +1131,7 @@
                         tags: ["DMG", "H3K27M", "DIPG", "PROGNOSIS"]
                     },
                     {
-                        id: "louis2014",
+                        id: "louis2018_cimpact",
                         authors: "Louis DN, Giannini C, Capper D, et al.",
                         year: 2018,
                         title: "cIMPACT-NOW update 2: diagnostic clarifications for diffuse midline glioma, H3 K27M-mutant",
@@ -1170,7 +1170,7 @@
                         tags: ["NGS", "IDH", "1P/19Q", "PROGNOSIS", "TCGA"]
                     },
                     {
-                        id: "shirahata2009",
+                        id: "shirahata2018",
                         authors: "Shirahata M, Ono T, Stichel D, et al.",
                         year: 2018,
                         title: "Novel, improved grading system(s) for IDH-mutant astrocytic gliomas",
@@ -1585,7 +1585,7 @@
             if (data.cdkn2a === 'homozygous-del') {
                 alerts.push({type: 'warning', msg: '🚨 CDKN2A/B homozygous deletion PRESENTE: WHO Grade 4 AUTOMATICO'});
                 diagnosis.grade = 'WHO Grade 4';
-                scores.glioblastoma += 100;
+                // scores.glioblastoma += 100;  // FIX BUG-002: Entity dipende da IDH status
             }
             
             // CHECK: H3K27me3 LOSS o H3F3A K27M = DIFFUSE MIDLINE GLIOMA
@@ -1594,6 +1594,16 @@
                 diagnosis.grade = 'WHO Grade 4';
                 diagnosis.entity = 'Glioma diffuso linea mediana, H3K27-altered';
                 scores.dmg += 150;
+                
+                // FIX BUG-003: DMG è diagnosi definitiva - return early
+                diagnosis.confidence = {
+                    astrocytoma: 0,
+                    oligodendroglioma: 0,
+                    glioblastoma: 0,
+                    dmg: 100
+                };
+                diagnosis.alerts = alerts;
+                return diagnosis;  // Return early - DMG definitivo
             }
             
             // IDH STATUS - Priorità NGS
@@ -1685,14 +1695,14 @@
             }
             
             // IDH WILDTYPE
-            if (idhStatus === 'wildtype' || idhStatus === 'wildtype-ihc') {
+            else if (idhStatus === 'wildtype' || idhStatus === 'wildtype-ihc') {
                 alerts.push({type: 'success', msg: '✓ IDH wildtype confermato'});
                 
                 // GRADING per IDH-wildtype
                 if (data.mitosis >= 10 || (data.histFeatures.necrosis && data.histFeatures.microvascular)) {
                     diagnosis.grade = 'WHO Grade 4';
                     diagnosis.entity = 'Glioblastoma, IDH-wildtype';
-                    scores.glioblastoma += 100;
+                    // scores.glioblastoma += 100;  // FIX BUG-002: Entity dipende da IDH status
                     alerts.push({type: 'success', msg: '✓ Grade 4 (GBM) confermato'});
                 } else {
                     diagnosis.grade = 'WHO Grade 2-3';
