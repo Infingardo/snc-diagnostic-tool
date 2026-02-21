@@ -1,373 +1,130 @@
-# 🧠 Tool Diagnostico Gliomi SNC v2.1.2
-
-Sistema educativo interattivo per apprendere la classificazione WHO CNS5 2021 dei tumori del sistema nervoso centrale, con integrazione di criteri morfologici, immunoistochimici e molecolari.
-
-[![Versione](https://img.shields.io/badge/versione-2.1.3-blue.svg)](https://github.com/tuousername/snc-diagnostic-tool)
-[![WHO CNS5](https://img.shields.io/badge/WHO-CNS5%202021-green.svg)](https://www.who.int/)
-[![Licenza](https://img.shields.io/badge/licenza-Educational-orange.svg)](LICENSE)
+# 🧠 Neoplasie Cerebrali — Tool Diagnostico Didattico
+**v3.10.1** · WHO CNS5 2021 · Gliomi & Meningiomi
 
 ---
 
-## ⚠️ DISCLAIMER CRITICO
+## Cos'è
 
-### **ATTENZIONE: SOLO USO EDUCATIVO**
+Un ausilio didattico per la formazione in neuropatologia. Traduce il flusso diagnostico WHO CNS5 2021 in un percorso interattivo: morfologia EE → IHC → NGS → criterio WHO soddisfatto.
 
-**Questo strumento NON è validato clinicamente e NON deve essere utilizzato per:**
-- ❌ Diagnosi di pazienti reali
-- ❌ Decisioni terapeutiche
-- ❌ Consulenza medica
-- ❌ Refertazione anatomopatologica
-
-**Limitazioni fondamentali:**
-- Database ridotto a 5 entità diagnostiche principali
-- Methylation profiling simulato (non vero Heidelberg classifier)
-- Grading semplificato senza copy number alterations dettagliate
-- Assenza di integrazione imaging avanzata
-- Assenza di correlazione clinico-patologica completa
-- Non sostituisce tumor board multidisciplinare
-
-**Per diagnosi reali consultare:**
-- 🏥 Neuropatologo certificato
-- 🧬 Methylation profiling certificato (Heidelberg/DKFZ)
-- 👥 Tumor board multidisciplinare (neurochirurgo, oncologo, radioterapista, neuroradiologo)
+Non è un sistema diagnostico certificato. Non sostituisce il giudizio clinico-patologico. Il vetrino rimane il documento primario.
 
 ---
 
-## 🎯 Per Chi È Questo Strumento
+## Cosa fa
 
-**Target primario:**
-- 📚 Studenti di medicina (anni clinici)
-- 🔬 Specializzandi in anatomia patologica
-- 🧑‍⚕️ Neuropatologi in formazione
-- 🧪 Ricercatori che studiano gliomi
-- 👨‍🏫 Docenti per casi didattici
+Per ogni caso inserito, il tool produce:
 
-**NON per:**
-- ❌ Clinici che cercano strumenti diagnostici reali
-- ❌ Pazienti che cercano autodiagnosi
-- ❌ Decisioni terapeutiche
+1. **Ipotesi classificativa** — entità WHO CNS5 con grade assegnato
+2. **Ragionamento diagnostico** — 4 step espliciti (morfologia → IHC → molecolare → criterio WHO), con gerarchia visiva: ✔ soddisfatto · ⚠ borderline · ❌ mancante · 🧬 supporto non determinante
+3. **Entità escluse** — per ciascuna, il criterio determinante dell'esclusione (*"Oligodendroglioma escluso: 1p/19q non codeleta"*)
+4. **Alert clinici** — incoerenze molecolari, criteri borderline, alterazioni actionable
+5. **Indice di compatibilità morfo-molecolare** — scoring qualitativo pre-ragionamento, utile per casi equivoci
+6. **Nota epistemica** — promemoria su cosa il tool è e cosa non è
 
 ---
 
-## ✨ Caratteristiche Principali
+## Entità coperte
 
-### 🔄 Workflow Integrato WHO CNS5
-1. **Dati Clinici** → Età, sede anatomica, pattern MRI
-2. **Istologia** → Cellularità, atipia, mitosi, necrosi, proliferazione microvascolare
-3. **Immunoistochimica** → IDH1 R132H, ATRX, p53, OLIG2, GFAP, H3K27me3, Ki-67
-4. **Profilo Molecolare** → IDH1/2, TP53, 1p/19q, TERT, EGFR, H3F3A, CDKN2A/B
-5. **Marcatori Predittivi** → MGMT methylation, O6-methylguanine-DNA methyltransferase
+### Gliomi (pannello Diatech Pharmacogenetics, 50 geni)
+| Entità | Criteri chiave |
+|---|---|
+| Astrocytoma, IDH-mutated (Gr. 2–4) | IDH mut, ATRX loss, TP53; CDKN2A hom-del → Gr.4 |
+| Oligodendroglioma, IDH-mut 1p/19q-codel (Gr. 2–3) | IDH mut + codelezione obbligatoria |
+| Glioblastoma, IDH-wildtype (Gr. 4) | Criteri morfologici o molecolari cIMPACT-NOW |
+| Diffuse Midline Glioma, H3 K27-altered (Gr. 4) | H3 K27M o H3K27me3 loss + sede midline |
+| Diffuse Hemispheric Glioma, H3 G34-mutant (Gr. 4) | H3 G34R/W, sede emisferica, età pediatrica/giovane adulto |
+| Astrocitoma Pilocitico (Gr. 1) | BRAF-KIAA1549 fusion, morfologia bifasica |
 
-### 🎯 Output Diagnostico
-- **Diagnosi primaria** con confidenza percentuale per ciascuna entità
-- **Grado WHO dinamico** (integra morfologia + molecolare secondo CNS5 2021)
-- **Evidenze supportive** e contraddittorie
-- **Diagnosi differenziale** con scoring comparativo
-- **Dati prognostici** (sopravvivenza mediana, 5-year survival)
-- **Bibliografia interattiva** con highlighting automatico dei riferimenti pertinenti
+Inclusi: fusioni actionable (NTRK, FGFR-TACC, RET, ROS1, ALK, NRG1), BRAF V600E, MSI/TMB, MGMT, POLE.
 
-### 📚 Bibliografia Interattiva
-- **70+ riferimenti** organizzati per categoria (WHO Classification, IDH, Oligodendroglioma, Glioblastoma, DMG, Grading Molecolare, MGMT, TP53/CDKN2A)
-- **Auto-highlighting** dei riferimenti pertinenti alla diagnosi generata
-- **Link diretti** a DOI e PubMed
-- **Abstract espandibili** con takeaway clinici
+### Meningiomi (WHO CNS5 2021)
+| Grade | Criteri morfologici | Criteri molecolari |
+|---|---|---|
+| Gr. 1 | Nessun criterio atipico | — |
+| Gr. 2 (Atipico) | ≥4 mitosi/10HPF, o ≥3 criteri minori, o invasione cerebrale, o sottotipo (cordoide, clear cell) | TERT mut → upgrading Gr. 2 |
+| Gr. 3 (Anaplastico) | ≥20 mitosi/10HPF, o morfologia franca, o sottotipo (rhabdoide, papillare) | CDKN2A/B hom-del → Gr. 3 automatico |
 
----
-
-## 🧬 Entità Diagnostiche Implementate
-
-| Entità | Grading | Markers Chiave |
-|--------|---------|----------------|
-| **Astrocytoma, IDH-mutated** | WHO Grade 2-4 | IDH mut + ATRX loss + TP53 |
-| **Oligodendroglioma, IDH-mutated and 1p/19q-codeleted** | WHO Grade 2-3 | IDH mut + 1p/19q codel + ATRX retained |
-| **Glioblastoma, IDH-wildtype** | WHO Grade 4 | IDH wt + EGFR amp + TERT mut + +7/-10 |
-| **Diffuse Midline Glioma, H3 K27-altered** | WHO Grade 4 | H3F3A K27M / H3K27me3 loss |
-| **Pilocytic Astrocytoma** | WHO Grade 1 | BRAF fusion/mutation |
+IHC inclusa: Ki67, EMA, PR, p53, SSTR2A, H3K27me3.  
+Molecolare opzionale: TERT, CDKN2A/B, NF2, BAP1, Chr22q.
 
 ---
 
-## 🔧 Grading Dinamico WHO CNS5
+## Architettura
 
-L'algoritmo calcola il grado secondo **gerarchia di priorità**:
-
-1. **🥇 Methylation class** (gold standard simulato)
-2. **🥈 CDKN2A/B homozygous deletion** → Grade 4 automatico (WHO CNS5 2021)
-3. **🥉 IDH status** → IDH-wildtype diffuse glioma = GBM Grade 4
-4. **4️⃣ H3 K27M mutation** → DMG sempre Grade 4
-5. **5️⃣ TP53 mutation** → Marker di aggressività, favorisce Grade 3-4
-6. **6️⃣ Criteri morfologici** → Necrosi + MVP, mitosi, atipia
-7. **7️⃣ Ki-67** → Correlazione con proliferazione
-
-### Validazione Biologica
-
-Implementa **constraint biologici** per prevenire diagnosi impossibili:
-- ✅ IDH-mutant **esclude** EGFR amplification
-- ✅ 1p/19q codeletion **esclude** ATRX loss (mutually exclusive)
-- ✅ ATRX loss **correlato** con TP53 mutation
-- ✅ H3 K27M **correlato** con H3K27me3 loss
-- ✅ DMG H3K27-altered → diagnosi **definitiva** (return early, non sovrascrivibile)
+- **Single-file HTML** — nessuna dipendenza esterna eccetto `html2pdf.js` (CDN) per l'export PDF
+- **Zero backend** — tutto client-side, nessun dato inviato a server
+- **Deployabile su GitHub Pages** — rinominare in `index.html`
+- Due engine separati: `computeDiagnosis()` per gliomi, `computeMeningiomaDiagnosis()` per meningiomi
+- `isPosFusion()` helper dedicato per campi fusion (distinto da `isPos` per SNV/IHC)
 
 ---
 
-## 📦 Installazione e Uso
+## Utilizzo
 
-### Metodo 1: Download Diretto
-
-```bash
-# Clone repository
-git clone https://github.com/tuousername/snc-diagnostic-tool.git
-cd snc-diagnostic-tool
-
-# Apri index.html nel browser
-open index.html  # macOS
-# oppure
-xdg-open index.html  # Linux
-# oppure doppio-click su Windows
+```
+index_v3.10.1.html  →  rinominare in index.html  →  caricare su GitHub Pages
 ```
 
-### Metodo 2: GitHub Pages (Online)
+Al primo avvio: modale con 3 checkbox di consenso informato (non riproposto nella stessa sessione via `sessionStorage`).
 
-Visita: `https://tuousername.github.io/snc-diagnostic-tool/`
-
-*(Configura GitHub Pages nelle impostazioni del repository)*
+Prima di ogni generazione: `confirm()` con riepilogo delle limitazioni.
 
 ---
 
-## 🚀 Quick Start
+## Pannello molecolare di riferimento
 
-### 1. Carica un Caso Precaricato
+**Diatech Pharmacogenetics — 50 geni** (versione estesa)
 
-L'applicazione include 4 casi didattici pre-configurati:
+SNV/InsDel · CNV · Fusioni · MSI · TMB
 
-- **Caso 1**: Astrocitoma IDH-mutato Grade 3
-- **Caso 2**: Oligodendroglioma IDH-mut 1p/19q-codel
-- **Caso 3**: Glioblastoma IDH-wildtype Grade 4
-- **Caso 4**: Glioma linea mediana pediatrico (H3 K27M-altered)
-
-**Procedura:**
-1. Seleziona caso dal dropdown "Carica caso precaricato"
-2. Click su "Carica"
-3. Click su "Genera Diagnosi & Scoring"
-4. Osserva: diagnosi, scoring, bibliografia evidenziata
-
-### 2. Inserisci un Caso Personalizzato
-
-**Workflow:**
-1. **Clinica**: età, sede, pattern imaging
-2. **Istologia**: cellularità, atipia, mitosi, necrosi, proliferazione microvascolare
-3. **IHC**: IDH1 R132H, ATRX, p53, OLIG2, GFAP, H3K27me3, Ki-67
-4. **NGS**: IDH1/2, TP53, 1p/19q, TERT, EGFR, H3F3A, CDKN2A/B
-5. Click "Genera Diagnosi & Scoring"
-
-### 3. Esporta Report
-
-- Click su "📥 Esporta PDF" per salvare il report diagnostico completo
+Campi disponibili nel tool: IDH1/2, TP53, ATRX, TERT, H3F3A, CDKN2A/B, PIK3CA, PTEN, NF1, mTOR, EGFR (CNV + SNV/EGFRvIII), ERBB2, MET (CNV + fusion), NTRK1/2/3, RET, ROS1, ALK, NRG1, FGFR1/3 (TACC fusions), BRAF (V600E + fusion), MGMT, MSI, MMR-IHC, TMB, POLE, Lynch.
 
 ---
 
-## 📊 Esempi di Output
+## Limiti espliciti
 
-### Esempio: Astrocytoma IDH-mutated Grade 3
-
-**Input:**
-- Età: 45 anni
-- IHC IDH1 R132H: Positivo
-- ATRX: Loss
-- p53: 20% (IHC)
-- TP53 (NGS): Mutato
-- Mitosi: 6/10 HPF
-
-**Output:**
-```
-Diagnosi: Astrocytoma, IDH-mutated, TP53-altered
-Grado: WHO Grade 3
-Confidenza: Astrocytoma 78% | Oligodendroglioma 12% | GBM 10%
-
-Alert:
-✓ IDH mutato confermato
-🚨 TP53 alterato (IHC>10% O NGS mutato): marker di aggressività - Grade 3 minimo
-✓ ATRX loss → Astrocytoma favorito
-```
+- Il tool applica le regole WHO come **interruttori on/off**. La patologia reale è un gradiente.
+- Non incorpora la variabilità morfologica del vetrino né la qualità pre-analitica del campione.
+- Un campione da agoaspirato e una resezione totale producono lo stesso output con gli stessi input — il tool non lo sa.
+- Le fusioni actionable (NTRK, FGFR-TACC) generano alert di target therapy: **non implicano efficacia nel contesto specifico**. Ogni decisione terapeutica richiede tumor board.
+- Lo scoring percentuale è un indice qualitativo di allineamento, non una probabilità bayesiana.
 
 ---
 
-## 🆕 Changelog
+## Casi precaricati
 
-### v2.1.3 (Novembre 2024) - Critical Hotfix
+### Gliomi
+| # | Entità | Caratteristiche chiave |
+|---|---|---|
+| M1 | Astrocitoma IDH-mut Gr. 3 | IDH R132H, ATRX loss, TP53 mut, mitosi 6 |
+| M2 | Oligodendroglioma IDH-mut 1p/19q-codel | 1p/19q codeleto, TERT wt |
+| M3 | GBM IDH-wt con EGFR amp + PTEN loss | EGFRvIII, +7/-10, TERT mut |
+| M4 | DMG H3 K27M pediatrico | H3F3A K27M, sede midline, CDKN2A hom-del |
+| M5 | Glioma NTRK-fusion (actionable) | NTRK3 fusion, IDH-wt giovane adulto |
 
-**🐛 Bug Critico Risolto:**
-
-**BUG-010 [CRITICAL]** - IDH mutation check string mismatch
-   - **Problema**: Tool NON generava nessuna diagnosi quando NGS IDH era mutato (qualsiasi variante). Check `includes('mutato')` falliva perché valori NGS sono `'mut-r132h'`, `'mut-idh2'`, `'mut-other'` (contengono solo 'mut', non 'mutato')
-   - **Fix**: Cambiato check in `includes('mut') && !== 'wildtype'` per matchare correttamente tutti i valori NGS mutati
-   - **Impatto**: Tool era completamente non funzionante per TUTTI i casi con profilazione molecolare IDH
-   - **Gravità**: CRITICAL - impediva utilizzo clinico-didattico su casi reali
-   - **Frequenza**: ~100% casi con NGS (tutti falliscono in v2.1.2)
-
-**🎁 Miglioramento Aggiunto:**
-   - Warning automatico per discordanza IHC IDH1 R132H negativo / NGS IDH mutato
-   - Alert: "Probabile mutazione non-R132H (R132C, R132G, R132S) o IDH2"
-   - Clinicamente rilevante: ~15% casi IDH-mutati hanno IHC negativo
-
-**📈 Risultato:**
-- v2.1.2: 0% casi NGS funzionanti ❌
-- v2.1.3: 100% casi NGS funzionanti ✓
-
-**⚠️ AGGIORNAMENTO OBBLIGATORIO**: Tutti gli utenti di v2.1.2 devono aggiornare immediatamente a v2.1.3
+### Meningiomi
+| # | Entità | Caratteristiche chiave |
+|---|---|---|
+| M1 | Gr. 1 classico | Meningoteliomatoso, 1 mitosi, NF2 mut |
+| M2 | Gr. 2 atipico | Mitosi 6 + invasione cerebrale, I recidiva |
+| M3 | Gr. 3 anaplastico | Mitosi 24 + CDKN2A hom-del + BAP1 loss |
+| M4 | Gr. 3 rhabdoide | Sottotipo rhabdoide, BAP1 lost |
+| M5 | Upgrade molecolare | Morfologia Gr. 1 borderline → Gr. 3 per TERT mut + CDKN2A hom-del |
 
 ---
 
-### v2.1.2 (Novembre 2024) - Bug Fix Release
+## Riferimenti principali
 
-**🐛 Bug Critici Risolti:**
-
-1. **BUG-001 [CRITICAL]** - IDH logic error
-   - **Problema**: IHC IDH1 positivo + NGS non eseguito → diagnosi errata "Glioblastoma IDH-wildtype"
-   - **Fix**: Cambiato `if (idhStatus === 'wildtype')` in `else if` per prevenire sovrascrittura
-   - **Impatto**: Diagnosi corretta per casi con IHC positivo/NGS non disponibile
-
-2. **BUG-002 [HIGH]** - CDKN2A scoring bias
-   - **Problema**: CDKN2A/B homozygous deletion aggiungeva +100 score GBM, causando bias verso "Glioblastoma" invece di "Astrocytoma Grade 4" in casi IDH-mutati
-   - **Fix**: Rimosso `scores.glioblastoma += 100`, entity dipende ora correttamente da IDH status
-   - **Regola WHO CNS5**: CDKN2A hom del = Grade 4 automatico, MA entity dipende da IDH
-
-3. **BUG-003 [HIGH]** - DMG overwrite vulnerability
-   - **Problema**: Diagnosi "Diffuse Midline Glioma, H3 K27-altered" poteva essere sovrascritta da logica IDH successiva
-   - **Fix**: Aggiunto `return diagnosis` early dopo diagnosi DMG
-   - **Regola WHO CNS5**: H3 K27-altered è diagnosi DEFINITIVA sempre Grade 4
-
-**📚 Bibliografia Corretta:**
-
-- `baumgarten2020` → `baumgarten2014` (year: 2014, PMID: 24102453)
-- `shirahata2009` → `shirahata2018` (year: 2018, PMID: 29679143)
-- `louis2014` → `louis2018_cimpact` (cIMPACT-NOW update 2, PMID: 29497819)
-
-**📈 Impatto:**
-- Diagnosi errate ridotte da ~15% a <2% nei test case
-- Scoring accuracy migliorato del 23%
-- Tutti i 12 test case WHO CNS5 ora passano
-
-### v2.1.1 (Ottobre 2024)
-
-- Bibliografia interattiva con auto-highlighting
-- Export PDF migliorato
-- UI responsive ottimizzata
-
-### v2.1.0 (Settembre 2024)
-
-- Integrazione completa pannello NGS (TP53, 1p/19q, TERT disponibili)
-- Scoring avanzato multi-entità
-- Bibliografia espandibile con abstract
-
-### v2.0.0 (Agosto 2024)
-
-- Rilascio iniziale WHO CNS5 2021
-- 5 entità diagnostiche implementate
-- Grading dinamico morfologia + molecolare
+- Louis DN et al. *The 2021 WHO Classification of Tumors of the Central Nervous System.* Neuro Oncol 2021
+- Perry A et al. *Meningiomas.* In: WHO Classification of Tumors of the CNS 2021
+- cIMPACT-NOW updates 2, 3, 6 (Brat et al., Ellison et al., Louis et al.)
+- Sturm D et al. *Paediatric and adult gliomas.* Nat Rev Cancer 2023
 
 ---
 
-## 🧪 Testing
+## Autore
 
-### Test Case Principali
-
-Il tool è stato validato su **12 test case** derivati da:
-- Casi reali anonimizzati (consenso ottenuto)
-- Casi pubblicati in letteratura (TCGA, cIMPACT-NOW)
-- Casi didattici da tumor board accademici
-
-**Accuracy post-fix v2.1.2:**
-- Overall: 98.5%
-- IDH-mutant gliomas: 100%
-- IDH-wildtype gliomas: 97%
-- DMG H3K27-altered: 100%
-
-### Come Testare
-
-```bash
-# Test automatico (richiede Python)
-python3 tests/run_validation.py
-
-# Test manuale
-# 1. Apri index.html
-# 2. Carica "Caso 1" → verifica output atteso
-# 3. Carica "Caso 2" → verifica output atteso
-# ... etc
-```
-
----
-
-## 📖 Riferimenti Scientifici Principali
-
-1. **Louis DN et al.** (2021) - The 2021 WHO Classification of Tumors of the CNS. *Neuro Oncol.* PMID: 34185076
-2. **Brat DJ et al.** (2020) - cIMPACT-NOW update 6. *Brain Pathol.* PMID: 32307792
-3. **Banan R et al.** (2021) - CDKN2A/B homozygous deletion in IDH-mutant glioma. *Neuro Oncol.* PMID: 33141886
-4. **Sturm D et al.** (2012) - H3F3A mutations in pediatric glioblastoma. *Cancer Cell.* PMID: 23079654
-5. **Hegi ME et al.** (2005) - MGMT gene silencing and temozolomide benefit. *NEJM.* PMID: 15758010
-
-**Bibliografia completa**: 70+ riferimenti accessibili direttamente nell'applicazione
-
----
-
-## 🤝 Contribuire
-
-Contributi benvenuti! Per favore:
-
-1. Fork il repository
-2. Crea un branch per la feature (`git checkout -b feature/AmazingFeature`)
-3. Commit dei cambiamenti (`git commit -m 'Add AmazingFeature'`)
-4. Push al branch (`git push origin feature/AmazingFeature`)
-5. Apri una Pull Request
-
-**Aree di contributo prioritarie:**
-- Validazione su nuovi test case
-- Traduzione in inglese
-- Integrazione copy number analysis
-- Integrazione imaging features
-- Nuove entità diagnostiche rare
-
----
-
-## 📄 Licenza
-
-Questo progetto è rilasciato sotto licenza **Educational Use Only**.
-
-**È CONSENTITO:**
-- ✅ Uso didattico in università/ospedali
-- ✅ Training di specializzandi
-- ✅ Ricerca accademica
-- ✅ Fork e modifiche per uso educativo
-
-**NON È CONSENTITO:**
-- ❌ Uso clinico diagnostico
-- ❌ Uso commerciale
-- ❌ Decisioni terapeutiche
-- ❌ Refertazione pazienti reali
-
----
-
-## 🙏 Ringraziamenti
-
-- **WHO Classification of Tumors Editorial Board** per le linee guida CNS5 2021
-- **cIMPACT-NOW Consortium** per gli aggiornamenti diagnostici
-- **TCGA Research Network** per i dati molecolari di riferimento
-- **Comunità neuropatologia** per feedback e validazione
-
----
-
-## 📧 Contatti
-
-- **Autore**: [Tuo Nome]
-- **Istituzione**: ASST Fatebenefratelli-Sacco, Milano
-- **Email**: [tua.email@example.com]
-- **Issues**: [GitHub Issues](https://github.com/tuousername/snc-diagnostic-tool/issues)
-
----
-
-## ⚖️ Note Legali Finali
-
-Questo software è fornito "così com'è", senza garanzie di alcun tipo. Gli autori non si assumono responsabilità per eventuali danni derivanti dall'uso improprio del tool. **Leggere e rispettare il disclaimer critico in apertura.**
-
----
-
-**Versione corrente: 2.1.3** | **Ultimo aggiornamento: Novembre 2024** | **WHO CNS5 2021 compliant**
+Dr. Filippo Bianchi  
+Direttore SC Anatomia Patologica — ASST Fatebenefratelli-Sacco, Milano  
+Uso interno didattico · Non per distribuzione clinica
