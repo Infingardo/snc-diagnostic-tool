@@ -1,130 +1,143 @@
-# 🧠 Neoplasie Cerebrali — Tool Diagnostico Didattico
-**v3.10.1** · WHO CNS5 2021 · Gliomi & Meningiomi
+# 🧠 Tool Diagnostico Neoplasie Cerebrali — v3.10.2
+
+**WHO CNS5 2021 · Gliomi & Meningiomi · Workflow morfologia → IHC → NGS**  
+Pannello Diatech Pharmacogenetics Extended
 
 ---
 
-## Cos'è
+## Descrizione
 
-Un ausilio didattico per la formazione in neuropatologia. Traduce il flusso diagnostico WHO CNS5 2021 in un percorso interattivo: morfologia EE → IHC → NGS → criterio WHO soddisfatto.
+Ausilio didattico per la formazione in neuropatologia.  
+Esegue pattern matching su regole **WHO CNS5 2021** — non è un sistema diagnostico certificato e non sostituisce il giudizio clinico-patologico.
 
-Non è un sistema diagnostico certificato. Non sostituisce il giudizio clinico-patologico. Il vetrino rimane il documento primario.
+Due moduli integrati in un unico file HTML self-contained:
 
----
-
-## Cosa fa
-
-Per ogni caso inserito, il tool produce:
-
-1. **Ipotesi classificativa** — entità WHO CNS5 con grade assegnato
-2. **Ragionamento diagnostico** — 4 step espliciti (morfologia → IHC → molecolare → criterio WHO), con gerarchia visiva: ✔ soddisfatto · ⚠ borderline · ❌ mancante · 🧬 supporto non determinante
-3. **Entità escluse** — per ciascuna, il criterio determinante dell'esclusione (*"Oligodendroglioma escluso: 1p/19q non codeleta"*)
-4. **Alert clinici** — incoerenze molecolari, criteri borderline, alterazioni actionable
-5. **Indice di compatibilità morfo-molecolare** — scoring qualitativo pre-ragionamento, utile per casi equivoci
-6. **Nota epistemica** — promemoria su cosa il tool è e cosa non è
+| Modulo | Entità coperte |
+|--------|---------------|
+| 🧬 **Gliomi / PCNSL** | Astrocitoma IDH-mut, Oligodendroglioma IDH-mut 1p/19q-codel, GBM IDH-wt, DMG H3K27-alt, DIPG, Ependimoma, Medulloblastoma, PCNSL, Gliomi fusione (NTRK, FGFR, NRG1) |
+| 🔴 **Meningiomi** | Tutti i sottotipi WHO CNS5, grading molecolare integrato |
 
 ---
 
-## Entità coperte
-
-### Gliomi (pannello Diatech Pharmacogenetics, 50 geni)
-| Entità | Criteri chiave |
-|---|---|
-| Astrocytoma, IDH-mutated (Gr. 2–4) | IDH mut, ATRX loss, TP53; CDKN2A hom-del → Gr.4 |
-| Oligodendroglioma, IDH-mut 1p/19q-codel (Gr. 2–3) | IDH mut + codelezione obbligatoria |
-| Glioblastoma, IDH-wildtype (Gr. 4) | Criteri morfologici o molecolari cIMPACT-NOW |
-| Diffuse Midline Glioma, H3 K27-altered (Gr. 4) | H3 K27M o H3K27me3 loss + sede midline |
-| Diffuse Hemispheric Glioma, H3 G34-mutant (Gr. 4) | H3 G34R/W, sede emisferica, età pediatrica/giovane adulto |
-| Astrocitoma Pilocitico (Gr. 1) | BRAF-KIAA1549 fusion, morfologia bifasica |
-
-Inclusi: fusioni actionable (NTRK, FGFR-TACC, RET, ROS1, ALK, NRG1), BRAF V600E, MSI/TMB, MGMT, POLE.
-
-### Meningiomi (WHO CNS5 2021)
-| Grade | Criteri morfologici | Criteri molecolari |
-|---|---|---|
-| Gr. 1 | Nessun criterio atipico | — |
-| Gr. 2 (Atipico) | ≥4 mitosi/10HPF, o ≥3 criteri minori, o invasione cerebrale, o sottotipo (cordoide, clear cell) | TERT mut → upgrading Gr. 2 |
-| Gr. 3 (Anaplastico) | ≥20 mitosi/10HPF, o morfologia franca, o sottotipo (rhabdoide, papillare) | CDKN2A/B hom-del → Gr. 3 automatico |
-
-IHC inclusa: Ki67, EMA, PR, p53, SSTR2A, H3K27me3.  
-Molecolare opzionale: TERT, CDKN2A/B, NF2, BAP1, Chr22q.
-
----
-
-## Architettura
-
-- **Single-file HTML** — nessuna dipendenza esterna eccetto `html2pdf.js` (CDN) per l'export PDF
-- **Zero backend** — tutto client-side, nessun dato inviato a server
-- **Deployabile su GitHub Pages** — rinominare in `index.html`
-- Due engine separati: `computeDiagnosis()` per gliomi, `computeMeningiomaDiagnosis()` per meningiomi
-- `isPosFusion()` helper dedicato per campi fusion (distinto da `isPos` per SNV/IHC)
-
----
-
-## Utilizzo
+## Workflow
 
 ```
-index_v3.10.1.html  →  rinominare in index.html  →  caricare su GitHub Pages
+Morfologia EE
+    ↓
+IHC (IDH1 R132H, ATRX, p53, Ki-67, TERT, H3K27me3, BRD1, EGFR, …)
+    ↓
+NGS — Pannello Diatech Extended
+  · SNV/InsDel: IDH1/2, TERT, CDKN2A/B, EGFR, BRAF, H3F3A/HIST1H3B
+  · CNV: EGFR amp, ERBB2, MET
+  · Fusioni: ALK, FGFR1/2/3, MET, NRG1, NTRK1/2/3, PPARG, RET, ROS1
+  · MSI: Bethesda esteso (BAT25, BAT26, CAT25 + 118 marker mononucleotidici)
+    ↓
+Report diagnostico WHO CNS5 + raccomandazioni cliniche
 ```
 
-Al primo avvio: modale con 3 checkbox di consenso informato (non riproposto nella stessa sessione via `sessionStorage`).
+---
 
-Prima di ogni generazione: `confirm()` con riepilogo delle limitazioni.
+## Modulo Gliomi — Parametri chiave
+
+### Gating (prerequisiti per la generazione del report)
+- Istotipo selezionato (obbligatorio)
+- Almeno un marker IHC inserito
+
+### Classificatori molecolari principali
+
+| Alterazione | Peso classificatorio |
+|-------------|---------------------|
+| IDH1/2 mut | Astrocitoma vs Oligodendroglioma vs GBM IDH-wt |
+| 1p/19q codelezione | Oligodendroglioma (richiede IDH mut) |
+| TERT mut | GBM IDH-wt (con EGFR amp o +7/−10) |
+| H3K27M | DMG pediatrico, Grade 4 |
+| CDKN2A/B del omozigote | Astrocitoma IDH-mut → Grade 4 |
+| Necrosi + MVP | GBM IDH-wt: criteri istologici Grade 4 |
+| NTRK / FGFR / NRG1 fusion | Gliomi fusione — entità emergenti CNS5 |
+
+### Casi precaricati (demo)
+
+| # | Caso | Entità attesa |
+|---|------|--------------|
+| 1 | Astrocitoma IDH-mut Ki-67 alto | WHO Grade 3 |
+| 2 | Oligodendroglioma IDH-mut 1p/19q-codel | WHO Grade 2 |
+| 3 | GBM IDH-wt con necrosi e MVP | WHO Grade 4 |
+| 4 | DMG H3K27M pediatrico con necrosi | WHO Grade 4 |
+| 5 | Glioma NTRK-fusion | Entità emergente |
 
 ---
 
-## Pannello molecolare di riferimento
+## Modulo Meningiomi — Parametri chiave
 
-**Diatech Pharmacogenetics — 50 geni** (versione estesa)
+### Grading WHO CNS5 2021
 
-SNV/InsDel · CNV · Fusioni · MSI · TMB
+| Criterio | Grado assegnato |
+|----------|----------------|
+| Sottotipo istologico benigno, assenza altri criteri | Grade 1 |
+| Invasione cerebrale confermata | Grade 2 (criterio isolato) |
+| Indice mitotico ≥ 4/10 HPF (Grade 2) o ≥ 20/10 HPF (Grade 3) | Grade 2 / Grade 3 |
+| **TERT promoter mutation** | **Grade 3 — criterio molecolare indipendente (WHO CNS5 2021)** |
+| CDKN2A/B delezione omozigote | Grade 3 — criterio molecolare indipendente |
+| Sottotipo istologico a grado implicito (es. rabdoide, papillare) | Grade 2 o 3 per definizione |
 
-Campi disponibili nel tool: IDH1/2, TP53, ATRX, TERT, H3F3A, CDKN2A/B, PIK3CA, PTEN, NF1, mTOR, EGFR (CNV + SNV/EGFRvIII), ERBB2, MET (CNV + fusion), NTRK1/2/3, RET, ROS1, ALK, NRG1, FGFR1/3 (TACC fusions), BRAF (V600E + fusion), MGMT, MSI, MMR-IHC, TMB, POLE, Lynch.
+> ⚠️ **Nota v3.10.2**: `TERT promoter mutation` assegna direttamente **WHO Grade 3**, non Grade 2.  
+> Versioni precedenti al v3.10.2 contenevano un errore su questo punto — corretto in questa release.
 
----
-
-## Limiti espliciti
-
-- Il tool applica le regole WHO come **interruttori on/off**. La patologia reale è un gradiente.
-- Non incorpora la variabilità morfologica del vetrino né la qualità pre-analitica del campione.
-- Un campione da agoaspirato e una resezione totale producono lo stesso output con gli stessi input — il tool non lo sa.
-- Le fusioni actionable (NTRK, FGFR-TACC) generano alert di target therapy: **non implicano efficacia nel contesto specifico**. Ogni decisione terapeutica richiede tumor board.
-- Lo scoring percentuale è un indice qualitativo di allineamento, non una probabilità bayesiana.
-
----
-
-## Casi precaricati
-
-### Gliomi
-| # | Entità | Caratteristiche chiave |
-|---|---|---|
-| M1 | Astrocitoma IDH-mut Gr. 3 | IDH R132H, ATRX loss, TP53 mut, mitosi 6 |
-| M2 | Oligodendroglioma IDH-mut 1p/19q-codel | 1p/19q codeleto, TERT wt |
-| M3 | GBM IDH-wt con EGFR amp + PTEN loss | EGFRvIII, +7/-10, TERT mut |
-| M4 | DMG H3 K27M pediatrico | H3F3A K27M, sede midline, CDKN2A hom-del |
-| M5 | Glioma NTRK-fusion (actionable) | NTRK3 fusion, IDH-wt giovane adulto |
-
-### Meningiomi
-| # | Entità | Caratteristiche chiave |
-|---|---|---|
-| M1 | Gr. 1 classico | Meningoteliomatoso, 1 mitosi, NF2 mut |
-| M2 | Gr. 2 atipico | Mitosi 6 + invasione cerebrale, I recidiva |
-| M3 | Gr. 3 anaplastico | Mitosi 24 + CDKN2A hom-del + BAP1 loss |
-| M4 | Gr. 3 rhabdoide | Sottotipo rhabdoide, BAP1 lost |
-| M5 | Upgrade molecolare | Morfologia Gr. 1 borderline → Gr. 3 per TERT mut + CDKN2A hom-del |
+### Pannello molecolare meningiomi (Diatech)
+- SNV/InsDel: TERT promoter, NF2, SMARCB1, SMARCA4, SMARCE1
+- CNV: CDKN2A/B (delezione omozigote)
 
 ---
 
-## Riferimenti principali
+## Funzionalità UI
 
-- Louis DN et al. *The 2021 WHO Classification of Tumors of the Central Nervous System.* Neuro Oncol 2021
-- Perry A et al. *Meningiomas.* In: WHO Classification of Tumors of the CNS 2021
-- cIMPACT-NOW updates 2, 3, 6 (Brat et al., Ellison et al., Louis et al.)
-- Sturm D et al. *Paediatric and adult gliomas.* Nat Rev Cancer 2023
+- **Switch modulo**: bottoni Gliomi / Meningiomi in header
+- **Casi precaricati**: dropdown con 5 casi demo per il modulo gliomi
+- **Reset form**: pulisce solo il modulo attivo (gliomi o meningiomi)
+- **Export PDF**: disponibile per entrambi i moduli (pulsante dedicato per ciascuno)
+- **Sezione bibliografia**: highlight automatico delle referenze pertinenti al caso
+- **Disclaimer**: visibile in footer — tool non certificato, uso solo didattico
 
 ---
 
-## Autore
+## Changelog
 
-Dr. Filippo Bianchi  
-Direttore SC Anatomia Patologica — ASST Fatebenefratelli-Sacco, Milano  
-Uso interno didattico · Non per distribuzione clinica
+### v3.10.2 (2026-03)
+- **[FIX CRITICO]** TERT promoter mutation nel meningioma → correttamente assegnato a WHO Grade 3 (non Grade 2). Il bug era presente dal v3.9.x.
+- **[FIX]** Help-text campo TERT aggiornato: "Mut → criterio molecolare indipendente di WHO Grade 3 (WHO CNS5 2021)"
+- **[FIX]** Opzione "Non specificato" nel gate ora accettata come valore valido (non bloccava più la generazione del report)
+- **[FIX]** Reset form ora confinato al modulo gliomi (non resettava per errore anche i campi meningioma)
+- **[FIX]** Export PDF unificato: entrambi i moduli dispongono di pulsante export con label e filename corretti
+- **[FIX]** Casi precaricati: aggiunti campi `hist-necrosis` e `hist-microvascular` a tutti i 5 casi demo
+
+### v3.10.1
+- Aggiunto modulo meningiomi con grading molecolare
+- Integrazione pannello Diatech per fusioni (NRG1, NTRK, FGFR)
+- MSI Bethesda esteso
+
+### v3.10.0
+- Refactoring architettura dual-module (gliomi + meningiomi)
+- Switch UI con tab dedicati
+
+---
+
+## Riferimenti normativi
+
+- **WHO Classification of Tumours of the Central Nervous System, 5th ed. (CNS5), 2021** — Louis DN et al., *Neuro-Oncology* 23(8):1231–1251, 2021
+- Sahm F et al. — TERT promoter mutations and meningioma grading, *Acta Neuropathol* 2016
+- Goutagny S et al. — Meningioma molecular classification, *Brain Pathol* 2021
+- Brat DJ et al. — cIMPACT-NOW update, *Acta Neuropathol* 2020
+
+---
+
+## Note tecniche
+
+- File: **singolo HTML self-contained** (no dipendenze esterne, no framework)
+- Compatibile con: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- Export PDF: `window.print()` con CSS `@media print` ottimizzato
+- Nessun dato trasmesso a server esterni — tutto client-side
+
+---
+
+*Tool sviluppato a scopo didattico interno — SC Anatomia Patologica, ASST Fatebenefratelli-Sacco, Milano.*  
+*Non certificato come dispositivo medico. Non utilizzare per decisioni diagnostiche cliniche.*

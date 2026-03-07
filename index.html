@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Diagnostico Neoplasie Cerebrali v3.10.2 — Gliomi &amp; Meningiomi | Pannello Diatech Extended</title>
+    <title>Tool Diagnostico Neoplasie Cerebrali v3.10.8 — Gliomi &amp; Meningiomi | Pannello Diatech Extended</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
@@ -208,40 +208,18 @@
         .mol-optional.visible { display: block; }
         .criteria-counter { font-size: 11px; font-family: var(--font-mono); background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); border-radius: 4px; padding: 4px 10px; margin: 8px 0 4px; display: inline-block; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(10,16,30,0.75); display: flex; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(3px); }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px 36px; max-width: 560px; width: 90%; box-shadow: 0 24px 60px rgba(0,0,0,0.25); }
-        .modal-box h2 { font-size: 18px; color: var(--red); margin-bottom: 8px; }
-        .modal-box p { font-size: 13px; color: var(--text); line-height: 1.65; margin-bottom: 14px; }
-        .modal-box .modal-checks { background: var(--surface2); border-radius: 8px; padding: 16px; margin-bottom: 18px; }
-        .modal-check-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--text); cursor: pointer; line-height: 1.5; }
-        .modal-check-row:last-child { margin-bottom: 0; }
-        .modal-check-row input[type=checkbox] { margin-top: 2px; accent-color: var(--blue); flex-shrink: 0; }
-        .modal-btn-enter { width: 100%; padding: 12px; border-radius: 8px; background: var(--blue); color: #fff; border: none; font-family: var(--font-sans); font-size: 14px; font-weight: 700; cursor: pointer; opacity: 0.4; pointer-events: none; transition: all 0.2s; }
-        .modal-btn-enter.active { opacity: 1; pointer-events: all; }
-        .modal-btn-enter.active:hover { background: #1448a0; }
+
         .generate-gate { background: var(--amber-dim); border: 1px solid var(--amber); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--amber); margin-bottom: 8px; display: none; }
         .generate-gate.visible { display: block; }
     </style>
 </head>
 <body>
 
-<div class="modal-overlay" id="consent-modal">
-    <div class="modal-box">
-        <h2>&#9888; Prima di accedere allo strumento</h2>
-        <p>Questo tool è un <strong>ausilio didattico per la formazione in neuropatologia</strong>. Esegue pattern matching su regole WHO CNS5 2021 — non è un sistema diagnostico certificato e non sostituisce il giudizio clinico-patologico.</p>
-        <div class="modal-checks">
-            <label class="modal-check-row"><input type="checkbox" id="chk1" onchange="checkConsent()">Sono un professionista sanitario, studente di medicina o ricercatore che utilizza questo strumento <strong>esclusivamente a scopo didattico</strong>.</label>
-            <label class="modal-check-row"><input type="checkbox" id="chk2" onchange="checkConsent()">Comprendo che l'output non costituisce diagnosi, non è validato clinicamente e <strong>non deve essere usato per refertazione o decisioni terapeutiche</strong> su pazienti reali.</label>
-            <label class="modal-check-row"><input type="checkbox" id="chk3" onchange="checkConsent()">So che ogni risultato richiede correlazione con morfologia EE, contesto clinico-radiologico e giudizio di un neuropatologo certificato.</label>
-        </div>
-        <button class="modal-btn-enter" id="consent-btn" onclick="acceptConsent()">Accetto — Entra nello strumento</button>
-    </div>
-</div>
 
 <div class="container">
     <div class="header">
         <div class="header-left">
-            <h1>&#129504; NEOPLASIE CEREBRALI // v3.10.2</h1>
+            <h1>&#129504; NEOPLASIE CEREBRALI // v3.10.8</h1>
             <p>WHO CNS5 2021 · Gliomi &amp; Meningiomi · Workflow integrato morfologia → IHC → NGS · Pannello Diatech Pharmacogenetics</p>
         </div>
         <div class="header-badges">
@@ -428,12 +406,12 @@
                 <div class="field-group"><div class="field-label">Mitosi / 10 HPF</div><input type="number" id="men-mitosis" placeholder="0" min="0" max="100"><div class="help-text">≥4 → criterio Gr.2 | ≥20 → criterio Gr.3</div></div>
                 <div class="field-group"><div class="field-label">Invasione cerebrale</div><select id="men-brain-invasion"><option value="">—</option><option value="assente">Assente</option><option value="present">Presente (confermata)</option><option value="sospetta">Sospetta / campione limitato</option></select><div class="help-text">Criterio Gr.2 isolato (WHO CNS5)</div></div>
                 <div class="field-group"><div class="field-label">Necrosi spontanea</div><select id="men-necrosis"><option value="">—</option><option value="assente">Assente</option><option value="presente">Presente</option></select><div class="help-text">Criterio minore atipico</div></div>
-                <div style="margin: 10px 0 6px; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Criteri minori (≥3 = Gr.2)</div>
+                <div style="margin: 10px 0 6px; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Criteri minori (≥3/5 = Gr.2)</div>
                 <label style="display:flex;gap:8px;align-items:center;margin-bottom:4px;font-size:12px;cursor:pointer"><input type="checkbox" id="men-hypercell"> Ipercellularità</label>
                 <label style="display:flex;gap:8px;align-items:center;margin-bottom:4px;font-size:12px;cursor:pointer"><input type="checkbox" id="men-small-cells"> Piccole cellule / alto N:C</label>
                 <label style="display:flex;gap:8px;align-items:center;margin-bottom:4px;font-size:12px;cursor:pointer"><input type="checkbox" id="men-nucleoli"> Nucleoli prominenti</label>
                 <label style="display:flex;gap:8px;align-items:center;margin-bottom:4px;font-size:12px;cursor:pointer"><input type="checkbox" id="men-sheet"> Pattern sheet-like</label>
-                <div id="men-minor-count" class="criteria-counter">Criteri minori: 0/4</div>
+                <div id="men-minor-count" class="criteria-counter">Criteri minori: 0/5</div>
                 <div class="field-group" style="margin-top:10px"><div class="field-label">Morfologia maligna franca</div><select id="men-frank-malignancy"><option value="">—</option><option value="assente">Assente</option><option value="carcinoma-like">Carcinoma-like</option><option value="sarcoma-like">Sarcoma-like</option><option value="melanoma-like">Melanoma-like</option></select><div class="help-text">Criterio Gr.3 indipendente</div></div>
             </div>
 
@@ -532,6 +510,16 @@ const bibliography = {
     ]},
     "mgmt_predictive": { title: "MGMT & Marcatori Predittivi", icon: "&#128138;", references: [
         { id: "hegi2005", authors: "Hegi ME, Diserens AC, Gorlia T, et al.", year: 2005, title: "MGMT gene silencing and benefit from temozolomide in glioblastoma", journal: "N Engl J Med. 2005;352(10):997-1003", doi: "10.1056/NEJMoa043331", pmid: "15758010", abstract: "MGMT promoter methylation predice risposta a temozolomide in GBM. Methylated = sopravvivenza mediana 21.7 vs 12.7 mesi.", tags: ["MGMT", "TEMOZOLOMIDE", "PROGNOSIS", "GLIOBLASTOMA"] }
+    ]},
+    "meningioma_grading": { title: "Meningioma — Grading & Molecolare WHO CNS5", icon: "&#128309;", references: [
+        { id: "louis2021_men", authors: "Louis DN, Perry A, Wesseling P, et al.", year: 2021, title: "The 2021 WHO Classification of Tumors of the Central Nervous System: a summary", journal: "Neuro Oncol. 2021;23(8):1231-1251", doi: "10.1093/neuonc/noab106", pmid: "34185076", abstract: "WHO CNS5 introduce grading molecolare meningioma: TERT promoter mut e CDKN2A/B del omozigote come criteri indipendenti di Grade 3. Ridefinizione criteri minori: 5 features (cutoff ≥3/5 per Grade 2).", tags: ["WHO CNS5", "MENINGIOMA", "GRADING", "TERT", "CDKN2A"] },
+        { id: "sahm2016", authors: "Sahm F, Schrimpf D, Olar A, et al.", year: 2016, title: "TERT promoter mutations and risk of recurrence in meningioma", journal: "J Natl Cancer Inst. 2016;108(5):djv377", doi: "10.1093/jnci/djv377", pmid: "26668184", abstract: "TERT promoter mutations in meningioma: associazione con recidiva precoce e comportamento aggressivo indipendentemente dal grado istologico. Base molecolare per Grade 3 in CNS5.", tags: ["TERT", "MENINGIOMA", "PROGNOSIS", "RECURRENCE"] },
+        { id: "nassiri2021", authors: "Nassiri F, Liu J, Patil V, et al.", year: 2021, title: "A clinically applicable integrative molecular classification of meningiomas", journal: "Nature. 2021;597(7874):119-125", doi: "10.1038/s41586-021-03850-3", pmid: "34385711", abstract: "Classificazione molecolare integrata meningiomi in 6 gruppi con diverso rischio di recidiva. CDKN2A/B del, TERT mut e BAP1 loss definiscono i gruppi ad alto rischio. Supera la classificazione istologica pura.", tags: ["MENINGIOMA", "MOLECULAR CLASSIFICATION", "CDKN2A", "BAP1", "PROGNOSIS"] },
+        { id: "brastianos2013", authors: "Brastianos PK, Horowitz PM, Santagata S, et al.", year: 2013, title: "Genomic sequencing of meningiomas identifies oncogenic SMO and AKT1 mutations", journal: "Nat Genet. 2013;45(3):285-289", doi: "10.1038/ng.2526", pmid: "23334667", abstract: "Identificazione mutazioni somatiche SMO e AKT1 in meningiomi NF2-wildtype. Definisce sottogruppi molecolari distinti con potenziale target terapeutico.", tags: ["MENINGIOMA", "SMO", "AKT1", "NF2", "MOLECULAR"] },
+        { id: "baumgarten2016", authors: "Baumgarten P, Gessler F, Schittenhelm J, et al.", year: 2016, title: "Brain invasion in otherwise benign meningiomas does not predict tumor recurrence", journal: "Acta Neuropathol. 2016;132(3):479-481", doi: "10.1007/s00401-016-1598-z", pmid: "27456736", abstract: "Invasione cerebrale come criterio isolato per Grade 2 in WHO 2016/CNS5: controversia sull'impatto prognostico indipendente. Dati suggeriscono che il contesto molecolare sia più rilevante.", tags: ["MENINGIOMA", "BRAIN INVASION", "GRADING", "GRADE 2", "PROGNOSIS"] },
+        { id: "choudhury2022", authors: "Choudhury A, Magill ST, Eaton CD, et al.", year: 2022, title: "Meningioma DNA methylation groups identify biological drivers and therapeutic vulnerabilities", journal: "Nat Genet. 2022;54(5):649-659", doi: "10.1038/s41588-022-01061-8", pmid: "35484215", abstract: "Sei gruppi di metilazione del DNA nei meningiomi con diverso profilo biologico e outcome. BAP1 loss / CDKN2A del correlano con i gruppi ad alto rischio. Potenziale clinico per classificazione prognostica.", tags: ["MENINGIOMA", "DNA METHYLATION", "BAP1", "CDKN2A", "PROGNOSIS"] },
+        { id: "bi2021_bap1", authors: "Bi WL, Greenwald NF, Abedalthagafi M, et al.", year: 2017, title: "Genomic landscape of high-grade meningiomas", journal: "npj Genomic Med. 2017;2:15", doi: "10.1038/s41525-017-0014-7", pmid: "29263829", abstract: "BAP1 loss nei meningiomi rabdoidi e papillari: associazione con morfologia di alto grado e prognosi infausta. Frequente co-occorrenza con CDKN2A/B delezione.", tags: ["MENINGIOMA", "BAP1", "RHABDOID", "GRADE 3", "PROGNOSIS"] },
+        { id: "mawrin2006", authors: "Mawrin C, Perry A", year: 2010, title: "Pathological classification and molecular genetics of meningiomas", journal: "J Neurooncol. 2010;99(3):379-391", doi: "10.1007/s11060-010-0342-6", pmid: "20809168", abstract: "Revisione sistematica genetica molecolare meningiomi: NF2 (40-60%), alterazioni 1p, 10q, 14q. Correlazioni genotipo-fenotipo istologico. Base per classificazione molecolare successiva WHO CNS5.", tags: ["MENINGIOMA", "NF2", "MOLECULAR", "GENETICS"] }
     ]}
 };
 
@@ -547,8 +535,13 @@ const cases = {
 };
 
 function loadCase() {
+    resetBiblioHighlights();
+    document.getElementById('report-container').innerHTML = '';
     const caseId = document.getElementById('case-select').value;
-    if (!caseId || !cases[caseId]) return;
+    if (!caseId || !cases[caseId]) { resetForm(); return; }
+    // FIX v3.10.8: reset preventivo — evita calcinacci da casi futuri parziali
+    resetForm();
+    document.getElementById('case-select').value = caseId;
     const d = cases[caseId];
     for (const [key, value] of Object.entries(d)) {
         const el = document.getElementById(key);
@@ -567,11 +560,13 @@ function resetForm() {
     });
     document.getElementById('case-select').value = '';
     document.getElementById('report-container').innerHTML = '';
+    const gliomaGate = document.getElementById('glioma-gate');
+    gliomaGate.classList.remove('visible'); gliomaGate.textContent = '';
     resetBiblioHighlights();
 }
 
 // ============================================================
-// CORE DIAGNOSIS ENGINE v3.10.2
+// CORE DIAGNOSIS ENGINE v3.10.8
 // ============================================================
 const isPosFusion = v => v && v !== 'negative' && v !== 'not-done' && v !== '';
 
@@ -700,8 +695,7 @@ function computeDiagnosis(data) {
     for (const k in scores) confidence[k] = Math.round((scores[k] / maxScore) * 100);
 
     const idhMut = data['idh-ngs'] ? data['idh-ngs'].startsWith('mut') : (data['idh-ihc'] === 'positive');
-    const idhWt  = data['idh-ngs'] === 'wildtype' || (!idhMut && data['idh-ihc'] === 'negative');
-    const has1p19q = data['1p19q'] === 'codeleted'; const atrxLost = data.atrx === 'lost';
+    const has1p19q = data['1p19q'] === 'codeleted';
 
     const stepMorfologia = [];
     if (data.celltype) stepMorfologia.push({ status: '✔', label: `Cellularità: ${data.cellularity || '—'}, tipo: ${data.celltype}` });
@@ -842,7 +836,7 @@ function highlightRelevantReferences(diagnosis, data) {
         let catRelevant = false;
         for (const ref of cat.references) {
             const match = ref.tags.some(t => relevantTags.has(t));
-            if (match) { const el = document.getElementById('ref-' + ref.id); el.classList.add('relevant'); const actions = el.querySelector('.biblio-reference-actions'); const badge = document.createElement('span'); badge.className = 'biblio-relevance-badge'; badge.textContent = '✓ rilevante'; actions.insertBefore(badge, actions.firstChild); count++; catRelevant = true; }
+            if (match) { const el = document.getElementById('ref-' + ref.id); el.classList.add('relevant'); const actions = el.querySelector('.biblio-reference-actions'); const badge = document.createElement('span'); badge.className = 'biblio-relevance-badge'; badge.textContent = 'RILEVANTE'; actions.insertBefore(badge, actions.firstChild); count++; catRelevant = true; }
         }
         if (catRelevant) { document.getElementById('cat-' + catId).classList.add('has-relevant'); document.getElementById('cat-' + catId).classList.add('expanded'); }
     }
@@ -874,7 +868,7 @@ function exportCurrentReport(type) {
     pdfContent.style.cssText = 'font-family: sans-serif; color:#111; background:white; padding:20px;';
     pdfContent.innerHTML = `
         <style>body{font-family:Arial,sans-serif;color:#111;font-size:12px}h2,h3{color:#1a2030}.alert{border-left:3px solid #999;padding:8px 10px;margin:6px 0;border-radius:4px;font-size:11px}.alert-critical{border-color:#c02828;background:#fdeaea}.alert-warning{border-color:#c07010;background:#fff8e8}.alert-success{border-color:#1a9954;background:#edfaf4}.alert-info{border-color:#1a5cc8;background:#eef4ff}.diagnosis-box{border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0}.diagnosis-entity{font-size:18px;font-weight:700;color:#1a2030;margin-bottom:4px}.diagnosis-grade{font-size:13px;color:#c07010;font-family:monospace}.actionable-banner{border:1px solid #c0aaee;background:#f4eeff;padding:10px;border-radius:8px;margin:8px 0}.scoring-container{border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0}.scoring-bar-bg{background:#eee;height:6px;border-radius:3px;margin:4px 0 10px}.scoring-bar-fill{height:6px;border-radius:3px}.scoring-label{display:flex;justify-content:space-between;font-size:11px}.summary-table{width:100%;border-collapse:collapse;font-size:11px}.summary-table td{padding:5px 8px;border-bottom:1px solid #eee}.summary-table td:first-child{font-weight:600;color:#5a6478;width:40%}hr{border:none;border-top:1px solid #ddd;margin:12px 0}</style>
-        <h2 style="text-align:center;margin-bottom:4px">REPORT DIAGNOSTICO ${label} — v3.10.2</h2>
+        <h2 style="text-align:center;margin-bottom:4px">REPORT DIAGNOSTICO ${label} — v3.10.8</h2>
         <p style="text-align:center;font-size:11px;color:#666">Data: ${new Date().toLocaleDateString('it-IT')} | WHO CNS5 2021 | Pannello Diatech Extended</p>
         <p style="text-align:center;font-size:10px;color:#c02828;font-style:italic">SOLO USO DIDATTICO — Non sostituisce la diagnosi anatomo-patologica</p>
         <hr>${rc.innerHTML}`;
@@ -884,9 +878,7 @@ function exportCurrentReport(type) {
 // ============================================================
 // MODAL CONSENSO
 // ============================================================
-function checkConsent() { const all = ['chk1','chk2','chk3'].every(id => document.getElementById(id).checked); document.getElementById('consent-btn').classList.toggle('active', all); }
-function acceptConsent() { document.getElementById('consent-modal').style.display = 'none'; sessionStorage.setItem('cnc-consent', '1'); }
-document.addEventListener('DOMContentLoaded', () => { if (sessionStorage.getItem('cnc-consent') === '1') document.getElementById('consent-modal').style.display = 'none'; });
+
 
 // ============================================================
 // CONFIDENCE CEILING
@@ -947,14 +939,15 @@ const subtypeHints = {
 };
 function updateMenSubtypeHint() { const v = document.getElementById('men-subtype').value; document.getElementById('men-subtype-hint').textContent = subtypeHints[v] || ''; }
 function updateMinorCount() {
-    const count = ['men-hypercell','men-small-cells','men-nucleoli','men-sheet'].filter(id => document.getElementById(id)?.checked).length;
+    const count = ['men-hypercell','men-small-cells','men-nucleoli','men-sheet'].filter(id => document.getElementById(id)?.checked).length
+        + (document.getElementById('men-necrosis')?.value === 'presente' ? 1 : 0);
     const el = document.getElementById('men-minor-count'); if (!el) return;
-    el.textContent = `Criteri minori: ${count}/4`;
+    el.textContent = `Criteri minori: ${count}/5`;
     el.style.background = count >= 3 ? 'var(--red-dim)' : count >= 2 ? 'var(--amber-dim)' : 'var(--surface2)';
     el.style.borderColor = count >= 3 ? 'var(--red)' : count >= 2 ? 'var(--amber)' : 'var(--border)';
     el.style.color       = count >= 3 ? 'var(--red)' : count >= 2 ? 'var(--amber)' : 'var(--text-dim)';
 }
-document.addEventListener('DOMContentLoaded', () => { ['men-hypercell','men-small-cells','men-nucleoli','men-sheet'].forEach(id => { document.getElementById(id)?.addEventListener('change', updateMinorCount); }); });
+document.addEventListener('DOMContentLoaded', () => { ['men-hypercell','men-small-cells','men-nucleoli','men-sheet'].forEach(id => { document.getElementById(id)?.addEventListener('change', updateMinorCount); }); document.getElementById('men-necrosis')?.addEventListener('change', updateMinorCount); });
 
 function toggleMolecolare() { const fields = document.getElementById('men-mol-fields'); const btn = document.getElementById('mol-toggle-btn'); const visible = fields.classList.toggle('visible'); btn.textContent = visible ? '▼ Nascondi molecolare' : '▶ Espandi molecolare (opzionale)'; }
 
@@ -970,8 +963,13 @@ const meningiomaCases = {
 };
 
 function loadMenCase() {
-    const id = document.getElementById('men-case-select').value; if (!id) return;
+    resetBiblioHighlights();
+    document.getElementById('men-report-container').innerHTML = '';   // FIX v3.10.8: pulizia prima del guard
+    const id = document.getElementById('men-case-select').value; if (!id) { resetMenForm(); return; }
     const c = meningiomaCases[id]; if (!c) return;
+    // FIX v3.10.8: reset preventivo — campi non presenti nel caso non ereditano valori precedenti
+    resetMenForm();
+    document.getElementById('men-case-select').value = id;
     const g = i => document.getElementById(i);
     g('men-age').value=c.age; g('men-sex').value=c.sex; g('men-location').value=c.location;
     g('men-nf2-clinical').value=c.nf2Clinical; g('men-recurrence').value=c.recurrence;
@@ -982,17 +980,31 @@ function loadMenCase() {
     g('men-ki67').value=c.ki67; g('men-ema').value=c.ema; g('men-pr').value=c.pr; g('men-p53').value=c.p53; g('men-sstr2a').value=c.sstr2a; g('men-h3k27me3').value=c.h3k27me3;
     const mol = document.getElementById('men-mol-fields'); if (!mol.classList.contains('visible')) toggleMolecolare();
     g('men-tert').value=c.tert; g('men-cdkn2a').value=c.cdkn2a; g('men-nf2').value=c.nf2; g('men-bap1').value=c.bap1; g('men-chr22q').value=c.chr22q;
-    updateMinorCount(); g('men-report-container').innerHTML = '';
+    updateMinorCount();
 }
 
 // FIX: reset meningioma confinato al container corretto
 function resetMenForm() {
     document.querySelectorAll('#meningioma-section input, #meningioma-section select').forEach(el => {
         if (el.id === 'men-case-select') return;
+        if (el.id === 'men-subtype') return;          // gestito esplicitamente sotto
         if (el.type === 'checkbox') el.checked = false; else el.value = '';
     });
     document.getElementById('men-case-select').value = '';
+    document.getElementById('men-subtype').value = 'non-specificato';  // FIX v3.10.8: default valido per il gate
+    document.getElementById('men-brain-invasion').value = '';
+    document.getElementById('men-necrosis').value = '';
+    // FIX v3.10.8: collassa pannello molecolare se espanso (reset = stato iniziale completo)
+    const molFields = document.getElementById('men-mol-fields');
+    const molBtn = document.getElementById('mol-toggle-btn');
+    if (molFields && molFields.classList.contains('visible')) {
+        molFields.classList.remove('visible');
+        if (molBtn) molBtn.textContent = '▶ Espandi molecolare (opzionale)';
+    }
     document.getElementById('men-report-container').innerHTML = '';
+    resetBiblioHighlights();
+    const meninGate = document.getElementById('menin-gate');
+    meninGate.classList.remove('visible'); meninGate.textContent = '';
     updateMinorCount(); document.getElementById('men-subtype-hint').textContent = '';
 }
 
@@ -1058,11 +1070,16 @@ function computeMeningiomaDiagnosis(d) {
         alerts.push({
             type: 'critical',
             msg: `&#128680; TERT promoter mutato: criterio molecolare indipendente per WHO Grade 3 nel meningioma (WHO CNS5 2021).${prevGrade && prevGrade !== 'WHO Grade 3' ? ` Upgrading da ${prevGrade} a Grade 3.` : ''}`
+                });
+                alerts.push({ type: 'info',
+                    msg: `&#x26A0;&#xFE0F; <strong>Nota critica — TERT isolato:</strong> la robustezza prognostica di TERTp come unico criterio molecolare di Grade 3 è oggetto di revisione nella letteratura recente (cfr. Sahm 2016; Nassiri 2021; revisioni 2024–2025). CDKN2A/B hom-del mostra stratificazione prognostica più consolidata. Il tool applica WHO CNS5 2021 as written.`
         });
     }
 
     // STEP 3 — Grading morfologico
-    const minorCount = [d.hypercell, d.smallCells, d.nucleoli, d.sheet].filter(Boolean).length;
+    // FIX v3.10.8: necrosi spontanea inclusa nei criteri minori (WHO CNS5: 5 criteri, cutoff ≥3)
+    const minorFeatures = [d.hypercell, d.smallCells, d.nucleoli, d.sheet, d.necrosis === 'presente'];
+    const minorCount = minorFeatures.filter(Boolean).length;
     if (grade !== 'WHO Grade 3') {
         if (d.mitosis >= 20) { grade = 'WHO Grade 3'; gradeReason.push(`Mitosi ≥20 (${d.mitosis}/10HPF)`); alerts.push({ type:'critical', msg:`&#128680; Mitosi ${d.mitosis}/10HPF (≥20): criterio morfologico WHO Grade 3.` }); }
         else if (d.frankMalig && d.frankMalig !== 'assente' && d.frankMalig !== '') { grade = 'WHO Grade 3'; gradeReason.push(`Morfologia maligna franca (${d.frankMalig})`); alerts.push({ type:'critical', msg:`&#128680; Morfologia maligna franca (${d.frankMalig}): criterio WHO Grade 3.` }); }
@@ -1071,7 +1088,7 @@ function computeMeningiomaDiagnosis(d) {
         const gr2crit = [];
         if (d.mitosis >= 4) gr2crit.push(`Mitosi ≥4 (${d.mitosis}/10HPF)`);
         if (d.brainInvasion === 'present') gr2crit.push('Invasione cerebrale confermata');
-        if (minorCount >= 3) gr2crit.push(`Criteri minori ≥3 (${minorCount}/4)`);
+        if (minorCount >= 3) gr2crit.push(`Criteri minori ≥3 (${minorCount}/5)`);
         if (gr2crit.length) { grade = 'WHO Grade 2'; gradeReason = gradeReason.concat(gr2crit); alerts.push({ type:'warning', msg:`&#9888;&#65039; Criterio/i WHO Grade 2: ${gr2crit.join(' | ')}` }); }
     }
     if (d.brainInvasion === 'sospetta') alerts.push({ type:'warning', msg:'&#9888;&#65039; Invasione cerebrale sospetta ma non confermata: campionamento aggiuntivo raccomandato. Se confermata → Grade 2 isolato (WHO CNS5).' });
@@ -1110,12 +1127,69 @@ function computeMeningioma() {
     if (dx.recidiveRisk) { const rc2 = dx.recidiveRisk==='ALTO'?'var(--red)':'var(--amber)'; html += `<div style="margin-top:8px;font-size:12px"><span style="background:${rc2};color:#fff;border-radius:4px;padding:2px 8px;font-family:var(--font-mono);font-weight:700">Rischio recidiva: ${dx.recidiveRisk}</span></div>`; }
     html += '</div>';
     html += `<div class="diagnosis-box" style="margin-top:10px"><h3 style="margin-bottom:8px">Dati inseriti</h3><table style="width:100%;border-collapse:collapse;font-size:11px">`;
-    const rows = [['Età / Sesso', `${d.age||'—'} / ${d.sex||'—'}`],['Sede', d.location||'—'],['Sottotipo', (d.subtype && d.subtype !== 'non-specificato') ? d.subtype : 'Non specificato'],['Mitosi/10HPF', d.mitosis],['Invasione cerebrale', d.brainInvasion||'—'],['Criteri minori', [d.hypercell?'Ipercell.':null,d.smallCells?'Piccole cellule':null,d.nucleoli?'Nucleoli':null,d.sheet?'Sheet-like':null].filter(Boolean).join(', ')||'Nessuno'],['Ki67', d.ki67?d.ki67+'%':'—'],['PR / SSTR2A', `${d.pr||'—'} / ${d.sstr2a||'—'}`],['TERT / CDKN2A', `${d.tert||'—'} / ${d.cdkn2a||'—'}`],['BAP1 / NF2', `${d.bap1||'—'} / ${d.nf2||'—'}`]];
+    const rows = [['Età / Sesso', `${d.age||'—'} / ${d.sex||'—'}`],['Sede', d.location||'—'],['Sottotipo', (d.subtype && d.subtype !== 'non-specificato') ? d.subtype : 'Non specificato'],['Mitosi/10HPF', d.mitosis],['Invasione cerebrale', d.brainInvasion||'—'],['Criteri minori', [d.hypercell?'Ipercell.':null,d.smallCells?'Piccole cellule':null,d.nucleoli?'Nucleoli':null,d.sheet?'Sheet-like':null,d.necrosis==='presente'?'Necrosi spontanea':null].filter(Boolean).join(', ')||'Nessuno'],['Ki67', d.ki67?d.ki67+'%':'—'],['PR / SSTR2A', `${d.pr||'—'} / ${d.sstr2a||'—'}`],['TERT / CDKN2A', `${d.tert||'—'} / ${d.cdkn2a||'—'}`],['BAP1 / NF2', `${d.bap1||'—'} / ${d.nf2||'—'}`]];
     rows.forEach(([k,v],i,arr) => { html += `<tr><td style="padding:4px 8px;${i<arr.length-1?'border-bottom:1px solid var(--border);':''}color:var(--text-dim);width:40%">${k}</td><td style="padding:4px 8px;${i<arr.length-1?'border-bottom:1px solid var(--border);':''}">${v}</td></tr>`; });
     html += `</table></div>`;
     html += `<div style="background:var(--blue-dim);border:1px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--blue);margin-top:8px;line-height:1.6"><strong>Nota epistemica:</strong> Output di <em>pattern matching su regole discrete</em> (WHO CNS5 2021). Non incorpora variabilità morfologica del vetrino né qualità pre-analitica del campione. <em>Il tool non diagnostica — il patologo sì.</em></div>`;
-    rc.innerHTML = html; rc.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    rc.innerHTML = html;
+    highlightRelevantMenReferences(d, dx);
+    setTimeout(() => document.querySelector('.biblio-section').scrollIntoView({ behavior:'smooth', block:'nearest' }), 600);
 }
+// ============================================================
+// BIBLIOGRAFIA — HIGHLIGHT MENINGIOMA
+// v3.10.8: funzione dedicata, analoga a highlightRelevantReferences
+// ============================================================
+function highlightRelevantMenReferences(d, dx) {
+    resetBiblioHighlights();
+    const tags = new Set(['MENINGIOMA', 'GRADING', 'WHO CNS5']);
+
+    if (d.tert === 'mutato')                              { tags.add('TERT'); tags.add('PROGNOSIS'); }
+    if (d.cdkn2a === 'homozygous-del')                    { tags.add('CDKN2A'); tags.add('PROGNOSIS'); }
+    if (d.bap1 === 'lost' || d.bap1 === 'mutato')         { tags.add('BAP1'); tags.add('PROGNOSIS'); }
+    if (d.nf2 === 'mutato')                               { tags.add('NF2'); tags.add('MOLECULAR'); }
+    if (d.brainInvasion === 'present')                    { tags.add('BRAIN INVASION'); tags.add('GRADE 2'); }
+    if (d.subtype === 'rhabdoide' || d.subtype === 'papillare') { tags.add('RHABDOID'); tags.add('GRADE 3'); }
+    if (dx.grade === 'WHO Grade 2')                       tags.add('GRADE 2');
+    if (dx.grade === 'WHO Grade 3')                       tags.add('GRADE 3');
+    if (d.necrosis === 'presente')                        { tags.add('GRADE 2'); tags.add('GRADE 3'); }
+    if (d.recurrence)                                     { tags.add('RECURRENCE'); tags.add('PROGNOSIS'); }
+
+    // FIX v3.10.8: data-driven — legge i tag dal database bibliography, non dal DOM renderizzato
+    // Usa id="ref-{id}" e id="cat-{catKey}" emessi da renderBibliography()
+    // Più robusto: immune a refactoring grafico dei tag o filtri dinamici futuri
+    let relevantCount = 0;
+    Object.entries(bibliography).forEach(([catKey, cat]) => {
+        let catHasRelevant = false;
+        cat.references.forEach(ref => {
+            const refTags = (ref.tags || []).map(t => t.toUpperCase());
+            const match = refTags.some(t => tags.has(t));
+            if (match) {
+                const refEl = document.getElementById(`ref-${ref.id}`);
+                if (refEl) {
+                    refEl.classList.add('relevant');
+                    if (!refEl.querySelector('.biblio-relevance-badge')) {
+                        const badge = document.createElement('span');
+                        badge.className = 'biblio-relevance-badge';
+                        badge.textContent = 'RILEVANTE';
+                        refEl.querySelector('.biblio-reference-actions')?.appendChild(badge);
+                    }
+                    catHasRelevant = true;
+                    relevantCount++;
+                }
+            }
+        });
+        if (catHasRelevant) {
+            const catEl = document.getElementById(`cat-${catKey}`);
+            if (catEl) { catEl.classList.add('has-relevant'); catEl.classList.add('expanded'); }
+        }
+    });
+    const badge = document.getElementById('relevance-badge');
+    if (relevantCount > 0) {
+        badge.textContent = `${relevantCount} riferiment${relevantCount===1?'o':'i'} rilevant${relevantCount===1?'e':'i'}`;
+        badge.style.display = 'inline-block';
+    }
+}
+
 </script>
 </body>
 </html>
