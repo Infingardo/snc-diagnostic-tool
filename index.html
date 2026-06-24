@@ -403,7 +403,7 @@
                     </select>
                     <div id="men-subtype-hint" class="help-text"></div>
                 </div>
-                <div class="field-group"><div class="field-label">Mitosi / 10 HPF</div><input type="number" id="men-mitosis" placeholder="0" min="0" max="100"><div class="help-text">≥4 → criterio Gr.2 | ≥20 → criterio Gr.3</div></div>
+                <div class="field-group"><div class="field-label">Mitosi / 1.6 mm²</div><input type="number" id="men-mitosis" placeholder="0" min="0" max="100"><div class="help-text">≥4/1.6mm² (=2.5/mm²) → Gr.2 | ≥20/1.6mm² (=12.5/mm²) → Gr.3 | WHO CNS5 2021</div></div>
                 <div class="field-group"><div class="field-label">Invasione cerebrale</div><select id="men-brain-invasion"><option value="">—</option><option value="assente">Assente</option><option value="present">Presente (confermata)</option><option value="sospetta">Sospetta / campione limitato</option></select><div class="help-text">Criterio Gr.2 isolato (WHO CNS5)</div></div>
                 <div class="field-group"><div class="field-label">Necrosi spontanea</div><select id="men-necrosis"><option value="">—</option><option value="assente">Assente</option><option value="presente">Presente</option></select><div class="help-text">Criterio minore atipico</div></div>
                 <div style="margin: 10px 0 6px; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">Criteri minori (≥3/5 = Gr.2)</div>
@@ -896,7 +896,7 @@ function checkGliomaCeiling() {
 function checkMeningiomaCeiling() {
     const g = i => document.getElementById(i); const missing = [];
     // FIX: "non-specificato" ha ora un value non vuoto, quindi il check passa correttamente
-    if (g('men-mitosis').value === '') missing.push('Mitosi/10HPF');
+    if (g('men-mitosis').value === '') missing.push('Mitosi/1.6mm²');
     if (!g('men-subtype').value) missing.push('Sottotipo');
     const gate = document.getElementById('menin-gate');
     if (missing.length > 0) { gate.textContent = `⚠ Dati insufficienti: ${missing.join(', ')} obbligatori.`; gate.classList.add('visible'); return false; }
@@ -1081,12 +1081,12 @@ function computeMeningiomaDiagnosis(d) {
     const minorFeatures = [d.hypercell, d.smallCells, d.nucleoli, d.sheet, d.necrosis === 'presente'];
     const minorCount = minorFeatures.filter(Boolean).length;
     if (grade !== 'WHO Grade 3') {
-        if (d.mitosis >= 20) { grade = 'WHO Grade 3'; gradeReason.push(`Mitosi ≥20 (${d.mitosis}/10HPF)`); alerts.push({ type:'critical', msg:`&#128680; Mitosi ${d.mitosis}/10HPF (≥20): criterio morfologico WHO Grade 3.` }); }
+        if (d.mitosis >= 20) { grade = 'WHO Grade 3'; gradeReason.push(`Mitosi ≥20 (${d.mitosis}/1.6mm²)`); alerts.push({ type:'critical', msg:`&#128680; Mitosi ${d.mitosis}/1.6mm² (≥20): criterio morfologico WHO Grade 3.` }); }
         else if (d.frankMalig && d.frankMalig !== 'assente' && d.frankMalig !== '') { grade = 'WHO Grade 3'; gradeReason.push(`Morfologia maligna franca (${d.frankMalig})`); alerts.push({ type:'critical', msg:`&#128680; Morfologia maligna franca (${d.frankMalig}): criterio WHO Grade 3.` }); }
     }
     if (grade !== 'WHO Grade 3') {
         const gr2crit = [];
-        if (d.mitosis >= 4) gr2crit.push(`Mitosi ≥4 (${d.mitosis}/10HPF)`);
+        if (d.mitosis >= 4) gr2crit.push(`Mitosi ≥4 (${d.mitosis}/1.6mm²)`);
         if (d.brainInvasion === 'present') gr2crit.push('Invasione cerebrale confermata');
         if (minorCount >= 3) gr2crit.push(`Criteri minori ≥3 (${minorCount}/5)`);
         if (gr2crit.length) { grade = 'WHO Grade 2'; gradeReason = gradeReason.concat(gr2crit); alerts.push({ type:'warning', msg:`&#9888;&#65039; Criterio/i WHO Grade 2: ${gr2crit.join(' | ')}` }); }
@@ -1127,7 +1127,7 @@ function computeMeningioma() {
     if (dx.recidiveRisk) { const rc2 = dx.recidiveRisk==='ALTO'?'var(--red)':'var(--amber)'; html += `<div style="margin-top:8px;font-size:12px"><span style="background:${rc2};color:#fff;border-radius:4px;padding:2px 8px;font-family:var(--font-mono);font-weight:700">Rischio recidiva: ${dx.recidiveRisk}</span></div>`; }
     html += '</div>';
     html += `<div class="diagnosis-box" style="margin-top:10px"><h3 style="margin-bottom:8px">Dati inseriti</h3><table style="width:100%;border-collapse:collapse;font-size:11px">`;
-    const rows = [['Età / Sesso', `${d.age||'—'} / ${d.sex||'—'}`],['Sede', d.location||'—'],['Sottotipo', (d.subtype && d.subtype !== 'non-specificato') ? d.subtype : 'Non specificato'],['Mitosi/10HPF', d.mitosis],['Invasione cerebrale', d.brainInvasion||'—'],['Criteri minori', [d.hypercell?'Ipercell.':null,d.smallCells?'Piccole cellule':null,d.nucleoli?'Nucleoli':null,d.sheet?'Sheet-like':null,d.necrosis==='presente'?'Necrosi spontanea':null].filter(Boolean).join(', ')||'Nessuno'],['Ki67', d.ki67?d.ki67+'%':'—'],['PR / SSTR2A', `${d.pr||'—'} / ${d.sstr2a||'—'}`],['TERT / CDKN2A', `${d.tert||'—'} / ${d.cdkn2a||'—'}`],['BAP1 / NF2', `${d.bap1||'—'} / ${d.nf2||'—'}`]];
+    const rows = [['Età / Sesso', `${d.age||'—'} / ${d.sex||'—'}`],['Sede', d.location||'—'],['Sottotipo', (d.subtype && d.subtype !== 'non-specificato') ? d.subtype : 'Non specificato'],['Mitosi/1.6mm²', d.mitosis],['Invasione cerebrale', d.brainInvasion||'—'],['Criteri minori', [d.hypercell?'Ipercell.':null,d.smallCells?'Piccole cellule':null,d.nucleoli?'Nucleoli':null,d.sheet?'Sheet-like':null,d.necrosis==='presente'?'Necrosi spontanea':null].filter(Boolean).join(', ')||'Nessuno'],['Ki67', d.ki67?d.ki67+'%':'—'],['PR / SSTR2A', `${d.pr||'—'} / ${d.sstr2a||'—'}`],['TERT / CDKN2A', `${d.tert||'—'} / ${d.cdkn2a||'—'}`],['BAP1 / NF2', `${d.bap1||'—'} / ${d.nf2||'—'}`]];
     rows.forEach(([k,v],i,arr) => { html += `<tr><td style="padding:4px 8px;${i<arr.length-1?'border-bottom:1px solid var(--border);':''}color:var(--text-dim);width:40%">${k}</td><td style="padding:4px 8px;${i<arr.length-1?'border-bottom:1px solid var(--border);':''}">${v}</td></tr>`; });
     html += `</table></div>`;
     html += `<div style="background:var(--blue-dim);border:1px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--blue);margin-top:8px;line-height:1.6"><strong>Nota epistemica:</strong> Output di <em>pattern matching su regole discrete</em> (WHO CNS5 2021). Non incorpora variabilità morfologica del vetrino né qualità pre-analitica del campione. <em>Il tool non diagnostica — il patologo sì.</em></div>`;
