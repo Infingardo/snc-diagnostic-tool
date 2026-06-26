@@ -752,7 +752,6 @@ function computeDiagnosis(data) {
 function generateDiagnosis() {
     const data = getData(); const diagnosis = computeDiagnosis(data);
     displayDiagnosis(diagnosis, data); highlightRelevantReferences(diagnosis, data);
-    setTimeout(() => document.querySelector('.biblio-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 600);
 }
 
 function displayDiagnosis(diagnosis, data) {
@@ -860,7 +859,7 @@ function exportMenPDF() { exportCurrentReport('meningioma'); }
 function exportCurrentReport(type) {
     const isGlioma = (type === 'glioma');
     const rc = document.getElementById(isGlioma ? 'report-container' : 'men-report-container');
-    if (!rc || !rc.innerHTML.trim()) { alert('Genera prima una diagnosi'); return; }
+    if (!rc || !rc.innerHTML.trim()) { return; }
     const label = isGlioma ? 'GLIOMI SNC' : 'MENINGIOMI SNC';
     const filename = (isGlioma ? 'Report_Glioma_v3_' : 'Report_Meningioma_v3_') + new Date().toISOString().split('T')[0] + '.pdf';
     const opt = { margin: 10, filename, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' } };
@@ -1133,7 +1132,6 @@ function computeMeningioma() {
     html += `<div style="background:var(--blue-dim);border:1px solid var(--blue);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--blue);margin-top:8px;line-height:1.6"><strong>Nota epistemica:</strong> Output di <em>pattern matching su regole discrete</em> (WHO CNS5 2021). Non incorpora variabilità morfologica del vetrino né qualità pre-analitica del campione. <em>Il tool non diagnostica — il patologo sì.</em></div>`;
     rc.innerHTML = html;
     highlightRelevantMenReferences(d, dx);
-    setTimeout(() => document.querySelector('.biblio-section').scrollIntoView({ behavior:'smooth', block:'nearest' }), 600);
 }
 // ============================================================
 // BIBLIOGRAFIA — HIGHLIGHT MENINGIOMA
