@@ -1,0 +1,77 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║           RIEPILOGO FINALE - v3.11.0                                       ║
+║           Modulo Gliomi — sicurezza IDH-wildtype e grading GBM             ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+Base: v3.10.8 → v3.11.0
+File modificato: index.html (funzione computeDiagnosis, ramo IDH-wildtype)
+Documentazione: README.md (changelog)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🐛 FIX INCLUSI IN v3.11.0
+
+FIX 1 [CRITICAL] — IDH-wildtype non sicuro da sola IHC negativa
+  Problema: il tool poteva dichiarare IDH-wildtype sulla sola IHC IDH1
+  R132H negativa, senza NGS. Le mutazioni non-canoniche (IDH1
+  R132C/G/S/L, IDH2 R172) sfuggono all'anticorpo.
+  Fix:
+    • <55 anni + IHC neg + NGS non eseguito → alert CRITICO bloccante:
+      "obbligatorio NGS IDH1/2 (R132 non-canoniche, IDH2 R172) prima di
+      classificare come IDH-wildtype (cIMPACT-NOW)". Entità marcata come
+      PROVVISORIA.
+    • ≥55 anni + IHC neg + NGS non eseguito → accettato come IDH-wt con
+      info-alert sulla conferma NGS non eseguita.
+    • BUG-010 (IHC neg + NGS mutato → discordanza R132 non-canonica)
+      NON toccato: resta invariato.
+
+FIX 2 [HIGH] — Mitosi ≥10 non è più trigger autonomo di Grade 4
+  Problema: nel GBM IDH-wt i criteri definenti di grado 4 sono necrosi,
+  MVP o criteri molecolari (TERT mut / EGFR amp / +7−10). L'alto indice
+  mitotico da solo NON è criterio WHO di grado 4.
+  Fix:
+    • Rimosso `data.mitosis >= 10` dalla condizione che assegna
+      Glioblastoma + WHO Grade 4.
+    • Grado 4 mantenuto solo su necrosi / MVP / criteri molecolari.
+    • mitosi ≥10 isolata → warning ("sospetto ma non sufficiente per
+      Grade 4; raccomandato completamento molecolare TERT, EGFR, +7/−10")
+      e caso intercettato dal ramo grading indeterminato / sottocampionamento
+      (con warning "realismo clinico" per età >50 già presente).
+
+FIX 3 [MEDIUM] — NF1 modellato come multi-hit
+  Problema: NF1 era flag binario. Nei referti reali possono coesistere più
+  varianti troncanti/frameshift, suggestive di inattivazione biallelica.
+  Fix:
+    • Nuova opzione select NF1 "multipli hit (sospetta inattivaz. biallelica)".
+    • Se biallelico → alert "Possibile inattivazione biallelica NF1
+      (multipli hit): coerente con GBM subtype mesenchimale."
+    • Entità e grado invariati (nessun impatto diagnostico).
+
+═══════════════════════════════════════════════════════════════════════════
+
+🧪 VERIFICA DI NON-REGRESSIONE (superata)
+
+Caso di riferimento GBM IDH-wt (67 aa, frontale, IHC IDH1 R132H neg, ATRX
+  conservato, Ki-67 5%, necrosi presente, TERT C228T mut, EGFR non ampl,
+  +7/−10 N.E., NF1 mut):
+  ✓ Glioblastoma, IDH-wildtype (WHO Grade 4)
+  ✓ Doppia motivazione: critico morfologico "Necrosi" + critico
+    molecolare "cIMPACT-NOW: TERT mut"
+  ✓ FIX 1: age 67 (>55) → info-alert su NGS non eseguito, NON blocca.
+
+Caso 40 anni (IHC IDH1 R132H neg, ATRX conservato, TERT wt, EGFR non ampl,
+  +7/−10 non fatto, no necrosi, no MVP):
+  ✓ Glioma diffuso, IDH-wildtype (tipo da determinare) — grading
+    indeterminato, warning pannello incompleto, NON GBM.
+  ✓ FIX 1: age <55 → warning bloccante su NGS IDH obbligatorio + entità
+    marcata PROVVISORIA.
+
+Caso 6 demo (58 anni, mitosi 14/HPF, no necrosi/MVP, no criteri molecolari,
+  NGS IDH-wt confermato):
+  ✓ NON GBM: grading indeterminato + warning mitosi elevata + realismo
+    clinico. Illustra FIX 2.
+
+BUG-010 (IHC neg + NGS mut R132H, ATRX loss):
+  ✓ Astrocytoma, IDH-mutated + warning discordanza IHC/NGS — invariato.
+
+═══════════════════════════════════════════════════════════════════════════

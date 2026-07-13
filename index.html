@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tool Diagnostico Neoplasie Cerebrali v3.10.8 — Gliomi &amp; Meningiomi | Pannello Diatech Extended</title>
+    <title>Tool Diagnostico Neoplasie Cerebrali v3.11.0 — Gliomi &amp; Meningiomi | Pannello Diatech Extended</title>
     <script src="./vendor/html2pdf.bundle.min.js"></script>
     <style>
         @import url('./vendor/fonts/fonts.css');
@@ -219,7 +219,7 @@
 <div class="container">
     <div class="header">
         <div class="header-left">
-            <h1>&#129504; NEOPLASIE CEREBRALI // v3.10.8</h1>
+            <h1>&#129504; NEOPLASIE CEREBRALI // v3.11.0</h1>
             <p>WHO CNS5 2021 · Gliomi &amp; Meningiomi · Workflow integrato morfologia → IHC → NGS · Pannello Diatech Pharmacogenetics</p>
         </div>
         <div class="header-badges">
@@ -248,6 +248,7 @@
             <option value="case3">Caso 3 — GBM IDH-wt con EGFR amp + PTEN loss</option>
             <option value="case4">Caso 4 — Glioma linea mediana pediatrico H3K27M</option>
             <option value="case5">Caso 5 — Glioma NTRK-fusion (actionable)</option>
+            <option value="case6">Caso 6 — Glioma IDH-wt, mitosi elevata senza necrosi/MVP (no GBM)</option>
         </select>
         <button class="btn-load" onclick="loadCase()">Carica</button>
         <button class="btn-reset-case" onclick="resetForm()">&#x21BA; Nuovo caso</button>
@@ -295,7 +296,7 @@
             <div class="section-divider">Pathway PI3K / mTOR</div>
             <div class="field-group"><div class="field-label">PIK3CA <span class="new-tag">NEW</span></div><select id="pik3ca"><option value="">—</option><option value="mutato">Mutato</option><option value="wildtype">Wild-type</option><option value="not-done">N.E.</option></select></div>
             <div class="field-group"><div class="field-label">PTEN <span class="new-tag">NEW</span></div><select id="pten"><option value="">—</option><option value="loss">Loss / mutato</option><option value="wildtype">Wild-type</option><option value="not-done">N.E.</option></select><div class="help-text">PTEN loss: frequentemente associato a GBM IDH-wt mesenchimale</div></div>
-            <div class="field-group"><div class="field-label">NF1 <span class="new-tag">NEW</span></div><select id="nf1"><option value="">—</option><option value="mutato">Mutato</option><option value="wildtype">Wild-type</option><option value="not-done">N.E.</option></select><div class="help-text">NF1 loss → Mesenchymal subtype GBM</div></div>
+            <div class="field-group"><div class="field-label">NF1 <span class="new-tag">NEW</span></div><select id="nf1"><option value="">—</option><option value="mutato">Mutato (singolo hit)</option><option value="biallelico">Mutato — multipli hit (sospetta inattivaz. biallelica)</option><option value="wildtype">Wild-type</option><option value="not-done">N.E.</option></select><div class="help-text">NF1 loss → Mesenchymal subtype GBM. Multipli hit troncanti/frameshift → sospetta inattivazione biallelica</div></div>
             <div class="field-group"><div class="field-label">MTOR <span class="new-tag">NEW</span></div><select id="mtor"><option value="">—</option><option value="mutato">Mutato (gain-of-function)</option><option value="wildtype">Wild-type</option><option value="not-done">N.E.</option></select></div>
             <div class="section-divider">Predittivi</div>
             <div class="field-group"><div class="field-label">MGMT metilazione</div><select id="mgmt"><option value="">—</option><option value="not-done">N.E.</option><option value="methylated">Metilato</option><option value="unmethylated">Non metilato</option></select></div>
@@ -531,7 +532,8 @@ const cases = {
     case2: { age: 52, location: 'emisfero', imaging: 'enhancement', cellularity: 'moderate', atypia: 'scarse', mitosis: 3, celltype: 'oligodendroglial', gfap: 'partial', 'idh-ihc': 'positive', atrx: 'retained', p53: 8, olig2: 'positive', h3k27me3: 'retained', ki67: 8, 'hist-necrosis': false, 'hist-microvascular': false, 'idh-ngs': 'mut-r132h', 'tp53-ngs': 'wildtype', '1p19q': 'codeleted', tert: 'wildtype', h3f3a: 'wildtype', cdkn2a: 'wildtype', pik3ca: 'wildtype', pten: 'wildtype', nf1: 'wildtype', mtor: 'wildtype', mgmt: 'not-done', 'egfr-cnv': 'normal', 'egfr-snv': 'wildtype', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'absent', braf: 'wildtype', 'ntrk-fusion': 'negative', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 1, pole: 'wildtype', lynch: 'no' },
     case3: { age: 64, location: 'emisfero', imaging: 'ring', cellularity: 'high', atypia: 'numerose', mitosis: 16, celltype: 'glioblastic', gfap: 'partial', 'idh-ihc': 'negative', atrx: 'retained', p53: 70, olig2: 'negative', h3k27me3: 'retained', ki67: 45, 'hist-necrosis': true, 'hist-microvascular': true, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato', '1p19q': 'not-codeleted', tert: 'mutato', h3f3a: 'wildtype', cdkn2a: 'wildtype', pik3ca: 'wildtype', pten: 'loss', nf1: 'mutato', mtor: 'wildtype', mgmt: 'unmethylated', 'egfr-cnv': 'amplified', 'egfr-snv': 'vIII', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'present', braf: 'wildtype', 'ntrk-fusion': 'negative', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 4, pole: 'wildtype', lynch: 'no' },
     case4: { age: 8, location: 'linea-mediana', imaging: 'midline-diffuse', cellularity: 'high', atypia: 'numerose', mitosis: 12, celltype: 'glioblastic', gfap: 'partial', 'idh-ihc': 'negative', atrx: 'retained', p53: 50, olig2: 'negative', h3k27me3: 'lost', ki67: 50, 'hist-necrosis': true, 'hist-microvascular': false, 'idh-ngs': 'wildtype', 'tp53-ngs': 'mutato', '1p19q': 'not-codeleted', tert: 'wildtype', h3f3a: 'k27m', cdkn2a: 'homozygous-del', pik3ca: 'wildtype', pten: 'wildtype', nf1: 'wildtype', mtor: 'wildtype', mgmt: 'unmethylated', 'egfr-cnv': 'normal', 'egfr-snv': 'wildtype', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'absent', braf: 'wildtype', 'ntrk-fusion': 'negative', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 2, pole: 'wildtype', lynch: 'no' },
-    case5: { age: 35, location: 'emisfero', imaging: 'diffuse', cellularity: 'moderate', atypia: 'moderate', mitosis: 4, celltype: 'astrocytic', gfap: 'positive', 'idh-ihc': 'negative', atrx: 'retained', p53: 5, olig2: 'partial', h3k27me3: 'retained', ki67: 10, 'hist-necrosis': false, 'hist-microvascular': false, 'idh-ngs': 'wildtype', 'tp53-ngs': 'wildtype', '1p19q': 'not-codeleted', tert: 'wildtype', h3f3a: 'wildtype', cdkn2a: 'wildtype', pik3ca: 'wildtype', pten: 'wildtype', nf1: 'wildtype', mtor: 'wildtype', mgmt: 'not-done', 'egfr-cnv': 'normal', 'egfr-snv': 'wildtype', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'absent', braf: 'wildtype', 'ntrk-fusion': 'ntrk3', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 2, pole: 'wildtype', lynch: 'no' }
+    case5: { age: 35, location: 'emisfero', imaging: 'diffuse', cellularity: 'moderate', atypia: 'moderate', mitosis: 4, celltype: 'astrocytic', gfap: 'positive', 'idh-ihc': 'negative', atrx: 'retained', p53: 5, olig2: 'partial', h3k27me3: 'retained', ki67: 10, 'hist-necrosis': false, 'hist-microvascular': false, 'idh-ngs': 'wildtype', 'tp53-ngs': 'wildtype', '1p19q': 'not-codeleted', tert: 'wildtype', h3f3a: 'wildtype', cdkn2a: 'wildtype', pik3ca: 'wildtype', pten: 'wildtype', nf1: 'wildtype', mtor: 'wildtype', mgmt: 'not-done', 'egfr-cnv': 'normal', 'egfr-snv': 'wildtype', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'absent', braf: 'wildtype', 'ntrk-fusion': 'ntrk3', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 2, pole: 'wildtype', lynch: 'no' },
+    case6: { age: 58, location: 'emisfero', imaging: 'diffuse', cellularity: 'high', atypia: 'numerose', mitosis: 14, celltype: 'astrocytic', gfap: 'positive', 'idh-ihc': 'negative', atrx: 'retained', p53: 15, olig2: 'negative', h3k27me3: 'retained', ki67: 18, 'hist-necrosis': false, 'hist-microvascular': false, 'idh-ngs': 'wildtype', 'tp53-ngs': 'wildtype', '1p19q': 'not-codeleted', tert: 'wildtype', h3f3a: 'wildtype', cdkn2a: 'wildtype', pik3ca: 'wildtype', pten: 'wildtype', nf1: 'wildtype', mtor: 'wildtype', mgmt: 'not-done', 'egfr-cnv': 'normal', 'egfr-snv': 'wildtype', 'erbb2-cnv': 'normal', 'met-cnv': 'normal', 'chr7-10': 'absent', braf: 'wildtype', 'ntrk-fusion': 'negative', 'ret-fusion': 'negative', 'ros1-fusion': 'negative', 'alk-fusion': 'negative', 'nrg1-fusion': 'negative', 'fgfr-fusion': 'negative', 'met-fusion': 'negative', 'msi-status': 'mss', 'mmr-ihc': 'intact', tmb: 3, pole: 'wildtype', lynch: 'no' }
 };
 
 function loadCase() {
@@ -566,7 +568,7 @@ function resetForm() {
 }
 
 // ============================================================
-// CORE DIAGNOSIS ENGINE v3.10.8
+// CORE DIAGNOSIS ENGINE v3.11.0
 // ============================================================
 const isPosFusion = v => v && v !== 'negative' && v !== 'not-done' && v !== '';
 
@@ -634,6 +636,8 @@ function computeDiagnosis(data) {
 
     const isIDHMut = idhStatus.startsWith('mut') && idhStatus !== 'wildtype' && idhStatus !== 'wildtype-ihc';
     const isIDHWt = idhStatus === 'wildtype' || idhStatus === 'wildtype-ihc';
+    // FIX v3.11.0: IHC IDH1 R132H negativa NON confermata da NGS (mutazioni non-canoniche R132C/G/S/L, IDH2 R172 sfuggono all'anticorpo)
+    const idhIhcNegUnconfirmed = data['idh-ihc'] === 'negative' && (!data['idh-ngs'] || data['idh-ngs'] === '' || data['idh-ngs'] === 'not-done');
     const egfrAmp = data['egfr-cnv'] === 'amplified'; const tertMut = data.tert === 'mutato'; const chr710 = data['chr7-10'] === 'present';
 
     if (isIDHMut) {
@@ -661,25 +665,38 @@ function computeDiagnosis(data) {
         if (data.cdkn2a === 'homozygous-del' && diagnosis.entity) diagnosis.entity = diagnosis.entity.replace(' (WHO CNS5 2021)', '') + ', WHO Grade 4 (CDKN2A/B homozygous deletion)';
 
     } else if (isIDHWt) {
-        alerts.push({ type: 'success', msg: '✓ IDH wildtype confermato' }); scores.glioblastoma += 40;
+        // FIX v3.11.0: sotto i 55 anni una sola IHC IDH1 R132H negativa non basta per dichiarare IDH-wt (cIMPACT-NOW / WHO CNS5)
+        if (idhIhcNegUnconfirmed) {
+            if (data.age < 55) alerts.push({ type: 'critical', msg: 'IHC IDH1 R132H negativa non confermata da sequenziamento in paziente <55 anni: obbligatorio NGS IDH1/2 (R132 non-canoniche, IDH2 R172) prima di classificare come IDH-wildtype (cIMPACT-NOW). Classificazione IDH-wildtype PROVVISORIA.' });
+            else alerts.push({ type: 'info', msg: 'IDH-wildtype su sola IHC IDH1 R132H negativa (età ≥55 anni): accettabile per WHO CNS5, ma conferma NGS IDH1/2 (R132 non-canoniche, IDH2 R172) non eseguita.' });
+        } else {
+            alerts.push({ type: 'success', msg: '✓ IDH wildtype confermato' });
+        }
+        scores.glioblastoma += 40;
         const tp53Altered = (data.p53 > 10) || (data['tp53-ngs'] === 'mutato');
         const hasNecrosis = data.histFeatures.necrosis; const hasMVP = data.histFeatures.microvascular;
         const molecularGBM = egfrAmp || chr710 || tertMut;
         const isDiffusePatternWt = !data.celltype || data.celltype === 'astrocytic' || data.celltype === 'mixed' || data.celltype === 'glioblastic';
         if (molecularGBM) { const criteria = [egfrAmp ? 'EGFR amp' : null, chr710 ? '+7/-10' : null, tertMut ? 'TERT mut' : null].filter(Boolean).join(' + '); if (isDiffusePatternWt) alerts.push({ type: 'critical', msg: `GBM molecolare (cIMPACT-NOW update 3): ${criteria} → Grade 4 in glioma diffuso IDH-wt, anche senza criteri morfologici` }); else alerts.push({ type: 'warning', msg: `Criteri molecolari GBM (${criteria}) in pattern non diffuso: cIMPACT-NOW si applica a glioma diffuso astrocitario.` }); }
-        if (isDiffusePatternWt && (data.mitosis >= 10 || hasNecrosis || hasMVP || molecularGBM)) { diagnosis.grade = 'WHO Grade 4'; diagnosis.entity = 'Glioblastoma, IDH-wildtype (WHO CNS5 2021)'; scores.glioblastoma += 80; if (hasNecrosis || hasMVP) { const crit = [hasNecrosis ? 'Necrosi' : null, hasMVP ? 'MVP' : null].filter(Boolean).join(' + '); alerts.push({ type: 'critical', msg: `Criteri morfologici Grade 4: ${crit}` }); } }
+        // FIX v3.11.0: mitosi ≥10 NON è criterio autonomo di Grade 4 nel GBM IDH-wt (WHO CNS5). Grade 4 solo su necrosi / MVP / criteri molecolari.
+        if (isDiffusePatternWt && (hasNecrosis || hasMVP || molecularGBM)) { diagnosis.grade = 'WHO Grade 4'; diagnosis.entity = 'Glioblastoma, IDH-wildtype (WHO CNS5 2021)'; scores.glioblastoma += 80; if (hasNecrosis || hasMVP) { const crit = [hasNecrosis ? 'Necrosi' : null, hasMVP ? 'MVP' : null].filter(Boolean).join(' + '); alerts.push({ type: 'critical', msg: `Criteri morfologici Grade 4: ${crit}` }); } }
         else if (!isDiffusePatternWt && molecularGBM) { diagnosis.grade = 'WHO Grade indeterminato (pattern non diffuso)'; diagnosis.entity = 'Glioma IDH-wildtype, pattern circoscritto (tipo da determinare)'; scores.glioblastoma += 20; alerts.push({ type: 'warning', msg: 'Alterazioni molecolari GBM in tumore non diffuso: classificazione WHO richiede conferma di pattern infiltrante. Rivalutare morfologia.' }); }
         else { diagnosis.grade = 'Grading indeterminato (pannello incompleto / possibile sottocampionamento)'; diagnosis.entity = 'Glioma diffuso, IDH-wildtype (tipo da determinare)'; scores.glioblastoma += 30; alerts.push({ type: 'warning', msg: 'Glioma IDH-wt senza criteri GBM morfologici né molecolari completi: pannello completo obbligatorio' }); if (data.age > 50) alerts.push({ type: 'warning', msg: `Realismo clinico: adulto ${data.age} anni, IDH-wt, senza criteri GBM → altissima probabilità di GBM sottocampionato.` }); }
+        // FIX v3.11.0: mitosi elevata isolata → segnalazione, non promozione a Grade 4
+        if (isDiffusePatternWt && data.mitosis >= 10 && !hasNecrosis && !hasMVP && !molecularGBM) alerts.push({ type: 'warning', msg: `Elevato indice mitotico (≥10, ${data.mitosis}/HPF) in glioma diffuso IDH-wt senza necrosi/MVP né criteri molecolari: sospetto ma non sufficiente per Grade 4 secondo WHO CNS5. Raccomandato completamento molecolare (TERT, EGFR, +7/−10).` });
         if (egfrAmp) { scores.glioblastoma += 30; alerts.push({ type: 'warning', msg: 'EGFR amplificato: Classical subtype GBM. Prognosticamente sfavorevole.' }); }
         if (data['egfr-snv'] === 'vIII') { scores.glioblastoma += 20; alerts.push({ type: 'info', msg: 'EGFRvIII: marker prognostico sfavorevole. Target sperimentale (vaccini, ADC).' }); }
         if (tertMut) { scores.glioblastoma += 20; alerts.push({ type: 'info', msg: 'TERT promoter mutato: favorisce GBM primario IDH-wt. Prognosi sfavorevole.' }); }
         if (chr710) { scores.glioblastoma += 25; alerts.push({ type: 'warning', msg: '+7/-10 presente: pattern cromosomico GBM.' }); }
         if (data['met-cnv'] === 'amplified') alerts.push({ type: 'critical', msg: 'MET amplificato: prognosi molto sfavorevole in GBM. Target sperimentale. Discutere trial.' });
         if (data.pten === 'loss') { scores.glioblastoma += 20; alerts.push({ type: 'info', msg: 'PTEN loss: attivazione pathway PI3K/AKT/mTOR. Presente in ~40% GBM. Mesenchymal subtype.' }); }
-        if (data.nf1 === 'mutato') alerts.push({ type: 'info', msg: 'NF1 loss: Mesenchymal subtype GBM.' });
+        if (data.nf1 === 'mutato') alerts.push({ type: 'info', msg: 'NF1 loss (singolo hit): Mesenchymal subtype GBM.' });
+        else if (data.nf1 === 'biallelico') alerts.push({ type: 'info', msg: 'Possibile inattivazione biallelica NF1 (multipli hit troncanti/frameshift): coerente con GBM subtype mesenchimale.' });
         if (data.mtor === 'mutato') alerts.push({ type: 'info', msg: 'mTOR mutato (gain-of-function): target rapamicina/everolimus. Dati clinici limitati in gliomi.' });
         if (data['nrg1-fusion'] === 'positive') alerts.push({ type: 'warning', msg: 'NRG1 fusion: entità emergente nei gliomi IDH-wt. Verificare con letteratura aggiornata.' });
         if (tp53Altered) alerts.push({ type: 'info', msg: 'TP53 alterato: presente in subset di GBM IDH-wt, più frequente nei casi proneural-like.' });
+        // FIX v3.11.0: <55 anni con IHC R132H neg non confermata da NGS → entità IDH-wt esplicitamente provvisoria
+        if (idhIhcNegUnconfirmed && data.age < 55 && diagnosis.entity) diagnosis.entity += ' [PROVVISORIO — NGS IDH1/2 obbligatorio: IHC R132H neg non confermata, età <55]';
     }
 
     if (data.mgmt === 'methylated') {
@@ -823,7 +840,7 @@ function highlightRelevantReferences(diagnosis, data) {
     if (data.tert === 'mutato') relevantTags.add('TERT');
     if (data['egfr-cnv'] === 'amplified') relevantTags.add('EGFR');
     if (data.pten === 'loss') relevantTags.add('PTEN');
-    if (data.nf1 === 'mutato') relevantTags.add('NF1');
+    if (data.nf1 === 'mutato' || data.nf1 === 'biallelico') relevantTags.add('NF1');
     if (isPosFusion(data['ntrk-fusion'])) { relevantTags.add('NTRK'); relevantTags.add('ACTIONABLE'); relevantTags.add('LAROTRECTINIB'); }
     if (data['ret-fusion'] === 'positive') { relevantTags.add('RET'); relevantTags.add('ACTIONABLE'); }
     if (data['ros1-fusion'] === 'positive') { relevantTags.add('ROS1'); relevantTags.add('ACTIONABLE'); }
@@ -867,7 +884,7 @@ function exportCurrentReport(type) {
     pdfContent.style.cssText = 'font-family: sans-serif; color:#111; background:white; padding:20px;';
     pdfContent.innerHTML = `
         <style>body{font-family:Arial,sans-serif;color:#111;font-size:12px}h2,h3{color:#1a2030}.alert{border-left:3px solid #999;padding:8px 10px;margin:6px 0;border-radius:4px;font-size:11px}.alert-critical{border-color:#c02828;background:#fdeaea}.alert-warning{border-color:#c07010;background:#fff8e8}.alert-success{border-color:#1a9954;background:#edfaf4}.alert-info{border-color:#1a5cc8;background:#eef4ff}.diagnosis-box{border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0}.diagnosis-entity{font-size:18px;font-weight:700;color:#1a2030;margin-bottom:4px}.diagnosis-grade{font-size:13px;color:#c07010;font-family:monospace}.actionable-banner{border:1px solid #c0aaee;background:#f4eeff;padding:10px;border-radius:8px;margin:8px 0}.scoring-container{border:1px solid #ddd;padding:12px;border-radius:8px;margin:10px 0}.scoring-bar-bg{background:#eee;height:6px;border-radius:3px;margin:4px 0 10px}.scoring-bar-fill{height:6px;border-radius:3px}.scoring-label{display:flex;justify-content:space-between;font-size:11px}.summary-table{width:100%;border-collapse:collapse;font-size:11px}.summary-table td{padding:5px 8px;border-bottom:1px solid #eee}.summary-table td:first-child{font-weight:600;color:#5a6478;width:40%}hr{border:none;border-top:1px solid #ddd;margin:12px 0}</style>
-        <h2 style="text-align:center;margin-bottom:4px">REPORT DIAGNOSTICO ${label} — v3.10.8</h2>
+        <h2 style="text-align:center;margin-bottom:4px">REPORT DIAGNOSTICO ${label} — v3.11.0</h2>
         <p style="text-align:center;font-size:11px;color:#666">Data: ${new Date().toLocaleDateString('it-IT')} | WHO CNS5 2021 | Pannello Diatech Extended</p>
         <p style="text-align:center;font-size:10px;color:#c02828;font-style:italic">SOLO USO DIDATTICO — Non sostituisce la diagnosi anatomo-patologica</p>
         <hr>${rc.innerHTML}`;
