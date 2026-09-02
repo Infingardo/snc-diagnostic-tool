@@ -1,4 +1,4 @@
-# 🧠 Tool Diagnostico Neoplasie Cerebrali — v3.10.8
+# 🧠 Tool Diagnostico Neoplasie Cerebrali — v3.11.0
 
 **WHO CNS5 2021 · Gliomi & Meningiomi · Workflow morfologia → IHC → NGS**  
 Pannello Diatech Pharmacogenetics Extended
@@ -101,6 +101,12 @@ Report diagnostico WHO CNS5 + raccomandazioni cliniche
 ---
 
 ## Changelog
+
+### v3.11.0 (2026-07) — Modulo Gliomi: sicurezza IDH-wildtype e grading GBM
+- **[FIX CRITICO]** IDH-wildtype non più assegnato in modo definitivo sulla sola IHC IDH1 R132H negativa in paziente <55 anni. Le mutazioni non-canoniche (IDH1 R132C/G/S/L, IDH2 R172) sfuggono all'anticorpo: sotto i 55 anni viene generato un alert bloccante che richiede NGS IDH1/2 e l'entità è marcata come *provvisoria*. Sopra i 55 anni l'IHC negativa resta accettata come IDH-wt con info-alert sulla conferma NGS non eseguita. Non regressione su BUG-010 (IHC neg + NGS mutato → discordanza R132 non-canonica).
+- **[FIX HIGH]** L'indice mitotico ≥10 non è più trigger autonomo di Glioblastoma / WHO Grade 4 nel ramo IDH-wt. Il grado 4 resta definito solo da necrosi, proliferazione microvascolare o criteri molecolari (TERT mut / EGFR amp / +7−10), come da WHO CNS5. La sola mitosi elevata genera un warning con raccomandazione di completamento molecolare, e il caso ricade nel grading indeterminato / sottocampionamento.
+- **[FIX MEDIUM]** NF1 modellabile come multi-hit: nuova opzione "multipli hit (sospetta inattivazione biallelica)" che genera un alert dedicato coerente con il subtype mesenchimale, distinto dal singolo hit. Entità e grado invariati.
+- **[DEMO]** Aggiunto Caso 6 — Glioma IDH-wt con mitosi elevata (14/HPF) senza necrosi/MVP né criteri molecolari, per illustrare il nuovo comportamento del grading.
 
 ### v3.10.2 (2026-03)
 - **[FIX CRITICO]** TERT promoter mutation nel meningioma → correttamente assegnato a WHO Grade 3 (non Grade 2). Il bug era presente dal v3.9.x.
