@@ -1,4 +1,4 @@
-# 🧠 Tool Diagnostico Neoplasie Cerebrali — v3.11.0
+# 🧠 Tool Diagnostico Neoplasie Cerebrali — v3.12.0
 
 **WHO CNS5 2021 · Gliomi & Meningiomi · Workflow morfologia → IHC → NGS**  
 Pannello Diatech Pharmacogenetics Extended
@@ -101,6 +101,18 @@ Report diagnostico WHO CNS5 + raccomandazioni cliniche
 ---
 
 ## Changelog
+
+### v3.12.0 (2026-09) — Motore estratto e testato; coerenza del grading IDH-mutato
+
+Il motore diagnostico è stato estratto da `index.html` in **`engine.js`** (nessuna dipendenza dal DOM) e coperto da una suite di test eseguibile con `npm test` (`tests/run.mjs`, 88 asserzioni). Motivo: il FIX HIGH della v3.11.0 era stato applicato al solo ramo IDH-wildtype e dimenticato in quello IDH-mutato — con verifiche solo manuali, nulla poteva segnalarlo.
+
+- **[FIX CRITICO]** L'indice mitotico ≥10 non è più criterio di WHO Grade 4 **nemmeno nell'astrocitoma IDH-mutante** (completa il FIX HIGH della v3.11.0, applicato allora al solo ramo IDH-wt). WHO CNS5: Grade 4 = necrosi, proliferazione microvascolare o delezione omozigote CDKN2A/B. Le mitosi separano Grade 2 da Grade 3; ≥10 isolate generano ora un warning con invito a verificare CDKN2A/B ed escludere sottocampionamento.
+- **[FIX CRITICO]** La delezione omozigote CDKN2A/B viene applicata come criterio di Grade 4 **solo alla linea astrocitaria**. Nell'oligodendroglioma IDH-mutato 1p/19q-codeleto non è criterio di grading CNS5: prima veniva appesa a qualunque entità, producendo un oligodendroglioma la cui stringa diagnostica dichiarava Grade 4 mentre il campo grado diceva Grade 3. Ora genera un warning prognostico e il grado resta invariato.
+- **[FIX HIGH]** Stato IDH risolto da un'unica funzione (`resolveIdh`) condivisa fra motore e blocco esclusioni. La seconda regola, duplicata, trattava `not-done` come dato presente e non consultava mai l'IHC: con NGS "N.E." e IHC R132H positiva le esclusioni dichiaravano *IDH wildtype* un caso classificato come IDH-mutato.
+- **[FIX HIGH]** I rami con uscita anticipata (H3 K27M, H3 G34, H3K27me3 loss, IDH indeterminato) eseguono ora il blocco di ragionamento: prima le entità di Grade 4 più gravi uscivano con i soli alert, senza percorso diagnostico, entità escluse né pannello dei criteri mancanti.
+- **[FIX MEDIUM]** `N.E.` conta come dato mancante quanto il campo vuoto nel pannello "criteri mancanti". Prima solo TERT lo verificava: selezionare N.E. su ATRX o 1p/19q — la via che il gate d'ingresso suggerisce esplicitamente — cancellava la segnalazione di incompletezza. Aggiunto CDKN2A/B fra i criteri attesi nei casi IDH-mutati.
+- **[FIX MEDIUM]** Soglie mitotiche allineate fra motore e interfaccia: il passo "Morfologia" del ragionamento prometteva Grade 4 a ≥20 mitosi e l'help-text del campo a ≥10, soglie che il motore non usa in nessun ramo.
+- **[NOTA]** Le esclusioni distinguono ora *IDH wildtype* da *IDH non valutato*.
 
 ### v3.11.0 (2026-07) — Modulo Gliomi: sicurezza IDH-wildtype e grading GBM
 - **[FIX CRITICO]** IDH-wildtype non più assegnato in modo definitivo sulla sola IHC IDH1 R132H negativa in paziente <55 anni. Le mutazioni non-canoniche (IDH1 R132C/G/S/L, IDH2 R172) sfuggono all'anticorpo: sotto i 55 anni viene generato un alert bloccante che richiede NGS IDH1/2 e l'entità è marcata come *provvisoria*. Sopra i 55 anni l'IHC negativa resta accettata come IDH-wt con info-alert sulla conferma NGS non eseguita. Non regressione su BUG-010 (IHC neg + NGS mutato → discordanza R132 non-canonica).

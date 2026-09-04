@@ -1,0 +1,9 @@
+{
+  "name": "snc-diagnostic-tool",
+  "version": "3.12.0",
+  "private": true,
+  "description": "Tool diagnostico neoplasie cerebrali — gliomi (WHO CNS5 2021) e meningiomi",
+  "scripts": {
+    "test": "node tests/run.mjs"
+  }
+}
